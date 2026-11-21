@@ -108,7 +108,7 @@ async function runSim() {
       event:'pretest_submit', student_matric:stu.matric, student_name:stu.name, student:stu,
       score:preSc, total:60, pct:+(preSc/60*100).toFixed(1),
       sections:sections(),
-      outcomes:{PO1:rnd(5,12),PO2:rnd(5,12),PO3:rnd(5,12)},
+      open:{PO1:pick(PRE_TEXT),PO2:pick(MID_TEXT),PO3:pick(TRANSFER)},
       answers:answers(),
     }, 'Pre-test → PreTest tab');
 
@@ -131,6 +131,20 @@ async function runSim() {
         post_surprise:pick(SURPRISE), post_transfer:pick(TRANSFER),
         calibration_delta:postC-preC, time_on_task_min:rnd(15,55),
       }, `Act${id} metacog → Act${id} tab`);
+
+      // Quiz result for this activity
+      const qTotal = [4,4,5,4,5,5,5,6,6,5,5,6,4][id-1];
+      const qFirst = rnd(Math.floor(qTotal*0.5), qTotal);
+      await gasPost({
+        event:'quiz_complete', activity_id:String(id),
+        matric:stu.matric, name:stu.name, gender:stu.gender, age:stu.age,
+        mykid:stu.mykid, home_state:stu.state, 'class':stu.kelas,
+        school_code:stu.school_code, institution_name:stu.school,
+        phone:stu.phone, email:stu.email,
+        quiz_score:qFirst, quiz_total:qTotal,
+        quiz_pct:Math.round(qFirst/qTotal*100),
+        first_try_correct:qFirst, ts:Date.now(),
+      }, `Act${id} quiz → Act${id} tab`);
     }
 
     // 4. Tiered activities
@@ -163,7 +177,7 @@ async function runSim() {
       score:postSc, total:60, pct:+(postSc/60*100).toFixed(1),
       sections:sections(),
       outcomes:Object.fromEntries(Array.from({length:12},(_,i)=>['L'+(i+1),rnd(2,5)])),
-      openEnded:Object.fromEntries(Array.from({length:4},(_,i)=>['OE'+(i+1),pick(REFLECTIONS)])),
+      open:Object.fromEntries(Array.from({length:4},(_,i)=>['OE'+(i+1),pick(REFLECTIONS)])),
       answers:answers(),
     }, 'Post-test → PostTest tab');
   }

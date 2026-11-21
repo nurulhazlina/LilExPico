@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Post-Test — Concept Inventory | LilEx5 Pico IoT Module</title>
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='#02ADA5'/%3E%3C/svg%3E">
+<style>
+/* ── hero ── */
+.ci-hero{background:linear-gradient(135deg,#02ADA5 0%,#0D55A7 100%);color:#fff;padding:2.5rem 0 2rem;text-align:center;}
+.ci-badge{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);border-radius:999px;font-size:.72rem;font-weight:700;padding:.2rem .9rem;letter-spacing:.06em;margin-bottom:.8rem;}
+.ci-hero h1{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900;margin:.3rem 0 .6rem;}
+.ci-hero p{font-size:.92rem;color:rgba(255,255,255,.85);max-width:500px;margin:0 auto;}
+
+/* ── part headings ── */
+.part-head{font-size:1.3rem;font-weight:900;color:#02ADA5;margin:2.5rem 0 .4rem;padding-top:1rem;border-top:2px solid rgba(255,255,255,.07);}
+.part-sub{font-size:.88rem;color:rgba(255,255,255,.6);margin:.2rem 0 1.2rem;}
+
+/* ── instructions ── */
+.ci-instructions{background:rgba(2,173,165,.08);border:1.5px solid rgba(2,173,165,.25);border-radius:12px;padding:1.1rem 1.4rem;margin:1.8rem 0;font-size:.88rem;line-height:1.65;}
+.ci-instructions strong{color:#02ADA5;}
+
+/* ── progress ── */
+.ci-progress-wrap{position:sticky;top:0;z-index:100;background:var(--bg,#0b1420);border-bottom:1px solid rgba(255,255,255,.08);padding:.6rem 0;}
+.ci-progress-inner{display:flex;align-items:center;gap:1rem;max-width:900px;margin:0 auto;padding:0 1.25rem;}
+.ci-progress-bar{flex:1;height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;}
+.ci-progress-fill{height:100%;background:linear-gradient(90deg,#02ADA5,#0D55A7);border-radius:3px;transition:width .3s;width:0%;}
+.ci-progress-txt{font-size:.78rem;font-weight:700;color:rgba(255,255,255,.55);white-space:nowrap;}
+
+/* ── MCQ ── */
+.ci-section{margin:2rem 0;}
+.ci-sec-head{font-size:1rem;font-weight:800;color:#02ADA5;border-left:3px solid #02ADA5;padding-left:.75rem;margin-bottom:1.2rem;}
+.ci-q{background:var(--card,#111c2d);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:.9rem;transition:border-color .2s;}
+.ci-q.ci-answered{border-color:rgba(2,173,165,.3);}
+.ci-q.ci-wrong-mark{border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.04);}
+.ci-qtext{margin:0 0 .85rem;font-size:.92rem;line-height:1.6;}
+.ci-num{font-weight:900;color:#02ADA5;margin-right:.3rem;}
+.ci-opts{display:flex;flex-direction:column;gap:.45rem;}
+.ci-opt{display:flex;align-items:flex-start;gap:.6rem;padding:.5rem .7rem;border-radius:7px;cursor:pointer;border:1.5px solid rgba(255,255,255,.07);transition:background .15s,border-color .15s;font-size:.88rem;}
+.ci-opt:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.18);}
+.ci-opt input[type=radio]{margin-top:.18rem;accent-color:#02ADA5;flex-shrink:0;}
+.ci-opt.ci-sel{background:rgba(2,173,165,.1);border-color:rgba(2,173,165,.4);}
+.ci-opt.ci-correct-show{background:rgba(16,185,129,.12);border-color:#10b981;}
+.ci-opt.ci-wrong-show{background:rgba(239,68,68,.1);border-color:#ef4444;}
+.ci-letter{font-weight:700;color:rgba(255,255,255,.45);flex-shrink:0;width:16px;}
+.ci-opt-text code,.ci-qtext code{background:rgba(255,255,255,.1);padding:.05em .3em;border-radius:3px;font-size:.85em;}
+.ci-opt-text pre,.ci-qtext pre{background:rgba(0,0,0,.3);padding:.5rem .75rem;border-radius:6px;font-size:.8rem;margin:.4rem 0 0;white-space:pre-wrap;}
+
+/* ── Likert ── */
+.lk-block{display:flex;flex-direction:column;gap:.6rem;}
+.lk-row{background:var(--card,#111c2d);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:1rem 1.25rem;transition:border-color .2s;}
+.lk-row.lk-answered{border-color:rgba(2,173,165,.3);}
+.lk-q{margin:0 0 .75rem;font-size:.91rem;line-height:1.6;}
+.lk-scale{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;}
+.lk-anchor{font-size:.7rem;color:rgba(255,255,255,.4);flex-shrink:0;}
+.lk-anchor-r{text-align:right;}
+.lk-cell{display:flex;flex-direction:column;align-items:center;gap:.25rem;cursor:pointer;padding:.35rem .5rem;border-radius:7px;border:1.5px solid rgba(255,255,255,.07);transition:background .15s,border-color .15s;min-width:46px;flex:1;}
+.lk-cell:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.2);}
+.lk-cell input[type=radio]{accent-color:#02ADA5;cursor:pointer;}
+.lk-cell.lk-sel{background:rgba(2,173,165,.12);border-color:rgba(2,173,165,.5);}
+.lk-num{font-size:.78rem;font-weight:700;color:rgba(255,255,255,.5);}
+.lk-cell.lk-sel .lk-num{color:#02ADA5;}
+
+/* ── Open-ended ── */
+.oe-q{background:var(--card,#111c2d);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:.9rem;}
+.oe-label{display:block;font-size:.91rem;line-height:1.6;margin-bottom:.3rem;cursor:default;}
+.oe-num{font-weight:900;color:#02ADA5;margin-right:.3rem;}
+.oe-hint{font-size:.78rem;color:rgba(255,255,255,.4);margin:.1rem 0 .65rem;font-style:italic;}
+.oe-ta{width:100%;background:rgba(0,0,0,.25);border:1.5px solid rgba(255,255,255,.1);border-radius:8px;padding:.7rem .9rem;color:#e5e7eb;font-size:.88rem;font-family:inherit;line-height:1.6;resize:vertical;min-height:90px;transition:border-color .2s;box-sizing:border-box;}
+.oe-ta:focus{outline:none;border-color:rgba(2,173,165,.5);background:rgba(2,173,165,.04);}
+.oe-ta.oe-filled{border-color:rgba(2,173,165,.3);}
+
+/* ── submit ── */
+.ci-submit-wrap{text-align:center;margin:2.5rem 0 1.5rem;}
+.ci-notice{background:rgba(245,162,29,.1);border:1.5px solid rgba(245,162,29,.4);border-radius:8px;padding:.8rem 1.2rem;color:#f5a21d;font-size:.88rem;font-weight:600;display:none;margin-bottom:1rem;}
+.ci-btn{background:linear-gradient(135deg,#02ADA5,#0D55A7);color:#fff;border:none;border-radius:999px;padding:.95rem 2.5rem;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;transition:opacity .2s;letter-spacing:.02em;}
+.ci-btn:hover{opacity:.88;}
+.ci-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ── results ── */
+#ci-results{display:none;}
+.ci-score-box{background:linear-gradient(135deg,#02ADA5 0%,#0D55A7 100%);border-radius:16px;padding:2rem;text-align:center;margin:1.5rem 0;color:#fff;}
+.ci-score-big{font-size:4rem;font-weight:900;line-height:1;}
+.ci-score-label{font-size:.85rem;opacity:.8;margin-top:.3rem;}
+.ci-sec-results{margin:1.5rem 0;}
+.ci-sec-row{display:flex;align-items:center;gap:.9rem;padding:.5rem 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:.86rem;}
+.ci-sec-row-name{flex:1;color:rgba(255,255,255,.75);}
+.ci-sec-row-score{font-weight:800;color:#02ADA5;min-width:50px;text-align:right;}
+.ci-sec-bar{flex:2;height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;}
+.ci-sec-bar-fill{height:100%;background:linear-gradient(90deg,#02ADA5,#0D55A7);border-radius:3px;}
+.ci-review-btn{background:transparent;border:1.5px solid rgba(255,255,255,.25);color:rgba(255,255,255,.7);border-radius:8px;padding:.5rem 1.2rem;font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;margin-top:.5rem;transition:all .2s;}
+.ci-review-btn:hover{border-color:#fff;color:#fff;}
+.ci-lk-results{margin:1.5rem 0;}
+.ci-lk-row{display:flex;align-items:center;gap:.9rem;padding:.45rem 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:.82rem;}
+.ci-lk-row-q{flex:3;color:rgba(255,255,255,.7);}
+.ci-lk-row-score{font-weight:800;color:#02ADA5;min-width:30px;text-align:center;}
+.ci-lk-stars{flex:1;color:#02ADA5;font-size:1rem;}
+
+/* ── not-registered ── */
+.ci-noreg{background:rgba(239,68,68,.1);border:1.5px solid rgba(239,68,68,.4);border-radius:12px;padding:1.2rem 1.5rem;text-align:center;margin:2rem 0;}
+.ci-noreg strong{color:#ef4444;}
+.ci-noreg a{color:#ef4444;font-weight:700;}
+
+/* ── branded footer ── */
+.site-footer{background:#031e1d;border-top:1px solid rgba(2,173,165,.15);padding:2.2rem 0 1.6rem;margin-top:3rem;}
+.sf-top{text-align:center;margin-bottom:1.4rem;}
+.sf-motto{font-size:1rem;font-weight:800;color:#fff;letter-spacing:.02em;}
+.sf-motto span{color:#02ADA5;}
+.sf-org{font-size:.82rem;font-weight:600;color:rgba(255,255,255,.55);letter-spacing:.12em;text-transform:uppercase;margin-top:.3rem;}
+.sf-bottom{display:flex;align-items:center;justify-content:center;gap:1rem;border-top:1px solid rgba(255,255,255,.07);padding-top:1.2rem;flex-wrap:wrap;}
+.sf-copy{font-size:.78rem;color:rgba(255,255,255,.35);}
+.sf-icons{display:flex;gap:.55rem;}
+.sf-icon{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(2,173,165,.5);color:#02ADA5;text-decoration:none;font-size:1rem;transition:background .2s,border-color .2s;}
+.sf-icon:hover{background:rgba(2,173,165,.18);border-color:#02ADA5;}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<div class="chev"><span>See</span><span>Think</span><span>Explore</span><span>Marvel</span></div>
+<nav class="sitenav"><div class="wrap">
+  <a class="brand" href="index.html">LilEx5 <span>Pico IoT Module</span></a>
+  <a class="nl" href="index.html">Home</a>
+  <details class="navsel">
+    <summary>Activities</summary>
+    <div class="navmenu" role="menu">
+      <a href="activity-2.html"><b>Activity 2</b>: Make an LED Blink</a>
+      <a href="activity-4.html"><b>Activity 4</b>: Digital Input</a>
+      <a href="activity-5.html"><b>Activity 5</b>: Making Decisions</a>
+      <a href="activity-8.html"><b>Activity 8</b>: Sensors and Numbers</a>
+      <a href="activity-10.html"><b>Activity 10</b>: Internet and Data</a>
+      <a href="activity-13.html"><b>Activity 13</b>: Sending Data to a Live Dashboard</a>
+    </div>
+  </details>
+</div></nav>
+
+<!-- ── HERO ── -->
+<div class="ci-hero">
+  <div class="wrap">
+    <div class="ci-badge">📋 LilEx5 Pico IoT · AFTER the activities</div>
+    <h1>Post-Test: Concept Inventory</h1>
+    <p>Take this test <strong>after</strong> completing all six modules. It measures how much your understanding has grown.</p>
+  </div>
+</div>
+
+<!-- ── STICKY PROGRESS ── -->
+<div class="ci-progress-wrap">
+  <div class="ci-progress-inner">
+    <div class="ci-progress-bar"><div class="ci-progress-fill" id="ci-prog-fill"></div></div>
+    <span class="ci-progress-txt" id="ci-prog-txt">0 / 60 MCQs answered</span>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<main><div class="wrap">
+
+  <div class="ci-noreg" id="ci-noreg" style="display:none">
+    <strong>⚠ Please register first.</strong><br>
+    Go back to <a href="index.html">the home page</a> and complete registration before taking this test.
+  </div>
+
+  <div class="ci-instructions" id="ci-instr">
+    <strong>Instructions:</strong>
+    This instrument has <strong>3 parts</strong>. Part&nbsp;1 is 60 MCQs (10 per module) — choose the best answer for each. Part&nbsp;2 is a 5-point Likert survey about your learning experience. Part&nbsp;3 has short reflection questions. All MCQs and all Likert items must be answered before you can submit; the written reflections are encouraged but optional.
+    You can only submit <strong>once</strong>.
+  </div>
+
+  <div id="ci-form">
+    <!-- ═ PART 1 MCQs ═ -->
+    <h2 class="part-head">Part 1 &mdash; Concept Inventory (60 MCQs)</h2>
+    <p class="part-sub">Choose the <em>best</em> answer for each question.</p>
+
+<div class="ci-section"><h3 class="ci-sec-head">Module 1 · Loops &amp; Timing</h3>
+<div class="ci-q" id="ciq-1"><p class="ci-qtext"><span class="ci-num">Q1.</span> What does <code>time.sleep(0.5)</code> do in MicroPython?</p><div class="ci-opts"><label class="ci-opt" data-qid="1" data-oi="0"><input type="radio" name="q1" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">Waits for 0.5 minutes before continuing</span></label>
+<label class="ci-opt" data-qid="1" data-oi="1"><input type="radio" name="q1" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">Pauses the program for half a second</span></label>
+<label class="ci-opt" data-qid="1" data-oi="2"><input type="radio" name="q1" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">Runs the next line 0.5 times</span></label>
+<label class="ci-opt" data-qid="1" data-oi="3"><input type="radio" name="q1" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">Sets the CPU speed to 0.5 MHz</span></label>
+</div></div>
+<div class="ci-q" id="ciq-2"><p class="ci-qtext"><span class="ci-num">Q2.</span> Which loop runs forever without stopping on its own?</p><div class="ci-opts"><label class="ci-opt" data-qid="2" data-oi="0"><input type="radio" name="q2" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text"><code>for i in range(10):</code></span></label>
+<label class="ci-opt" data-qid="2" data-oi="1"><input type="radio" name="q2" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text"><code>while i &lt; 10:</code></span></label>
+<label class="ci-opt" data-qid="2" data-oi="2"><input type="radio" name="q2" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text"><code>while True:</code></span></label>
+<label class="ci-opt" data-qid="2" data-oi="3"><input type="radio" name="q2" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text"><code>repeat forever:</code></span></label>
+</div></div>
+<div class="ci-q" id="ciq-3"><p class="ci-qtext"><span class="ci-num">Q3.</span> What is the role of indentation in MicroPython?</p><div class="ci-opts"><label class="ci-opt" data-qid="3" data-oi="0"><input type="radio" name="q3" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">It makes the code look neater on screen</span></label>
+<label class="ci-opt" data-qid="3" data-oi="1"><input type="radio" name="q3" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">It tells Python which lines belong inside a block</span></label>
+<label class="ci-opt" data-qid="3" data-oi="2"><input type="radio" name="q3" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">It speeds up how fast the code runs</span></label>
+<label class="ci-opt" data-qid="3" data-oi="3"><input type="radio" name="q3" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">It is optional and has no effect</span></label>
+</div></div>
+<div class="ci-q" id="ciq-4"><p class="ci-qtext"><span class="ci-num">Q4.</span> What does <code>led.toggle()</code> do?</p><div class="ci-opts"><label class="ci-opt" data-qid="4" data-oi="0"><input type="radio" name="q4" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">Turns the LED on permanently</span></label>
+<label class="ci-opt" data-qid="4" data-oi="1"><input type="radio" name="q4" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">Turns the LED off permanently</span></label>
+<label class="ci-opt" data-qid="4" data-oi="2"><input type="radio" name="q4" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">Switches the LED from its current state to the opposite</span></label>
+<label class="ci-opt" data-qid="4" data-oi="3"><input type="radio" name="q4" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">Makes the LED blink three times</span></label>
+</div></div>
+<div class="ci-q" id="ciq-5"><p class="ci-qtext"><span class="ci-num">Q5.</span> If you change <code>time.sleep(1)</code> to <code>time.sleep(0.1)</code>, the LED will:</p><div class="ci-opts"><label class="ci-opt" data-qid="5" data-oi="0"><input type="radio" name="q5" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">Blink slower</span></label>
+<label class="ci-opt" data-qid="5" data-oi="1"><input type="radio" name="q5" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">Blink faster</span></label>
+<label class="ci-opt" data-qid="5" data-oi="2"><input type="radio" name="q5" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">Stop blinking</span></label>
+<label class="ci-opt" data-qid="5" data-oi="3"><input type="radio" name="q5" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">Blink at the same speed</span></label>
+</div></div>
+<div class="ci-q" id="ciq-6"><p class="ci-qtext"><span class="ci-num">Q6.</span> What does <code>from machine import Pin</code> do?</p><div class="ci-opts"><label class="ci-opt" data-qid="6" data-oi="0"><input type="radio" name="q6" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">Saves a Pin object to the machine</span></label>
+<label class="ci-opt" data-qid="6" data-oi="1"><input type="radio" name="q6" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">Imports the Pin class from the machine module so you can use it</span></label>
+<label class="ci-opt" data-qid="6" data-oi="2"><input type="radio" name="q6" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">Deletes the machine module</span></label>
+<label class="ci-opt" data-qid="6" data-oi="3"><input type="radio" name="q6" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">Creates a new physical pin on the board</span></label>
+</div></div>
+<div class="ci-q" id="ciq-7"><p class="ci-qtext"><span class="ci-num">Q7.</span> <code>Pin.OUT</code> configures a pin as:</p><div class="ci-opts"><label class="ci-opt" data-qid="7" data-oi="0"><input type="radio" name="q7" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">An output — it sends signals out of the board</span></label>
+<label class="ci-opt" data-qid="7" data-oi="1"><input type="radio" name="q7" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">An input — it reads signals coming into the board</span></label>
+<label class="ci-opt" data-qid="7" data-oi="2"><input type="radio" name="q7" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">A power supply pin</span></label>
+<label class="ci-opt" data-qid="7" data-oi="3"><input type="radio" name="q7" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">A voltage-measurement pin</span></label>
+</div></div>
+<div class="ci-q" id="ciq-8"><p class="ci-qtext"><span class="ci-num">Q8.</span> Look at this code:<br><pre>while True:
+    led.on()
+    time.sleep(1)
+    led.off()
+    time.sleep(2)</pre>How long is the LED OFF in each cycle?</p><div class="ci-opts"><label class="ci-opt" data-qid="8" data-oi="0"><input type="radio" name="q8" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">0 seconds</span></label>
+<label class="ci-opt" data-qid="8" data-oi="1"><input type="radio" name="q8" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">1 second</span></label>
+<label class="ci-opt" data-qid="8" data-oi="2"><input type="radio" name="q8" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">2 seconds</span></label>
+<label class="ci-opt" data-qid="8" data-oi="3"><input type="radio" name="q8" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">3 seconds</span></label>
+</div></div>
+<div class="ci-q" id="ciq-9"><p class="ci-qtext"><span class="ci-num">Q9.</span> What error occurs if you forget to indent code inside a <code>while True:</code> block?</p><div class="ci-opts"><label class="ci-opt" data-qid="9" data-oi="0"><input type="radio" name="q9" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">The loop runs but very slowly</span></label>
+<label class="ci-opt" data-qid="9" data-oi="1"><input type="radio" name="q9" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">An <code>IndentationError</code> is raised</span></label>
+<label class="ci-opt" data-qid="9" data-oi="2"><input type="radio" name="q9" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">The loop runs only once</span></label>
+<label class="ci-opt" data-qid="9" data-oi="3"><input type="radio" name="q9" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">Nothing — it still works</span></label>
+</div></div>
+<div class="ci-q" id="ciq-10"><p class="ci-qtext"><span class="ci-num">Q10.</span> How many times does the body of <code>for i in range(5):</code> run?</p><div class="ci-opts"><label class="ci-opt" data-qid="10" data-oi="0"><input type="radio" name="q10" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">4 times</span></label>
+<label class="ci-opt" data-qid="10" data-oi="1"><input type="radio" name="q10" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">5 times</span></label>
+<label class="ci-opt" data-qid="10" data-oi="2"><input type="radio" name="q10" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">6 times</span></label>
+<label class="ci-opt" data-qid="10" data-oi="3"><input type="radio" name="q10" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">It runs forever</span></label>
+</div></div>
+</div>
+<div class="ci-section"><h3 class="ci-sec-head">Module 2 · Digital Input</h3>
+<div class="ci-q" id="ciq-11"><p class="ci-qtext"><span class="ci-num">Q11.</span> To read a button on GP15, which <code>Pin</code> mode should you use?</p><div class="ci-opts"><label class="ci-opt" data-qid="11" data-oi="0"><input type="radio" name="q11" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text"><code>Pin.OUT</code></span></label>
+<label class="ci-opt" data-qid="11" data-oi="1"><input type="radio" name="q11" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text"><code>Pin.IN</code></span></label>
+<label class="ci-opt" data-qid="11" data-oi="2"><input type="radio" name="q11" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text"><code>Pin.PWM</code></span></label>
+<label class="ci-opt" data-qid="11" data-oi="3"><input type="radio" name="q11" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text"><code>Pin.ADC</code></span></label>
+</div></div>
+<div class="ci-q" id="ciq-12"><p class="ci-qtext"><span class="ci-num">Q12.</span> What does <code>Pin.PULL_UP</code> do to an input pin?</p><div class="ci-opts"><label class="ci-opt" data-qid="12" data-oi="0"><input type="radio" name="q12" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">Pulls the pin voltage to 3.3 V when nothing else drives it</span></label>
+<label class="ci-opt" data-qid="12" data-oi="1"><input type="radio" name="q12" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">Makes the button harder to press physically</span></label>
+<label class="ci-opt" data-qid="12" data-oi="2"><input type="radio" name="q12" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">Increases the current drawn through the pin</span></label>
+<label class="ci-opt" data-qid="12" data-oi="3"><input type="radio" name="q12" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">Connects the pin permanently to 5 V</span></label>
+</div></div>
+<div class="ci-q" id="ciq-13"><p class="ci-qtext"><span class="ci-num">Q13.</span> A button uses <code>PULL_UP</code>. When the button <strong>is pressed</strong>, <code>btn.value()</code> returns:</p><div class="ci-opts"><label class="ci-opt" data-qid="13" data-oi="0"><input type="radio" name="q13" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text"><code>1</code></span></label>
+<label class="ci-opt" data-qid="13" data-oi="1"><input type="radio" name="q13" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text"><code>0</code></span></label>
+<label class="ci-opt" data-qid="13" data-oi="2"><input type="radio" name="q13" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text"><code>True</code></span></label>
+<label class="ci-opt" data-qid="13" data-oi="3"><input type="radio" name="q13" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text"><code>HIGH</code></span></label>
+</div></div>
+<div class="ci-q" id="ciq-14"><p class="ci-qtext"><span class="ci-num">Q14.</span> What does <code>print()</code> do in MicroPython when connected via USB?</p><div class="ci-opts"><label class="ci-opt" data-qid="14" data-oi="0"><input type="radio" name="q14" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">Sends text to a printer</span></label>
+<label class="ci-opt" data-qid="14" data-oi="1"><input type="radio" name="q14" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">Saves text to a file on the board</span></label>
+<label class="ci-opt" data-qid="14" data-oi="2"><input type="radio" name="q14" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">Displays output in the Thonny Shell panel</span></label>
+<label class="ci-opt" data-qid="14" data-oi="3"><input type="radio" name="q14" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">Writes text to the OLED screen</span></label>
+</div></div>
+<div class="ci-q" id="ciq-15"><p class="ci-qtext"><span class="ci-num">Q15.</span> Which line correctly sets up a button on GP14 with internal pull-up?</p><div class="ci-opts"><label class="ci-opt" data-qid="15" data-oi="0"><input type="radio" name="q15" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text"><code>btn = Pin(14, Pin.OUT)</code></span></label>
+<label class="ci-opt" data-qid="15" data-oi="1"><input type="radio" name="q15" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text"><code>btn = Pin(14, Pin.IN, Pin.PULL_UP)</code></span></label>
+<label class="ci-opt" data-qid="15" data-oi="2"><input type="radio" name="q15" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text"><code>btn = Pin(14, Pin.READ)</code></span></label>
+<label class="ci-opt" data-qid="15" data-oi="3"><input type="radio" name="q15" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text"><code>btn = Pin.IN(14)</code></span></label>
+</div></div>
+<div class="ci-q" id="ciq-16"><p class="ci-qtext"><span class="ci-num">Q16.</span> A button with PULL_UP reads 1 at rest and 0 when pressed. This is called:</p><div class="ci-opts"><label class="ci-opt" data-qid="16" data-oi="0"><input type="radio" name="q16" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">Active HIGH logic</span></label>
+<label class="ci-opt" data-qid="16" data-oi="1"><input type="radio" name="q16" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">Active LOW logic</span></label>
+<label class="ci-opt" data-qid="16" data-oi="2"><input type="radio" name="q16" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">Inverted power mode</span></label>
+<label class="ci-opt" data-qid="16" data-oi="3"><input type="radio" name="q16" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">Reverse polarity</span></label>
+</div></div>
+<div class="ci-q" id="ciq-17"><p class="ci-qtext"><span class="ci-num">Q17.</span> What is the key difference between a digital <em>input</em> and a digital <em>output</em>?</p><div class="ci-opts"><label class="ci-opt" data-qid="17" data-oi="0"><input type="radio" name="q17" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">There is no difference — they work the same way</span></label>
+<label class="ci-opt" data-qid="17" data-oi="1"><input type="radio" name="q17" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">An input reads signals from a component; an output sends signals to a component</span></label>
+<label class="ci-opt" data-qid="17" data-oi="2"><input type="radio" name="q17" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">An input pin uses more power than an output pin</span></label>
+<label class="ci-opt" data-qid="17" data-oi="3"><input type="radio" name="q17" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">An output pin can only ever be 0</span></label>
+</div></div>
+<div class="ci-q" id="ciq-18"><p class="ci-qtext"><span class="ci-num">Q18.</span> <code>while True: print(btn.value())</code> will:</p><div class="ci-opts"><label class="ci-opt" data-qid="18" data-oi="0"><input type="radio" name="q18" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">Print the button value once and stop</span></label>
+<label class="ci-opt" data-qid="18" data-oi="1"><input type="radio" name="q18" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">Print the button value continuously forever</span></label>
+<label class="ci-opt" data-qid="18" data-oi="2"><input type="radio" name="q18" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">Only print when the button is pressed</span></label>
+<label class="ci-opt" data-qid="18" data-oi="3"><input type="radio" name="q18" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">Print the word 'value' repeatedly</span></label>
+</div></div>
+<div class="ci-q" id="ciq-19"><p class="ci-qtext"><span class="ci-num">Q19.</span> Why might you add <code>time.sleep(0.05)</code> inside a button-reading loop?</p><div class="ci-opts"><label class="ci-opt" data-qid="19" data-oi="0"><input type="radio" name="q19" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">To make the button last longer physically</span></label>
+<label class="ci-opt" data-qid="19" data-oi="1"><input type="radio" name="q19" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">To slow the read rate and reduce noisy or bouncing readings</span></label>
+<label class="ci-opt" data-qid="19" data-oi="2"><input type="radio" name="q19" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">To increase the voltage on the button pin</span></label>
+<label class="ci-opt" data-qid="19" data-oi="3"><input type="radio" name="q19" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">To make a connected LED brighter</span></label>
+</div></div>
+<div class="ci-q" id="ciq-20"><p class="ci-qtext"><span class="ci-num">Q20.</span> If <code>btn.value()</code> returns <code>0</code> and the button uses PULL_UP, the button is:</p><div class="ci-opts"><label class="ci-opt" data-qid="20" data-oi="0"><input type="radio" name="q20" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">Broken</span></label>
+<label class="ci-opt" data-qid="20" data-oi="1"><input type="radio" name="q20" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">Unplugged</span></label>
+<label class="ci-opt" data-qid="20" data-oi="2"><input type="radio" name="q20" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">Currently pressed</span></label>
+<label class="ci-opt" data-qid="20" data-oi="3"><input type="radio" name="q20" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">Releasing after being pressed</span></label>
+</div></div>
+</div>
+<div class="ci-section"><h3 class="ci-sec-head">Module 3 · Making Decisions</h3>
+<div class="ci-q" id="ciq-21"><p class="ci-qtext"><span class="ci-num">Q21.</span> What does the <code>==</code> operator do?</p><div class="ci-opts"><label class="ci-opt" data-qid="21" data-oi="0"><input type="radio" name="q21" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">Sets a variable to a value</span></label>
+<label class="ci-opt" data-qid="21" data-oi="1"><input type="radio" name="q21" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">Checks whether two values are equal</span></label>
+<label class="ci-opt" data-qid="21" data-oi="2"><input type="radio" name="q21" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">Checks whether two values are not equal</span></label>
+<label class="ci-opt" data-qid="21" data-oi="3"><input type="radio" name="q21" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">Divides two numbers</span></label>
+</div></div>
+<div class="ci-q" id="ciq-22"><p class="ci-qtext"><span class="ci-num">Q22.</span> Which line correctly checks if <code>temp</code> is <strong>above</strong> 30?</p><div class="ci-opts"><label class="ci-opt" data-qid="22" data-oi="0"><input type="radio" name="q22" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text"><code>if temp = 30:</code></span></label>
+<label class="ci-opt" data-qid="22" data-oi="1"><input type="radio" name="q22" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text"><code>if temp > 30:</code></span></label>
+<label class="ci-opt" data-qid="22" data-oi="2"><input type="radio" name="q22" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text"><code>if temp => 30:</code></span></label>
+<label class="ci-opt" data-qid="22" data-oi="3"><input type="radio" name="q22" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text"><code>if temp &lt; 30:</code></span></label>
+</div></div>
+<div class="ci-q" id="ciq-23"><p class="ci-qtext"><span class="ci-num">Q23.</span> What is the purpose of <code>elif</code>?</p><div class="ci-opts"><label class="ci-opt" data-qid="23" data-oi="0"><input type="radio" name="q23" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">It ends an if block</span></label>
+<label class="ci-opt" data-qid="23" data-oi="1"><input type="radio" name="q23" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">It is another way to write <code>else</code></span></label>
+<label class="ci-opt" data-qid="23" data-oi="2"><input type="radio" name="q23" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">It checks an extra condition only when the previous <code>if</code> was False</span></label>
+<label class="ci-opt" data-qid="23" data-oi="3"><input type="radio" name="q23" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">It runs regardless of any condition</span></label>
+</div></div>
+<div class="ci-q" id="ciq-24"><p class="ci-qtext"><span class="ci-num">Q24.</span> What does this code print when <code>x = 5</code>?<br><pre>if x > 10:
+    print('big')
+elif x > 3:
+    print('medium')
+else:
+    print('small')</pre></p><div class="ci-opts"><label class="ci-opt" data-qid="24" data-oi="0"><input type="radio" name="q24" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text"><code>big</code></span></label>
+<label class="ci-opt" data-qid="24" data-oi="1"><input type="radio" name="q24" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text"><code>medium</code></span></label>
+<label class="ci-opt" data-qid="24" data-oi="2"><input type="radio" name="q24" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text"><code>small</code></span></label>
+<label class="ci-opt" data-qid="24" data-oi="3"><input type="radio" name="q24" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text"><code>big medium</code></span></label>
+</div></div>
+<div class="ci-q" id="ciq-25"><p class="ci-qtext"><span class="ci-num">Q25.</span> Which operator means 'not equal to'?</p><div class="ci-opts"><label class="ci-opt" data-qid="25" data-oi="0"><input type="radio" name="q25" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text"><code>=!</code></span></label>
+<label class="ci-opt" data-qid="25" data-oi="1"><input type="radio" name="q25" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text"><code>&gt;&lt;</code></span></label>
+<label class="ci-opt" data-qid="25" data-oi="2"><input type="radio" name="q25" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text"><code>!=</code></span></label>
+<label class="ci-opt" data-qid="25" data-oi="3"><input type="radio" name="q25" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text"><code>&lt;&gt;</code></span></label>
+</div></div>
+<div class="ci-q" id="ciq-26"><p class="ci-qtext"><span class="ci-num">Q26.</span> How many <code>else</code> blocks can follow a single <code>if</code> statement?</p><div class="ci-opts"><label class="ci-opt" data-qid="26" data-oi="0"><input type="radio" name="q26" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">As many as you want</span></label>
+<label class="ci-opt" data-qid="26" data-oi="1"><input type="radio" name="q26" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">None</span></label>
+<label class="ci-opt" data-qid="26" data-oi="2"><input type="radio" name="q26" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">Exactly one</span></label>
+<label class="ci-opt" data-qid="26" data-oi="3"><input type="radio" name="q26" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">Exactly two</span></label>
+</div></div>
+<div class="ci-q" id="ciq-27"><p class="ci-qtext"><span class="ci-num">Q27.</span> In Python, <code>and</code> in a condition means:</p><div class="ci-opts"><label class="ci-opt" data-qid="27" data-oi="0"><input type="radio" name="q27" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">Both conditions must be True for the whole expression to be True</span></label>
+<label class="ci-opt" data-qid="27" data-oi="1"><input type="radio" name="q27" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">At least one condition must be True</span></label>
+<label class="ci-opt" data-qid="27" data-oi="2"><input type="radio" name="q27" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">Neither condition needs to be True</span></label>
+<label class="ci-opt" data-qid="27" data-oi="3"><input type="radio" name="q27" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">It reverses the condition</span></label>
+</div></div>
+<div class="ci-q" id="ciq-28"><p class="ci-qtext"><span class="ci-num">Q28.</span> If <code>light = 1</code> and <code>door = 0</code>, which condition is <strong>True</strong>?</p><div class="ci-opts"><label class="ci-opt" data-qid="28" data-oi="0"><input type="radio" name="q28" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text"><code>light == 1 and door == 1</code></span></label>
+<label class="ci-opt" data-qid="28" data-oi="1"><input type="radio" name="q28" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text"><code>light == 0 or door == 0</code></span></label>
+<label class="ci-opt" data-qid="28" data-oi="2"><input type="radio" name="q28" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text"><code>light == 1 and door == 0</code></span></label>
+<label class="ci-opt" data-qid="28" data-oi="3"><input type="radio" name="q28" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text"><code>light == 0 and door == 0</code></span></label>
+</div></div>
+<div class="ci-q" id="ciq-29"><p class="ci-qtext"><span class="ci-num">Q29.</span> What is a 'nested if' statement?</p><div class="ci-opts"><label class="ci-opt" data-qid="29" data-oi="0"><input type="radio" name="q29" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">An if statement inside a function</span></label>
+<label class="ci-opt" data-qid="29" data-oi="1"><input type="radio" name="q29" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">An if statement placed inside another if statement</span></label>
+<label class="ci-opt" data-qid="29" data-oi="2"><input type="radio" name="q29" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">An if statement with no condition at all</span></label>
+<label class="ci-opt" data-qid="29" data-oi="3"><input type="radio" name="q29" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">Two if statements that execute at exactly the same time</span></label>
+</div></div>
+<div class="ci-q" id="ciq-30"><p class="ci-qtext"><span class="ci-num">Q30.</span> If <code>val = 0</code>, what does <code>if val:</code> evaluate to?</p><div class="ci-opts"><label class="ci-opt" data-qid="30" data-oi="0"><input type="radio" name="q30" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">True — because <code>val</code> exists as a variable</span></label>
+<label class="ci-opt" data-qid="30" data-oi="1"><input type="radio" name="q30" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">False — because 0 is treated as falsy in Python</span></label>
+<label class="ci-opt" data-qid="30" data-oi="2"><input type="radio" name="q30" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">An error — you can't use a number as a condition</span></label>
+<label class="ci-opt" data-qid="30" data-oi="3"><input type="radio" name="q30" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">True — because 0 is a valid number</span></label>
+</div></div>
+</div>
+<div class="ci-section"><h3 class="ci-sec-head">Module 4 · Sensors &amp; Numbers</h3>
+<div class="ci-q" id="ciq-31"><p class="ci-qtext"><span class="ci-num">Q31.</span> What type of number is <code>3.14</code> in Python?</p><div class="ci-opts"><label class="ci-opt" data-qid="31" data-oi="0"><input type="radio" name="q31" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">Integer</span></label>
+<label class="ci-opt" data-qid="31" data-oi="1"><input type="radio" name="q31" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">String</span></label>
+<label class="ci-opt" data-qid="31" data-oi="2"><input type="radio" name="q31" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">Float</span></label>
+<label class="ci-opt" data-qid="31" data-oi="3"><input type="radio" name="q31" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">Boolean</span></label>
+</div></div>
+<div class="ci-q" id="ciq-32"><p class="ci-qtext"><span class="ci-num">Q32.</span> What does <code>round(3.7845, 2)</code> return?</p><div class="ci-opts"><label class="ci-opt" data-qid="32" data-oi="0"><input type="radio" name="q32" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text"><code>3.7</code></span></label>
+<label class="ci-opt" data-qid="32" data-oi="1"><input type="radio" name="q32" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text"><code>3.78</code></span></label>
+<label class="ci-opt" data-qid="32" data-oi="2"><input type="radio" name="q32" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text"><code>3.79</code></span></label>
+<label class="ci-opt" data-qid="32" data-oi="3"><input type="radio" name="q32" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text"><code>4.0</code></span></label>
+</div></div>
+<div class="ci-q" id="ciq-33"><p class="ci-qtext"><span class="ci-num">Q33.</span> I²C is a communication protocol. It uses:</p><div class="ci-opts"><label class="ci-opt" data-qid="33" data-oi="0"><input type="radio" name="q33" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">One wire for data only</span></label>
+<label class="ci-opt" data-qid="33" data-oi="1"><input type="radio" name="q33" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">Two wires: SDA (data) and SCL (clock)</span></label>
+<label class="ci-opt" data-qid="33" data-oi="2"><input type="radio" name="q33" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">Three wires: power, ground, and data</span></label>
+<label class="ci-opt" data-qid="33" data-oi="3"><input type="radio" name="q33" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">A wireless radio signal</span></label>
+</div></div>
+<div class="ci-q" id="ciq-34"><p class="ci-qtext"><span class="ci-num">Q34.</span> A sensor returns raw value <code>1234</code>. Formula: <code>temp = raw * 0.1</code>. What is the temperature?</p><div class="ci-opts"><label class="ci-opt" data-qid="34" data-oi="0"><input type="radio" name="q34" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text"><code>123.4</code></span></label>
+<label class="ci-opt" data-qid="34" data-oi="1"><input type="radio" name="q34" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text"><code>12340</code></span></label>
+<label class="ci-opt" data-qid="34" data-oi="2"><input type="radio" name="q34" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text"><code>12.34</code></span></label>
+<label class="ci-opt" data-qid="34" data-oi="3"><input type="radio" name="q34" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text"><code>0.1234</code></span></label>
+</div></div>
+<div class="ci-q" id="ciq-35"><p class="ci-qtext"><span class="ci-num">Q35.</span> What does <code>int(3.9)</code> return?</p><div class="ci-opts"><label class="ci-opt" data-qid="35" data-oi="0"><input type="radio" name="q35" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text"><code>4</code></span></label>
+<label class="ci-opt" data-qid="35" data-oi="1"><input type="radio" name="q35" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text"><code>3</code></span></label>
+<label class="ci-opt" data-qid="35" data-oi="2"><input type="radio" name="q35" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text"><code>3.9</code></span></label>
+<label class="ci-opt" data-qid="35" data-oi="3"><input type="radio" name="q35" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">An error</span></label>
+</div></div>
+<div class="ci-q" id="ciq-36"><p class="ci-qtext"><span class="ci-num">Q36.</span> Why might you average several consecutive sensor readings?</p><div class="ci-opts"><label class="ci-opt" data-qid="36" data-oi="0"><input type="radio" name="q36" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">To make the code run faster</span></label>
+<label class="ci-opt" data-qid="36" data-oi="1"><input type="radio" name="q36" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">To reduce the effect of random electrical noise in measurements</span></label>
+<label class="ci-opt" data-qid="36" data-oi="2"><input type="radio" name="q36" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">To use less memory on the board</span></label>
+<label class="ci-opt" data-qid="36" data-oi="3"><input type="radio" name="q36" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">To make the sensor run warmer</span></label>
+</div></div>
+<div class="ci-q" id="ciq-37"><p class="ci-qtext"><span class="ci-num">Q37.</span> Which code correctly rounds a float <code>v</code> to one decimal place?</p><div class="ci-opts"><label class="ci-opt" data-qid="37" data-oi="0"><input type="radio" name="q37" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text"><code>round(v)</code></span></label>
+<label class="ci-opt" data-qid="37" data-oi="1"><input type="radio" name="q37" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text"><code>round(v, 1)</code></span></label>
+<label class="ci-opt" data-qid="37" data-oi="2"><input type="radio" name="q37" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text"><code>int(v, 1)</code></span></label>
+<label class="ci-opt" data-qid="37" data-oi="3"><input type="radio" name="q37" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text"><code>v.round(1)</code></span></label>
+</div></div>
+<div class="ci-q" id="ciq-38"><p class="ci-qtext"><span class="ci-num">Q38.</span> What type of value does an <code>ADC</code> pin measure?</p><div class="ci-opts"><label class="ci-opt" data-qid="38" data-oi="0"><input type="radio" name="q38" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">Digital HIGH or LOW only</span></label>
+<label class="ci-opt" data-qid="38" data-oi="1"><input type="radio" name="q38" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">A continuous range of analogue voltage levels</span></label>
+<label class="ci-opt" data-qid="38" data-oi="2"><input type="radio" name="q38" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">The speed of data transfer on I²C</span></label>
+<label class="ci-opt" data-qid="38" data-oi="3"><input type="radio" name="q38" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">The temperature of the microcontroller chip itself</span></label>
+</div></div>
+<div class="ci-q" id="ciq-39"><p class="ci-qtext"><span class="ci-num">Q39.</span> On the Raspberry Pi Pico, which of these GP pins can be used as an ADC input?</p><div class="ci-opts"><label class="ci-opt" data-qid="39" data-oi="0"><input type="radio" name="q39" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">GP0</span></label>
+<label class="ci-opt" data-qid="39" data-oi="1"><input type="radio" name="q39" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">GP5</span></label>
+<label class="ci-opt" data-qid="39" data-oi="2"><input type="radio" name="q39" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">GP26</span></label>
+<label class="ci-opt" data-qid="39" data-oi="3"><input type="radio" name="q39" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">GP15</span></label>
+</div></div>
+<div class="ci-q" id="ciq-40"><p class="ci-qtext"><span class="ci-num">Q40.</span> Your temperature reading jumps between values on every read. The most likely cause is:</p><div class="ci-opts"><label class="ci-opt" data-qid="40" data-oi="0"><input type="radio" name="q40" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">The sensor is broken beyond repair</span></label>
+<label class="ci-opt" data-qid="40" data-oi="1"><input type="radio" name="q40" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">Electrical noise in the circuit or sensor signal</span></label>
+<label class="ci-opt" data-qid="40" data-oi="2"><input type="radio" name="q40" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">A syntax error in your code</span></label>
+<label class="ci-opt" data-qid="40" data-oi="3"><input type="radio" name="q40" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">The board is overheating</span></label>
+</div></div>
+</div>
+<div class="ci-section"><h3 class="ci-sec-head">Module 5 · Internet &amp; Data</h3>
+<div class="ci-q" id="ciq-41"><p class="ci-qtext"><span class="ci-num">Q41.</span> What is MQTT?</p><div class="ci-opts"><label class="ci-opt" data-qid="41" data-oi="0"><input type="radio" name="q41" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">A MicroPython programming language extension</span></label>
+<label class="ci-opt" data-qid="41" data-oi="1"><input type="radio" name="q41" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">A lightweight messaging protocol designed for IoT devices</span></label>
+<label class="ci-opt" data-qid="41" data-oi="2"><input type="radio" name="q41" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">A type of WiFi antenna specification</span></label>
+<label class="ci-opt" data-qid="41" data-oi="3"><input type="radio" name="q41" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">A MicroPython library for controlling LEDs</span></label>
+</div></div>
+<div class="ci-q" id="ciq-42"><p class="ci-qtext"><span class="ci-num">Q42.</span> In MQTT, a 'topic' is:</p><div class="ci-opts"><label class="ci-opt" data-qid="42" data-oi="0"><input type="radio" name="q42" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">The hostname of the MQTT broker server</span></label>
+<label class="ci-opt" data-qid="42" data-oi="1"><input type="radio" name="q42" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">A string label that organises messages so subscribers receive only what they care about</span></label>
+<label class="ci-opt" data-qid="42" data-oi="2"><input type="radio" name="q42" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">The network password used to connect</span></label>
+<label class="ci-opt" data-qid="42" data-oi="3"><input type="radio" name="q42" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">The speed at which data is transferred</span></label>
+</div></div>
+<div class="ci-q" id="ciq-43"><p class="ci-qtext"><span class="ci-num">Q43.</span> Which MicroPython module do you import to connect a Pico W to WiFi?</p><div class="ci-opts"><label class="ci-opt" data-qid="43" data-oi="0"><input type="radio" name="q43" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text"><code>import bluetooth</code></span></label>
+<label class="ci-opt" data-qid="43" data-oi="1"><input type="radio" name="q43" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text"><code>import network</code></span></label>
+<label class="ci-opt" data-qid="43" data-oi="2"><input type="radio" name="q43" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text"><code>import wifi</code></span></label>
+<label class="ci-opt" data-qid="43" data-oi="3"><input type="radio" name="q43" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text"><code>import internet</code></span></label>
+</div></div>
+<div class="ci-q" id="ciq-44"><p class="ci-qtext"><span class="ci-num">Q44.</span> What does <code>wlan.connect(ssid, password)</code> do?</p><div class="ci-opts"><label class="ci-opt" data-qid="44" data-oi="0"><input type="radio" name="q44" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">Creates a new WiFi hotspot with that name</span></label>
+<label class="ci-opt" data-qid="44" data-oi="1"><input type="radio" name="q44" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">Checks the signal strength of a nearby network</span></label>
+<label class="ci-opt" data-qid="44" data-oi="2"><input type="radio" name="q44" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">Connects the Pico W to an existing WiFi network</span></label>
+<label class="ci-opt" data-qid="44" data-oi="3"><input type="radio" name="q44" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">Disconnects from whatever network is currently active</span></label>
+</div></div>
+<div class="ci-q" id="ciq-45"><p class="ci-qtext"><span class="ci-num">Q45.</span> In MQTT, 'publish' means:</p><div class="ci-opts"><label class="ci-opt" data-qid="45" data-oi="0"><input type="radio" name="q45" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">Receiving a message from the broker</span></label>
+<label class="ci-opt" data-qid="45" data-oi="1"><input type="radio" name="q45" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">Sending a message on a topic to the broker</span></label>
+<label class="ci-opt" data-qid="45" data-oi="2"><input type="radio" name="q45" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">Creating a new topic on the broker</span></label>
+<label class="ci-opt" data-qid="45" data-oi="3"><input type="radio" name="q45" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">Deleting a stored message from the broker</span></label>
+</div></div>
+<div class="ci-q" id="ciq-46"><p class="ci-qtext"><span class="ci-num">Q46.</span> What is the role of an MQTT broker?</p><div class="ci-opts"><label class="ci-opt" data-qid="46" data-oi="0"><input type="radio" name="q46" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">The IoT sensor device that generates data</span></label>
+<label class="ci-opt" data-qid="46" data-oi="1"><input type="radio" name="q46" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">A server that receives messages and routes them to subscribers</span></label>
+<label class="ci-opt" data-qid="46" data-oi="2"><input type="radio" name="q46" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">A type of analogue-to-digital converter</span></label>
+<label class="ci-opt" data-qid="46" data-oi="3"><input type="radio" name="q46" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">The WiFi router that provides internet access</span></label>
+</div></div>
+<div class="ci-q" id="ciq-47"><p class="ci-qtext"><span class="ci-num">Q47.</span> Why is MQTT often preferred over HTTP for IoT devices?</p><div class="ci-opts"><label class="ci-opt" data-qid="47" data-oi="0"><input type="radio" name="q47" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">It is faster at rendering web pages</span></label>
+<label class="ci-opt" data-qid="47" data-oi="1"><input type="radio" name="q47" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">It uses less data and handles unreliable connections better</span></label>
+<label class="ci-opt" data-qid="47" data-oi="2"><input type="radio" name="q47" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">It requires absolutely no internet connection</span></label>
+<label class="ci-opt" data-qid="47" data-oi="3"><input type="radio" name="q47" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">It automatically encrypts all messages</span></label>
+</div></div>
+<div class="ci-q" id="ciq-48"><p class="ci-qtext"><span class="ci-num">Q48.</span> Which line correctly checks whether the Pico W has connected to WiFi?</p><div class="ci-opts"><label class="ci-opt" data-qid="48" data-oi="0"><input type="radio" name="q48" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text"><code>wlan.active()</code></span></label>
+<label class="ci-opt" data-qid="48" data-oi="1"><input type="radio" name="q48" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text"><code>wlan.isconnected()</code></span></label>
+<label class="ci-opt" data-qid="48" data-oi="2"><input type="radio" name="q48" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text"><code>wlan.connected()</code></span></label>
+<label class="ci-opt" data-qid="48" data-oi="3"><input type="radio" name="q48" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text"><code>wlan.status() == 1</code></span></label>
+</div></div>
+<div class="ci-q" id="ciq-49"><p class="ci-qtext"><span class="ci-num">Q49.</span> <code>wlan.isconnected()</code> keeps returning <code>False</code>. The most likely cause is:</p><div class="ci-opts"><label class="ci-opt" data-qid="49" data-oi="0"><input type="radio" name="q49" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">The MQTT broker is offline</span></label>
+<label class="ci-opt" data-qid="49" data-oi="1"><input type="radio" name="q49" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">The wrong SSID or password has been entered</span></label>
+<label class="ci-opt" data-qid="49" data-oi="2"><input type="radio" name="q49" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">The LED circuit is open</span></label>
+<label class="ci-opt" data-qid="49" data-oi="3"><input type="radio" name="q49" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">The temperature sensor is not connected</span></label>
+</div></div>
+<div class="ci-q" id="ciq-50"><p class="ci-qtext"><span class="ci-num">Q50.</span> What does <code>client.subscribe(b'sensor/temp')</code> do?</p><div class="ci-opts"><label class="ci-opt" data-qid="50" data-oi="0"><input type="radio" name="q50" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">Publishes temperature data on that topic</span></label>
+<label class="ci-opt" data-qid="50" data-oi="1"><input type="radio" name="q50" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">Removes the topic from the broker</span></label>
+<label class="ci-opt" data-qid="50" data-oi="2"><input type="radio" name="q50" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">Registers the client to receive messages sent to 'sensor/temp'</span></label>
+<label class="ci-opt" data-qid="50" data-oi="3"><input type="radio" name="q50" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">Connects to the MQTT broker for the first time</span></label>
+</div></div>
+</div>
+<div class="ci-section"><h3 class="ci-sec-head">Module 6 · Live Dashboard</h3>
+<div class="ci-q" id="ciq-51"><p class="ci-qtext"><span class="ci-num">Q51.</span> What does <code>urequests.post(url, json=data)</code> do?</p><div class="ci-opts"><label class="ci-opt" data-qid="51" data-oi="0"><input type="radio" name="q51" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">Downloads data from a web URL</span></label>
+<label class="ci-opt" data-qid="51" data-oi="1"><input type="radio" name="q51" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">Sends data to a server using an HTTP POST request</span></label>
+<label class="ci-opt" data-qid="51" data-oi="2"><input type="radio" name="q51" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">Opens a web browser on the Pico</span></label>
+<label class="ci-opt" data-qid="51" data-oi="3"><input type="radio" name="q51" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">Connects the Pico to WiFi</span></label>
+</div></div>
+<div class="ci-q" id="ciq-52"><p class="ci-qtext"><span class="ci-num">Q52.</span> When a Pico POSTs to a Google Apps Script Web App URL ending in <code>/exec</code>:</p><div class="ci-opts"><label class="ci-opt" data-qid="52" data-oi="0"><input type="radio" name="q52" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">The script automatically runs and can process the incoming data</span></label>
+<label class="ci-opt" data-qid="52" data-oi="1"><input type="radio" name="q52" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">The data is forwarded to your Gmail inbox</span></label>
+<label class="ci-opt" data-qid="52" data-oi="2"><input type="radio" name="q52" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">A new folder is created in Google Drive</span></label>
+<label class="ci-opt" data-qid="52" data-oi="3"><input type="radio" name="q52" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">The URL returns an error — POST is not supported</span></label>
+</div></div>
+<div class="ci-q" id="ciq-53"><p class="ci-qtext"><span class="ci-num">Q53.</span> Which HTTP status code means the request was successful?</p><div class="ci-opts"><label class="ci-opt" data-qid="53" data-oi="0"><input type="radio" name="q53" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text"><code>404</code></span></label>
+<label class="ci-opt" data-qid="53" data-oi="1"><input type="radio" name="q53" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text"><code>500</code></span></label>
+<label class="ci-opt" data-qid="53" data-oi="2"><input type="radio" name="q53" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text"><code>200</code></span></label>
+<label class="ci-opt" data-qid="53" data-oi="3"><input type="radio" name="q53" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text"><code>302</code></span></label>
+</div></div>
+<div class="ci-q" id="ciq-54"><p class="ci-qtext"><span class="ci-num">Q54.</span> What does <code>json.dumps(data)</code> do in MicroPython?</p><div class="ci-opts"><label class="ci-opt" data-qid="54" data-oi="0"><input type="radio" name="q54" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">Reads a JSON file from the board's storage</span></label>
+<label class="ci-opt" data-qid="54" data-oi="1"><input type="radio" name="q54" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">Converts a Python dictionary into a JSON-formatted string</span></label>
+<label class="ci-opt" data-qid="54" data-oi="2"><input type="radio" name="q54" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">Sends the dictionary to a server automatically</span></label>
+<label class="ci-opt" data-qid="54" data-oi="3"><input type="radio" name="q54" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">Displays the data on the OLED screen</span></label>
+</div></div>
+<div class="ci-q" id="ciq-55"><p class="ci-qtext"><span class="ci-num">Q55.</span> Why is sending sensor data to Google Sheets via Apps Script useful?</p><div class="ci-opts"><label class="ci-opt" data-qid="55" data-oi="0"><input type="radio" name="q55" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">It makes the Pico run faster</span></label>
+<label class="ci-opt" data-qid="55" data-oi="1"><input type="radio" name="q55" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">It lets you store and graph readings over time without a local database</span></label>
+<label class="ci-opt" data-qid="55" data-oi="2"><input type="radio" name="q55" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">It replaces the need for MQTT entirely</span></label>
+<label class="ci-opt" data-qid="55" data-oi="3"><input type="radio" name="q55" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">It allows the sensor to self-calibrate remotely</span></label>
+</div></div>
+<div class="ci-q" id="ciq-56"><p class="ci-qtext"><span class="ci-num">Q56.</span> What is the difference between HTTP GET and HTTP POST?</p><div class="ci-opts"><label class="ci-opt" data-qid="56" data-oi="0"><input type="radio" name="q56" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">GET is faster; POST is slower</span></label>
+<label class="ci-opt" data-qid="56" data-oi="1"><input type="radio" name="q56" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">GET retrieves data from a server; POST sends data to a server</span></label>
+<label class="ci-opt" data-qid="56" data-oi="2"><input type="radio" name="q56" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">GET is for sensors; POST is only for LED control</span></label>
+<label class="ci-opt" data-qid="56" data-oi="3"><input type="radio" name="q56" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">There is no meaningful difference between them</span></label>
+</div></div>
+<div class="ci-q" id="ciq-57"><p class="ci-qtext"><span class="ci-num">Q57.</span> The Pico sends a POST every 30 seconds. After 1 hour, how many rows in the Sheet?</p><div class="ci-opts"><label class="ci-opt" data-qid="57" data-oi="0"><input type="radio" name="q57" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">30</span></label>
+<label class="ci-opt" data-qid="57" data-oi="1"><input type="radio" name="q57" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">60</span></label>
+<label class="ci-opt" data-qid="57" data-oi="2"><input type="radio" name="q57" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">120</span></label>
+<label class="ci-opt" data-qid="57" data-oi="3"><input type="radio" name="q57" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">1 800</span></label>
+</div></div>
+<div class="ci-q" id="ciq-58"><p class="ci-qtext"><span class="ci-num">Q58.</span> Which MicroPython library is commonly used to make HTTP requests on the Pico W?</p><div class="ci-opts"><label class="ci-opt" data-qid="58" data-oi="0"><input type="radio" name="q58" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text"><code>requests</code></span></label>
+<label class="ci-opt" data-qid="58" data-oi="1"><input type="radio" name="q58" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text"><code>urequests</code></span></label>
+<label class="ci-opt" data-qid="58" data-oi="2"><input type="radio" name="q58" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text"><code>http.client</code></span></label>
+<label class="ci-opt" data-qid="58" data-oi="3"><input type="radio" name="q58" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text"><code>urllib</code></span></label>
+</div></div>
+<div class="ci-q" id="ciq-59"><p class="ci-qtext"><span class="ci-num">Q59.</span> Adding <code>'Content-Type': 'application/json'</code> to headers tells the server:</p><div class="ci-opts"><label class="ci-opt" data-qid="59" data-oi="0"><input type="radio" name="q59" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">That the request comes from a Raspberry Pi device</span></label>
+<label class="ci-opt" data-qid="59" data-oi="1"><input type="radio" name="q59" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">That the data being sent is in JSON format</span></label>
+<label class="ci-opt" data-qid="59" data-oi="2"><input type="radio" name="q59" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">That the connection is encrypted with TLS</span></label>
+<label class="ci-opt" data-qid="59" data-oi="3"><input type="radio" name="q59" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">That the HTTP connection should be kept open permanently</span></label>
+</div></div>
+<div class="ci-q" id="ciq-60"><p class="ci-qtext"><span class="ci-num">Q60.</span> A Google Apps Script returns a <code>302</code> redirect instead of <code>200</code>. Your code should:</p><div class="ci-opts"><label class="ci-opt" data-qid="60" data-oi="0"><input type="radio" name="q60" value="0"> <span class="ci-letter">A</span> <span class="ci-opt-text">Treat it as a success — 302 is normal for Apps Script</span></label>
+<label class="ci-opt" data-qid="60" data-oi="1"><input type="radio" name="q60" value="1"> <span class="ci-letter">B</span> <span class="ci-opt-text">Retry the same POST immediately without any changes</span></label>
+<label class="ci-opt" data-qid="60" data-oi="2"><input type="radio" name="q60" value="2"> <span class="ci-letter">C</span> <span class="ci-opt-text">Follow the redirect URL returned in the response headers</span></label>
+<label class="ci-opt" data-qid="60" data-oi="3"><input type="radio" name="q60" value="3"> <span class="ci-letter">D</span> <span class="ci-opt-text">Switch to MQTT instead of HTTP</span></label>
+</div></div>
+</div>
+
+
+
+    <!-- ═══ LIKERT SCALE ═══ -->
+    <div class="ci-section" id="likert-section">
+      <h2 class="part-head">Part 2 &mdash; Learning Impact Survey</h2>
+      <p class="part-sub">Rate each statement on a scale of <strong>1 (Strongly Disagree)</strong> to <strong>5 (Strongly Agree)</strong>.</p>
+      <div class="lk-block">
+        
+<div class="lk-row" id="lk-L1">
+  <p class="lk-q">I feel more confident working with physical computing after completing this module.</p>
+  <div class="lk-scale">
+    <span class="lk-anchor">Strongly Disagree</span>
+    <label class="lk-cell"><input type="radio" name="L1" value="1"><span class="lk-num">1</span></label><label class="lk-cell"><input type="radio" name="L1" value="2"><span class="lk-num">2</span></label><label class="lk-cell"><input type="radio" name="L1" value="3"><span class="lk-num">3</span></label><label class="lk-cell"><input type="radio" name="L1" value="4"><span class="lk-num">4</span></label><label class="lk-cell"><input type="radio" name="L1" value="5"><span class="lk-num">5</span></label>
+    <span class="lk-anchor lk-anchor-r">Strongly Agree</span>
+  </div>
+</div>
+<div class="lk-row" id="lk-L2">
+  <p class="lk-q">I am able to connect a circuit and write code to make it work correctly.</p>
+  <div class="lk-scale">
+    <span class="lk-anchor">Strongly Disagree</span>
+    <label class="lk-cell"><input type="radio" name="L2" value="1"><span class="lk-num">1</span></label><label class="lk-cell"><input type="radio" name="L2" value="2"><span class="lk-num">2</span></label><label class="lk-cell"><input type="radio" name="L2" value="3"><span class="lk-num">3</span></label><label class="lk-cell"><input type="radio" name="L2" value="4"><span class="lk-num">4</span></label><label class="lk-cell"><input type="radio" name="L2" value="5"><span class="lk-num">5</span></label>
+    <span class="lk-anchor lk-anchor-r">Strongly Agree</span>
+  </div>
+</div>
+<div class="lk-row" id="lk-L3">
+  <p class="lk-q">The tiered activity structure helped me learn step by step.</p>
+  <div class="lk-scale">
+    <span class="lk-anchor">Strongly Disagree</span>
+    <label class="lk-cell"><input type="radio" name="L3" value="1"><span class="lk-num">1</span></label><label class="lk-cell"><input type="radio" name="L3" value="2"><span class="lk-num">2</span></label><label class="lk-cell"><input type="radio" name="L3" value="3"><span class="lk-num">3</span></label><label class="lk-cell"><input type="radio" name="L3" value="4"><span class="lk-num">4</span></label><label class="lk-cell"><input type="radio" name="L3" value="5"><span class="lk-num">5</span></label>
+    <span class="lk-anchor lk-anchor-r">Strongly Agree</span>
+  </div>
+</div>
+<div class="lk-row" id="lk-L4">
+  <p class="lk-q">The LMS was easy to navigate and use on my own.</p>
+  <div class="lk-scale">
+    <span class="lk-anchor">Strongly Disagree</span>
+    <label class="lk-cell"><input type="radio" name="L4" value="1"><span class="lk-num">1</span></label><label class="lk-cell"><input type="radio" name="L4" value="2"><span class="lk-num">2</span></label><label class="lk-cell"><input type="radio" name="L4" value="3"><span class="lk-num">3</span></label><label class="lk-cell"><input type="radio" name="L4" value="4"><span class="lk-num">4</span></label><label class="lk-cell"><input type="radio" name="L4" value="5"><span class="lk-num">5</span></label>
+    <span class="lk-anchor lk-anchor-r">Strongly Agree</span>
+  </div>
+</div>
+<div class="lk-row" id="lk-L5">
+  <p class="lk-q">I would like to explore more IoT projects after this experience.</p>
+  <div class="lk-scale">
+    <span class="lk-anchor">Strongly Disagree</span>
+    <label class="lk-cell"><input type="radio" name="L5" value="1"><span class="lk-num">1</span></label><label class="lk-cell"><input type="radio" name="L5" value="2"><span class="lk-num">2</span></label><label class="lk-cell"><input type="radio" name="L5" value="3"><span class="lk-num">3</span></label><label class="lk-cell"><input type="radio" name="L5" value="4"><span class="lk-num">4</span></label><label class="lk-cell"><input type="radio" name="L5" value="5"><span class="lk-num">5</span></label>
+    <span class="lk-anchor lk-anchor-r">Strongly Agree</span>
+  </div>
+</div>
+<div class="lk-row" id="lk-L6">
+  <p class="lk-q">The difficulty level of the activities was appropriate for my current ability.</p>
+  <div class="lk-scale">
+    <span class="lk-anchor">Strongly Disagree</span>
+    <label class="lk-cell"><input type="radio" name="L6" value="1"><span class="lk-num">1</span></label><label class="lk-cell"><input type="radio" name="L6" value="2"><span class="lk-num">2</span></label><label class="lk-cell"><input type="radio" name="L6" value="3"><span class="lk-num">3</span></label><label class="lk-cell"><input type="radio" name="L6" value="4"><span class="lk-num">4</span></label><label class="lk-cell"><input type="radio" name="L6" value="5"><span class="lk-num">5</span></label>
+    <span class="lk-anchor lk-anchor-r">Strongly Agree</span>
+  </div>
+</div>
+<div class="lk-row" id="lk-L7">
+  <p class="lk-q">I understand how data from physical sensors can be sent to the internet.</p>
+  <div class="lk-scale">
+    <span class="lk-anchor">Strongly Disagree</span>
+    <label class="lk-cell"><input type="radio" name="L7" value="1"><span class="lk-num">1</span></label><label class="lk-cell"><input type="radio" name="L7" value="2"><span class="lk-num">2</span></label><label class="lk-cell"><input type="radio" name="L7" value="3"><span class="lk-num">3</span></label><label class="lk-cell"><input type="radio" name="L7" value="4"><span class="lk-num">4</span></label><label class="lk-cell"><input type="radio" name="L7" value="5"><span class="lk-num">5</span></label>
+    <span class="lk-anchor lk-anchor-r">Strongly Agree</span>
+  </div>
+</div>
+<div class="lk-row" id="lk-L8">
+  <p class="lk-q">This module has increased my interest in STEM / computing.</p>
+  <div class="lk-scale">
+    <span class="lk-anchor">Strongly Disagree</span>
+    <label class="lk-cell"><input type="radio" name="L8" value="1"><span class="lk-num">1</span></label><label class="lk-cell"><input type="radio" name="L8" value="2"><span class="lk-num">2</span></label><label class="lk-cell"><input type="radio" name="L8" value="3"><span class="lk-num">3</span></label><label class="lk-cell"><input type="radio" name="L8" value="4"><span class="lk-num">4</span></label><label class="lk-cell"><input type="radio" name="L8" value="5"><span class="lk-num">5</span></label>
+    <span class="lk-anchor lk-anchor-r">Strongly Agree</span>
+  </div>
+</div>
+<div class="lk-row" id="lk-L9">
+  <p class="lk-q">I feel confident enough to explain what MQTT is to a classmate.</p>
+  <div class="lk-scale">
+    <span class="lk-anchor">Strongly Disagree</span>
+    <label class="lk-cell"><input type="radio" name="L9" value="1"><span class="lk-num">1</span></label><label class="lk-cell"><input type="radio" name="L9" value="2"><span class="lk-num">2</span></label><label class="lk-cell"><input type="radio" name="L9" value="3"><span class="lk-num">3</span></label><label class="lk-cell"><input type="radio" name="L9" value="4"><span class="lk-num">4</span></label><label class="lk-cell"><input type="radio" name="L9" value="5"><span class="lk-num">5</span></label>
+    <span class="lk-anchor lk-anchor-r">Strongly Agree</span>
+  </div>
+</div>
+<div class="lk-row" id="lk-L10">
+  <p class="lk-q">I would recommend this module to other students.</p>
+  <div class="lk-scale">
+    <span class="lk-anchor">Strongly Disagree</span>
+    <label class="lk-cell"><input type="radio" name="L10" value="1"><span class="lk-num">1</span></label><label class="lk-cell"><input type="radio" name="L10" value="2"><span class="lk-num">2</span></label><label class="lk-cell"><input type="radio" name="L10" value="3"><span class="lk-num">3</span></label><label class="lk-cell"><input type="radio" name="L10" value="4"><span class="lk-num">4</span></label><label class="lk-cell"><input type="radio" name="L10" value="5"><span class="lk-num">5</span></label>
+    <span class="lk-anchor lk-anchor-r">Strongly Agree</span>
+  </div>
+</div>
+<div class="lk-row" id="lk-L11">
+  <p class="lk-q">The concept check questions in each activity helped me confirm my understanding.</p>
+  <div class="lk-scale">
+    <span class="lk-anchor">Strongly Disagree</span>
+    <label class="lk-cell"><input type="radio" name="L11" value="1"><span class="lk-num">1</span></label><label class="lk-cell"><input type="radio" name="L11" value="2"><span class="lk-num">2</span></label><label class="lk-cell"><input type="radio" name="L11" value="3"><span class="lk-num">3</span></label><label class="lk-cell"><input type="radio" name="L11" value="4"><span class="lk-num">4</span></label><label class="lk-cell"><input type="radio" name="L11" value="5"><span class="lk-num">5</span></label>
+    <span class="lk-anchor lk-anchor-r">Strongly Agree</span>
+  </div>
+</div>
+<div class="lk-row" id="lk-L12">
+  <p class="lk-q">I felt motivated to complete all the activities in this module.</p>
+  <div class="lk-scale">
+    <span class="lk-anchor">Strongly Disagree</span>
+    <label class="lk-cell"><input type="radio" name="L12" value="1"><span class="lk-num">1</span></label><label class="lk-cell"><input type="radio" name="L12" value="2"><span class="lk-num">2</span></label><label class="lk-cell"><input type="radio" name="L12" value="3"><span class="lk-num">3</span></label><label class="lk-cell"><input type="radio" name="L12" value="4"><span class="lk-num">4</span></label><label class="lk-cell"><input type="radio" name="L12" value="5"><span class="lk-num">5</span></label>
+    <span class="lk-anchor lk-anchor-r">Strongly Agree</span>
+  </div>
+</div>
+      </div>
+    </div>
+
+    <!-- ═ OPEN-ENDED ═ -->
+    <div class="ci-section" id="open-section">
+      <h2 class="part-head">Part 3 &mdash; Reflection &amp; Feedback</h2>
+      <p class="part-sub">Take a moment to reflect on your learning journey through this module.</p>
+
+<div class="oe-q" id="oe-OE1">
+  <label class="oe-label" for="oe-ta-OE1">
+    <span class="oe-num">Q1.</span> What was the most interesting or surprising thing you learned during this module?
+  </label>
+  <p class="oe-hint">Think about concepts, circuits, or moments that stood out to you.</p>
+  <textarea class="oe-ta" id="oe-ta-OE1" name="OE1" rows="4"
+    placeholder="Write your answer here…"></textarea>
+</div>
+<div class="oe-q" id="oe-OE2">
+  <label class="oe-label" for="oe-ta-OE2">
+    <span class="oe-num">Q2.</span> Which activity did you find most challenging, and why?
+  </label>
+  <p class="oe-hint">Be specific — describe what was difficult and how (or whether) you overcame it.</p>
+  <textarea class="oe-ta" id="oe-ta-OE2" name="OE2" rows="4"
+    placeholder="Write your answer here…"></textarea>
+</div>
+<div class="oe-q" id="oe-OE3">
+  <label class="oe-label" for="oe-ta-OE3">
+    <span class="oe-num">Q3.</span> If you could change or improve one thing about this learning experience, what would it be?
+  </label>
+  <p class="oe-hint">Your feedback helps us make the module better for future students.</p>
+  <textarea class="oe-ta" id="oe-ta-OE3" name="OE3" rows="4"
+    placeholder="Write your answer here…"></textarea>
+</div>
+<div class="oe-q" id="oe-OE4">
+  <label class="oe-label" for="oe-ta-OE4">
+    <span class="oe-num">Q4.</span> After completing this module, what IoT project or idea would you like to explore next?
+  </label>
+  <p class="oe-hint">Dream big — there are no wrong answers.</p>
+  <textarea class="oe-ta" id="oe-ta-OE4" name="OE4" rows="4"
+    placeholder="Write your answer here…"></textarea>
+</div>
+    </div>
+
+    <!-- ═ SUBMIT ═ -->
+    <div class="ci-submit-wrap">
+      <div class="ci-notice" id="ci-notice">⚠ Please answer all 60 MCQs and all 12 Likert items before submitting.</div>
+      <button class="ci-btn" id="ci-submit-btn" onclick="ciSubmit()">Submit Post-Test →</button>
+    </div>
+  </div>
+
+  <!-- ═ RESULTS ═ -->
+  <div id="ci-results">
+    <div class="ci-score-box">
+      <div class="ci-score-big" id="ci-score-big">—</div>
+      <div class="ci-score-label">MCQ Score (out of 60)</div>
+      <div style="margin-top:.6rem;font-size:.85rem;opacity:.8" id="ci-score-pct"></div>
+    </div>
+
+    <h3 style="margin:1.5rem 0 .5rem">MCQ Score by Module</h3>
+    <div class="ci-sec-results" id="ci-sec-results"></div>
+
+    <h3 style="margin:1.8rem 0 .5rem">Likert Scale Responses</h3><div class="ci-lk-results" id="ci-lk-results"></div>
+
+    <p style="font-size:.82rem;color:rgba(255,255,255,.45);margin-top:1.5rem">
+      Your answers have been saved. You may review the MCQ answers below — correct answers are highlighted in green.
+    </p>
+    <div class="ci-submit-wrap">
+      <button class="ci-review-btn" onclick="ciToggleReview()">📋 Show / Hide MCQ Review</button>
+    </div>
+    <div id="ci-review-area" style="display:none"></div>
+  </div>
+
+</div></main>
+
+<!-- ── FOOTER ── -->
+<footer class="site-footer">
+  <div class="sf-top">
+    <div class="sf-motto">
+      <span>See</span> &middot; <span>Think</span> &middot; <span>Explore</span> &middot; <span>Marvel</span>
+    </div>
+    <div class="sf-org">UMPSA STEM LAB</div>
+  </div>
+  <div class="sf-bottom">
+    <span class="sf-copy">&copy; 2026 UMPSA STEM Lab Engineering Education</span>
+    <div class="sf-icons">
+      <a class="sf-icon" href="https://ee.ump.edu.my/hazlina/#research" target="_blank" rel="noopener" title="Research Website">🌐</a>
+      <a class="sf-icon" href="mailto:hazlina@umpsa.edu.my" title="Email">✉</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var LMS_KEY    = 'lilex_lms_student';
+  var TEST_KEY   = 'lilex_posttest';
+  var GAS_URL = 'https://script.google.com/macros/s/AKfycbwEKS3VdUL8CaenRJ80wQ7ynRGE2lUNMdNs9BR5iqfMsD_rsu18e17t5JblEiuLP2RM/exec';
+  var GAS_EVT    = 'posttest_submit';
+  var MCQ_TOTAL  = 60;
+  var IS_PRE     = false;
+
+  var ANSWERS    = {"1":1,"2":2,"3":1,"4":2,"5":1,"6":1,"7":0,"8":2,"9":1,"10":1,"11":1,"12":0,"13":1,"14":2,"15":1,"16":1,"17":1,"18":1,"19":1,"20":2,"21":1,"22":1,"23":2,"24":1,"25":2,"26":2,"27":0,"28":2,"29":1,"30":1,"31":2,"32":1,"33":1,"34":0,"35":1,"36":1,"37":1,"38":1,"39":2,"40":1,"41":1,"42":1,"43":1,"44":2,"45":1,"46":1,"47":1,"48":1,"49":1,"50":2,"51":1,"52":0,"53":2,"54":1,"55":1,"56":1,"57":2,"58":1,"59":1,"60":2};
+  var SEC_LABELS = {"1":"Module 1 · Loops &amp; Timing","2":"Module 1 · Loops &amp; Timing","3":"Module 1 · Loops &amp; Timing","4":"Module 1 · Loops &amp; Timing","5":"Module 1 · Loops &amp; Timing","6":"Module 1 · Loops &amp; Timing","7":"Module 1 · Loops &amp; Timing","8":"Module 1 · Loops &amp; Timing","9":"Module 1 · Loops &amp; Timing","10":"Module 1 · Loops &amp; Timing","11":"Module 2 · Digital Input","12":"Module 2 · Digital Input","13":"Module 2 · Digital Input","14":"Module 2 · Digital Input","15":"Module 2 · Digital Input","16":"Module 2 · Digital Input","17":"Module 2 · Digital Input","18":"Module 2 · Digital Input","19":"Module 2 · Digital Input","20":"Module 2 · Digital Input","21":"Module 3 · Making Decisions","22":"Module 3 · Making Decisions","23":"Module 3 · Making Decisions","24":"Module 3 · Making Decisions","25":"Module 3 · Making Decisions","26":"Module 3 · Making Decisions","27":"Module 3 · Making Decisions","28":"Module 3 · Making Decisions","29":"Module 3 · Making Decisions","30":"Module 3 · Making Decisions","31":"Module 4 · Sensors &amp; Numbers","32":"Module 4 · Sensors &amp; Numbers","33":"Module 4 · Sensors &amp; Numbers","34":"Module 4 · Sensors &amp; Numbers","35":"Module 4 · Sensors &amp; Numbers","36":"Module 4 · Sensors &amp; Numbers","37":"Module 4 · Sensors &amp; Numbers","38":"Module 4 · Sensors &amp; Numbers","39":"Module 4 · Sensors &amp; Numbers","40":"Module 4 · Sensors &amp; Numbers","41":"Module 5 · Internet &amp; Data","42":"Module 5 · Internet &amp; Data","43":"Module 5 · Internet &amp; Data","44":"Module 5 · Internet &amp; Data","45":"Module 5 · Internet &amp; Data","46":"Module 5 · Internet &amp; Data","47":"Module 5 · Internet &amp; Data","48":"Module 5 · Internet &amp; Data","49":"Module 5 · Internet &amp; Data","50":"Module 5 · Internet &amp; Data","51":"Module 6 · Live Dashboard","52":"Module 6 · Live Dashboard","53":"Module 6 · Live Dashboard","54":"Module 6 · Live Dashboard","55":"Module 6 · Live Dashboard","56":"Module 6 · Live Dashboard","57":"Module 6 · Live Dashboard","58":"Module 6 · Live Dashboard","59":"Module 6 · Live Dashboard","60":"Module 6 · Live Dashboard"};
+  var LIKERT_IDS = ["L1", "L2", "L3", "L4", "L5", "L6", "L7", "L8", "L9", "L10", "L11", "L12"];
+  var OPEN_IDS   = ["OE1", "OE2", "OE3", "OE4"];
+
+  /* ── Registration check ── */
+  var student = null;
+  try { student = JSON.parse(localStorage.getItem(LMS_KEY)||'null'); } catch(e){}
+  if (!student || !student.name) {
+    document.getElementById('ci-noreg').style.display = 'block';
+    document.getElementById('ci-form').style.display  = 'none';
+  }
+
+  /* ── Restore saved state / lock if already submitted ── */
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem(TEST_KEY)||'null'); } catch(e){}
+  if (saved && saved.submitted) {
+    ciShowResults(saved);
+    return;
+  }
+  if (saved && saved.draft) {
+    var d = saved.draft;
+    // restore MCQs
+    Object.keys(d.mcq||{}).forEach(function(qid) {
+      var inp = document.querySelector('input[name="q'+qid+'"][value="'+d.mcq[qid]+'"]');
+      if (inp) { inp.checked = true; markSelected(inp); }
+    });
+    // restore Likert
+    Object.keys(d.likert||{}).forEach(function(lid) {
+      var inp = document.querySelector('input[name="'+lid+'"][value="'+d.likert[lid]+'"]');
+      if (inp) { inp.checked = true; markLikertSel(inp); }
+    });
+    // restore open-ended
+    Object.keys(d.open||{}).forEach(function(oid) {
+      var ta = document.getElementById('oe-ta-'+oid);
+      if (ta) { ta.value = d.open[oid]; markOE(ta); }
+    });
+    updateProgress();
+  }
+
+  /* ── MCQ option clicks ── */
+  document.querySelectorAll('.ci-opt').forEach(function(label) {
+    label.addEventListener('click', function() {
+      var inp = label.querySelector('input[type=radio]');
+      if (!inp || inp.disabled) return;
+      inp.checked = true;
+      markSelected(inp);
+      saveDraft();
+      updateProgress();
+    });
+  });
+
+  function markSelected(inp) {
+    var name = inp.getAttribute('name');
+    document.querySelectorAll('input[name="'+name+'"]').forEach(function(r) {
+      r.closest('.ci-opt').classList.remove('ci-sel');
+    });
+    inp.closest('.ci-opt').classList.add('ci-sel');
+    var qid = name.replace('q','');
+    var el = document.getElementById('ciq-'+qid);
+    if (el) el.classList.add('ci-answered');
+  }
+
+  /* ── Likert clicks ── */
+  document.querySelectorAll('.lk-cell').forEach(function(cell) {
+    cell.addEventListener('click', function() {
+      var inp = cell.querySelector('input[type=radio]');
+      if (!inp || inp.disabled) return;
+      inp.checked = true;
+      markLikertSel(inp);
+      saveDraft();
+    });
+  });
+
+  function markLikertSel(inp) {
+    var name = inp.getAttribute('name');
+    document.querySelectorAll('input[name="'+name+'"]').forEach(function(r) {
+      r.closest('.lk-cell').classList.remove('lk-sel');
+    });
+    inp.closest('.lk-cell').classList.add('lk-sel');
+    var row = document.getElementById('lk-'+name);
+    if (row) row.classList.add('lk-answered');
+  }
+
+  /* ── Open-ended typing ── */
+  document.querySelectorAll('.oe-ta').forEach(function(ta) {
+    ta.addEventListener('input', function() {
+      markOE(ta);
+      saveDraft();
+    });
+  });
+
+  function markOE(ta) {
+    if (ta.value.trim().length > 0) ta.classList.add('oe-filled');
+    else ta.classList.remove('oe-filled');
+  }
+
+  /* ── Draft save ── */
+  function saveDraft() {
+    var mcq = {}, likert = {}, open = {};
+    document.querySelectorAll('.ci-opts input[type=radio]:checked').forEach(function(r) {
+      mcq[r.getAttribute('name').replace('q','')] = parseInt(r.value);
+    });
+    LIKERT_IDS.forEach(function(lid) {
+      var r = document.querySelector('input[name="'+lid+'"]:checked');
+      if (r) likert[lid] = parseInt(r.value);
+    });
+    OPEN_IDS.forEach(function(oid) {
+      var ta = document.getElementById('oe-ta-'+oid);
+      if (ta && ta.value.trim()) open[oid] = ta.value.trim();
+    });
+    try { localStorage.setItem(TEST_KEY, JSON.stringify({draft:{mcq,likert,open}})); } catch(e){}
+  }
+
+  /* ── Progress bar (MCQ only) ── */
+  function updateProgress() {
+    var n = document.querySelectorAll('.ci-opts input[type=radio]:checked').length;
+    var pct = (n/MCQ_TOTAL*100).toFixed(0);
+    document.getElementById('ci-prog-fill').style.width = pct+'%';
+    document.getElementById('ci-prog-txt').textContent = n+' / '+MCQ_TOTAL+' MCQs answered';
+  }
+
+  /* ── SUBMIT ── */
+  window.ciSubmit = function() {
+    var mcqAnswered = document.querySelectorAll('.ci-opts input[type=radio]:checked').length;
+    var lkAnswered  = IS_PRE ? LIKERT_IDS.length : LIKERT_IDS.filter(function(lid){
+      return !!document.querySelector('input[name="'+lid+'"]:checked');
+    }).length;
+    var lkRequired  = IS_PRE ? 0 : LIKERT_IDS.length;
+
+    if (mcqAnswered < MCQ_TOTAL || lkAnswered < lkRequired) {
+      document.getElementById('ci-notice').style.display = 'block';
+      var firstMissing = null;
+      for (var id=1; id<=MCQ_TOTAL; id++) {
+        if (!document.querySelector('input[name="q'+id+'"]:checked')) {
+          firstMissing = document.getElementById('ciq-'+id); break;
+        }
+      }
+      if (!firstMissing && !IS_PRE) {
+        LIKERT_IDS.forEach(function(lid) {
+          if (!firstMissing && !document.querySelector('input[name="'+lid+'"]:checked'))
+            firstMissing = document.getElementById('lk-'+lid);
+        });
+      }
+      if (firstMissing) firstMissing.scrollIntoView({behavior:'smooth',block:'center'});
+      return;
+    }
+    document.getElementById('ci-notice').style.display = 'none';
+    document.getElementById('ci-submit-btn').disabled = true;
+    document.getElementById('ci-submit-btn').textContent = 'Scoring…';
+
+    /* Collect & score MCQs */
+    var mcqResp = {}, score = 0, secScores = {}, secTotals = {};
+    document.querySelectorAll('.ci-opts input[type=radio]:checked').forEach(function(r) {
+      var qid     = r.getAttribute('name').replace('q','');
+      var chosen  = parseInt(r.value);
+      var correct = ANSWERS[qid];
+      var sec     = SEC_LABELS[qid];
+      mcqResp[qid] = chosen;
+      secTotals[sec] = (secTotals[sec]||0) + 1;
+      if (chosen === correct) { score++; secScores[sec] = (secScores[sec]||0)+1; }
+    });
+
+    /* Collect Likert */
+    var likertResp = {};
+    LIKERT_IDS.forEach(function(lid) {
+      var r = document.querySelector('input[name="'+lid+'"]:checked');
+      if (r) likertResp[lid] = parseInt(r.value);
+    });
+
+    /* Collect open-ended */
+    var openResp = {};
+    OPEN_IDS.forEach(function(oid) {
+      var ta = document.getElementById('oe-ta-'+oid);
+      if (ta && ta.value.trim()) openResp[oid] = ta.value.trim();
+    });
+
+    var result = {
+      submitted: true,
+      ts: Date.now(),
+      score: score,
+      total: MCQ_TOTAL,
+      pct: Math.round(score/MCQ_TOTAL*100),
+      mcq_responses: mcqResp,
+      sec_scores: secScores,
+      sec_totals: secTotals,
+      likert: likertResp,
+      open: openResp,
+      student_name: student&&student.name||'',
+      student_matric: student&&student.matric||''
+    };
+    try { localStorage.setItem(TEST_KEY, JSON.stringify(result)); } catch(e){}
+
+    /* POST to GAS */
+    if (GAS_URL) {
+      fetch(GAS_URL, {method:'POST',mode:'no-cors',
+        body:JSON.stringify(Object.assign({event:GAS_EVT}, result, {student:student}))}).catch(function(){});
+    }
+
+    ciShowResults(result);
+  };
+
+  /* ── Show results ── */
+  function ciShowResults(result) {
+    document.getElementById('ci-form').style.display    = 'none';
+    document.getElementById('ci-results').style.display = 'block';
+    document.getElementById('ci-score-big').textContent = result.score + ' / ' + result.total;
+    document.getElementById('ci-score-pct').textContent = result.pct + '% correct';
+
+    /* Module breakdown */
+    var html = '';
+    var secs = result.sec_totals || {};
+    Object.keys(secs).forEach(function(sec) {
+      var got = (result.sec_scores&&result.sec_scores[sec])||0;
+      var tot = secs[sec]||10;
+      var p   = Math.round(got/tot*100);
+      html += '<div class="ci-sec-row">'
+        + '<span class="ci-sec-row-name">'+sec+'</span>'
+        + '<div class="ci-sec-bar"><div class="ci-sec-bar-fill" style="width:'+p+'%"></div></div>'
+        + '<span class="ci-sec-row-score">'+got+'/'+tot+'</span></div>';
+    });
+    document.getElementById('ci-sec-results').innerHTML = html;
+
+    /* Likert breakdown (post-test only) */
+    if (!IS_PRE) {
+      var lkEl = document.getElementById('ci-lk-results');
+      if (lkEl) {
+        var lkHtml = '';
+        LIKERT_IDS.forEach(function(lid) {
+          var v = (result.likert&&result.likert[lid])||0;
+          lkHtml += '<div class="ci-lk-row">'
+            + '<span class="ci-lk-row-q" id="lkr-'+lid+'"></span>'
+            + '<span class="ci-lk-stars">'+'★'.repeat(v)+'☆'.repeat(5-v)+'</span>'
+            + '<span class="ci-lk-row-score">'+v+'/5</span></div>';
+        });
+        lkEl.innerHTML = lkHtml;
+        LIKERT_IDS.forEach(function(lid) {
+          var row = document.getElementById('lk-'+lid);
+          var qEl = document.getElementById('lkr-'+lid);
+          if (row && qEl) qEl.textContent = row.querySelector('.lk-q').textContent;
+        });
+      }
+    }
+
+    /* Lock radios & show correct/wrong */
+    document.querySelectorAll('.ci-opts input[type=radio]').forEach(function(r){r.disabled=true;});
+    document.querySelectorAll('.lk-cell input[type=radio]').forEach(function(r){r.disabled=true;});
+    document.querySelectorAll('.oe-ta').forEach(function(ta){ta.disabled=true;});
+
+    var resp = result.mcq_responses || {};
+    Object.keys(ANSWERS).forEach(function(qid) {
+      var correct = ANSWERS[qid];
+      var chosen  = resp[qid] !== undefined ? resp[qid] : -1;
+      document.querySelectorAll('.ci-opt[data-qid="'+qid+'"]').forEach(function(label) {
+        var oi = parseInt(label.getAttribute('data-oi'));
+        label.classList.remove('ci-sel');
+        if (oi === correct) label.classList.add('ci-correct-show');
+        else if (oi === chosen) label.classList.add('ci-wrong-show');
+      });
+      if (chosen !== correct) {
+        var qEl = document.getElementById('ciq-'+qid);
+        if (qEl) qEl.classList.add('ci-wrong-mark');
+      }
+    });
+  }
+
+  window.ciToggleReview = function() {
+    var rev  = document.getElementById('ci-review-area');
+    var form = document.getElementById('ci-form');
+    if (rev.style.display === 'none') {
+      rev.style.display = 'block';
+      form.style.display = 'block';
+    } else {
+      rev.style.display = 'none';
+    }
+  };
+
+  updateProgress();
+})();
+</script>
+</body>
+</html>
