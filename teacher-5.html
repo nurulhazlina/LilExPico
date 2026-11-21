@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teacher notes &mdash; Activity 5 | LilEx5 Pico IoT Module</title>
+<meta name="description" content="Instructor notes for Activity 5.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%2302ADA5'/%3E%3C/svg%3E">
+<style>
+.codebox{position:relative;margin:1em 0}
+.codebox pre{margin:0;padding:1.1em 1em 1em;background:var(--code-bg,#1e1e2e);color:var(--code-fg,#cdd6f4);border-radius:6px;overflow-x:auto;font-size:.88em;line-height:1.5;tab-size:4}
+.codebox code{font-family:'Cascadia Code','Fira Mono',monospace;white-space:pre}
+.copybtn{position:absolute;top:.45em;right:.45em;padding:.22em .6em;font-size:.78em;font-weight:600;background:#02ADA5;color:#fff;border:none;border-radius:4px;cursor:pointer;opacity:.82;transition:opacity .15s}
+.copybtn:hover{opacity:1}
+.copybtn.copied{background:#4caf50}
+</style>
+</head>
+<body>
+
+<div class="chev"><span>See</span><span>Think</span><span>Explore</span><span>Marvel</span></div>
+<nav class="sitenav"><div class="wrap">
+  <a class="brand" href="index.html">LilEx5 <span>Pico IoT Module</span></a>
+  <a class="nl" href="index.html">Home</a>
+  <details class="navsel">
+    <summary>Activity 5: Making Decisions</summary>
+    <div class="navmenu" role="menu">
+      <a href="teacher-0.html"><b>Activity 0</b>: Getting Started</a>
+      <a href="teacher-1.html"><b>Activity 1</b>: Light Up an LED</a>
+      <a href="teacher-2.html"><b>Activity 2</b>: Make an LED Blink</a>
+      <a href="teacher-3.html"><b>Activity 3</b>: Digital Output &amp; Servo</a>
+      <a href="teacher-4.html"><b>Activity 4</b>: Digital Input</a>
+      <a href="teacher-5.html" aria-current="page"><b>Activity 5</b>: Making Decisions</a>
+      <a href="teacher-6.html"><b>Activity 6</b>: And, Or, Not</a>
+      <a href="teacher-7.html"><b>Activity 7</b>: Words on a Screen</a>
+      <a href="teacher-8.html"><b>Activity 8</b>: Sensors and Numbers</a>
+      <a href="teacher-9.html"><b>Activity 9</b>: Soil Moisture</a>
+      <a href="teacher-10.html"><b>Activity 10</b>: Internet and Data</a>
+      <a href="teacher-11.html"><b>Activity 11</b>: Control from Anywhere</a>
+      <a href="teacher-12.html"><b>Activity 12</b>: Sending Messages by Radio</a>
+      <a href="teacher-13.html"><b>Activity 13</b>: Sending Data to a Live Dashboard</a>
+    </div>
+  </details>
+  <a class="nl" href="pinout.html">Pin reference</a>
+</div></nav>
+
+<div class="gate" id="gate">
+  <h2>&#128274; Teacher notes</h2>
+  <p>This page holds the exercise answers for <strong>Activity 5 &mdash; Making Decisions</strong>.
+  It is not linked from the student pages.</p>
+  <p><strong>Students: please go back and try the exercise first.</strong></p>
+  <button class="cta" id="gatebtn" type="button">I'm a teacher &mdash; show the notes</button>
+  <p style="margin-top:16px"><a href="activity-5.html">&larr; Back to the student page</a></p>
+</div>
+
+<div id="tcontent" hidden>
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">LilEx5 &middot; Pico IoT Module &middot; Instructor notes</p>
+    <h1>Activity 5 &mdash; teacher notes</h1>
+    <p class="sub">Making Decisions. One idea: a program can choose.</p>
+    <div class="hero-cta">
+      <a class="cta alt" href="activity-5.html">&#9654; Student page</a>
+      <a class="cta alt" href="teacher.html">&#128218; All teacher notes</a>
+      <a class="cta alt" href="teacher-4.html">&#8592; Activity 4 notes</a>
+      <a class="cta alt" href="pinout.html">&#128204; Pin reference</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<div class="tbanner"><b>Keep this link to yourself.</b> Unlisted and hidden from search engines, but the
+repository is public &mdash; anyone with the URL can read it.</div>
+
+<section>
+  <h2>What is being taught</h2>
+  <ul>
+    <li><strong>One idea:</strong> a program can choose. Everything before this ran the same way every
+    time. The largest conceptual step in the module, and everything after it assumes the step was
+    taken.</li>
+    <li><strong>It arrives in two halves and the order matters.</strong> <code>if</code> first, with a
+    demonstration that it leaves the light stuck on; <em>then</em> <code>else</code> as the fix. Do not
+    write both at once on the board &mdash; the class needs to see the light that will not go out.</li>
+    <li><strong><code>print()</code> stays in the main program</strong> as a debugging tool: words right
+    + light wrong means the wiring; words wrong too means the decision.</li>
+    <li><strong>The loop waits 0.1</strong>, chosen for driving a light rather than throttling a console.
+    Worth saying out loud that the number fits the job.</li>
+  </ul>
+
+  <table>
+    <thead><tr><th>Trap</th><th>Behaviour</th><th>How dangerous</th></tr></thead>
+    <tbody>
+      <tr><td>One equals in a question</td><td><code>SyntaxError</code>, nothing runs</td>
+      <td>The headline trap, and the <strong>kind</strong> one. Nobody loses a lesson to it.</td></tr>
+      <tr><td><code>== 1</code> instead of <code>== 0</code></td><td>Runs perfectly, does the exact
+      opposite</td><td><strong>Dangerous.</strong> Activity 4&rsquo;s inversion collecting its debt. Send
+      them to <a href="activity-4.html#trap">that section</a> rather than re-explaining.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="cal tip"><b>The question to open with</b>
+  &ldquo;Last lesson you all wanted the button to turn the light on and I said no. Why could we not do
+  it?&rdquo; Push until somebody says <em>&ldquo;it didn&rsquo;t know how to only sometimes do
+  it&rdquo;</em>. That sentence is the whole activity, and it is far better coming from them.</div>
+  <div class="cal warn"><b>No <code>and</code>, <code>or</code> or <code>not</code> today</b>
+  That is <a href="activity-6.html">Activity 6</a>. One button, one condition throughout &mdash; including
+  the exercise, which is deliberately two separate decisions. If a student produces a combined condition
+  it is genuinely clever: praise it, then ask for the two-block version too, because Activity 6 builds on
+  the contrast.</div>
+</section>
+
+<section>
+  <h2>The main program</h2>
+  <div class="codebox"><button class="copybtn" type="button">Copy</button><pre><code># Three tools: Pin for the button and the light, sleep for the pause
+from machine import Pin
+from time import sleep
+
+# SW1 is a button on GP2, held up until you press it
+sw = Pin(2, Pin.IN, Pin.PULL_UP)
+
+# LED1 is a light on GP11
+led = Pin(11, Pin.OUT)
+
+# Read the button, decide, act - over and over
+while True:
+    if sw.value() == 0:       # 0 means the button is pressed
+        led.on()              # so switch the light on
+        print(&quot;pressed&quot;)
+    else:                     # anything else means it is not
+        led.off()             # so switch the light off
+        print(&quot;not pressed&quot;)
+    sleep(0.1)</code></pre></div>
+  <p>Nine working lines, five of them shapes they have already typed. Comments optional as always.</p>
+</section>
+
+<section>
+  <h2>Exercise answer
+  <div class="codebox"><button class="copybtn" type="button">Copy</button><pre><code>from machine import Pin
+from time import sleep
+
+# Two buttons and two lights, each with its own name
+sw1 = Pin(2, Pin.IN, Pin.PULL_UP)
+sw2 = Pin(3, Pin.IN, Pin.PULL_UP)
+red = Pin(11, Pin.OUT)
+green = Pin(13, Pin.OUT)
+
+# Two decisions, one after the other, over and over
+while True:
+    if sw1.value() == 0:      # is SW1 down?
+        red.on()
+    else:
+        red.off()
+
+    if sw2.value() == 0:      # is SW2 down?
+        green.on()
+    else:
+        green.off()
+
+    sleep(0.1)</code></pre></div>
+  <p>One thing from Activity 1 (each part gets its own name) and one from today, used twice. No new
+  syntax at all &mdash; the shape scales by repetition, not cleverness. Accept any sensible names; insist
+  on three things:</p>
+  <ul>
+    <li><strong>Two separate blocks, not one clever condition.</strong> The decisions must know nothing
+    about each other. Ask the student to press both buttons at once &mdash; the four-state diagram is the
+    acceptance test.</li>
+    <li><strong>The second <code>if</code> at four spaces.</strong> At eight it becomes part of the first
+    decision, so SW2 only works while SW1 is held. The most instructive wrong answer in the exercise
+    &mdash; worth putting on the projector.</li>
+    <li><strong>One waiting line, at the bottom, at four spaces.</strong> Two waits halve the response
+    rate; a wait inside a block makes the loop speed depend on which road was taken.</li>
+  </ul>
+  <div class="cal info"><b>If a pair finishes very early</b>
+  Ask them to make SW1 turn the green light <em>off</em> as well as the red one on. Two lines inside one
+  <code>if</code> &mdash; the first time a block has held more than one line, and it makes the
+  indentation rule pay for itself.</div>
+  <div class="cal warn"><b>Wokwi needs a second LED and a second resistor</b>
+  Green on GP13 with its own 330&nbsp;&Omega;, and a second pushbutton on GP3: four parts, eight wires.
+  Expect the wiring, not the code, to slow the Wokwi route down. Real-board pairs finish much sooner
+  &mdash; have the going-further list ready.</div>
+
+ &mdash; two decisions at once</h2>
+  <p><a href="https://wokwi.com/projects/473933180056861697" target="_blank" rel="noopener" class="cta alt">&#9654;&nbsp;Try this answer on Wokwi</a></p>
+</section>
+
+<section>
+  <h2>Going-further answers</h2>
+  <table>
+    <thead><tr><th>Task</th><th>Answer / what to say</th></tr></thead>
+    <tbody>
+      <tr><td>Add SW3 on <span class="gp">4</span> and LED2 on <span class="gp">12</span></td>
+      <td>A third block, identical in shape. Nothing new &mdash; exactly the observation you want them to
+      make out loud.</td></tr>
+      <tr><td>Make SW2 work the other way round</td><td>Swap the two lines inside the block, or compare
+      with 1. Both correct; the second is more interesting, because it uses the trap <em>on purpose</em>.
+      Nothing was ever wrong with <code>== 1</code>, only with using it when you meant
+      <code>== 0</code>.</td></tr>
+      <tr><td>Buzzer BZ1 on <span class="gp">14</span></td><td>Set up and driven exactly like an LED.
+      Loud; ten seconds is plenty.</td></tr>
+      <tr><td>SW1 lights red <em>and</em> switches green off</td><td>Two lines inside one block, both at
+      eight spaces. The answer to &ldquo;how many lines can go inside an <code>if</code>&rdquo;: as many
+      as you like, as long as they line up.</td></tr>
+      <tr><td>SW4 on <span class="gp">15</span> chooses which light</td><td>A decision inside a decision
+      &mdash; twelve spaces. It works, and it is the natural moment to say Activity 6 has a tidier way of
+      saying the same thing. Do not require it.</td></tr>
+      <tr><td>Take the wait out</td><td>Nothing visible changes &mdash; the light already follows the
+      finger faster than an eye can see. Good prediction question; most of the class expects a
+      flicker.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Before the lesson</h2>
+  <ul>
+    <li>Activities 1&ndash;4 done. Naming pins, the loop, stopping it and <code>value()</code> are all
+    assumed and none re-taught.</li>
+    <li><strong>Check the class actually accepted the inversion.</strong> Two minutes at the start:
+    everyone presses a button and says what number they would see. If a third of the room says 1, fix
+    that before you teach <code>if</code>, or the lesson falls apart at the comparison.</li>
+    <li>A board and USB cable per pair; check SW1 clicks and LED1 lights on each.</li>
+    <li>Thonny installed, interpreter preset to <em>MicroPython (Raspberry Pi Pico)</em>.</li>
+    <li>Wokwi route: budget extra time for wiring &mdash; first circuit with two independent parts, and
+    the exercise doubles it.</li>
+    <li>The <a href="pinout.html">pin reference</a> open on every machine. Buttons 2, 3, 4; LEDs 11, 12,
+    13.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>The mistakes students actually make</h2>
+  <div class="tablescroll">
+  <table>
+    <thead><tr><th>What they did</th><th>What they see</th><th>What to say</th></tr></thead>
+    <tbody>
+      <tr><td>One equals in the question</td><td><code>SyntaxError: invalid syntax</code></td>
+      <td>Most common, least harmful. &ldquo;One equals puts, two equals asks.&rdquo; Three or four
+      times, then it stops for good.</td></tr>
+      <tr><td>Compared with 1</td><td>Light on except while they press</td><td><strong>The dangerous
+      one.</strong> Do not fix the line. Ask them to hold the button, say the number out loud, then read
+      their own <code>if</code> line back.</td></tr>
+      <tr><td>No <code>else</code></td><td>Light comes on once, never goes off</td><td>Exactly the
+      demonstration the page asks for. Let it happen.</td></tr>
+      <tr><td><code>else</code> at eight spaces</td><td><code>SyntaxError</code> on the <code>else</code></td>
+      <td>They let the editor indent for them. <kbd>Backspace</kbd> once &mdash; those two words line
+      up.</td></tr>
+      <tr><td>Nothing indented under the <code>if</code></td><td><code>IndentationError</code></td>
+      <td>The colon promises something underneath. Same contract as <code>while</code>.</td></tr>
+      <tr><td>A question after <code>else</code></td><td><code>SyntaxError</code></td><td><code>else</code>
+      already means &ldquo;every other case&rdquo;. A good instinct badly aimed &mdash; it is
+      <code>elif</code>, which does not arrive until Activity 9.</td></tr>
+      <tr><td>Light and words disagree</td><td>Words right, light wrong</td><td>Decision correct, circuit
+      not. Send them to the wiring. This is what the printing lines are for.</td></tr>
+      <tr><td>LED in backwards (Wokwi)</td><td>Nothing lights, no error</td><td>Long leg through the
+      resistor to GP11. Wokwi is silent about a reversed LED.</td></tr>
+      <tr><td><code>Pin.OUT</code> and <code>Pin.IN</code> swapped</td><td>The light never changes, or the
+      button always reads the same</td><td>Read the two setup lines side by side; the word in the middle
+      is the difference.</td></tr>
+      <tr><td>Second <code>if</code> at eight spaces (exercise)</td><td>SW2 only works while SW1 is held</td>
+      <td>The most instructive wrong answer. Put it on the projector and trace the roads with a
+      finger.</td></tr>
+      <tr><td>One name for both LEDs (exercise)</td><td>Only one light works</td><td>Activity 1&rsquo;s
+      mistake, third appearance. Last time it needs saying.</td></tr>
+      <tr><td>Knocked SW5</td><td>Board goes dead</td><td>Still the power switch.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>Teaching notes</h2>
+  <ul>
+    <li><strong>Build it in two goes, in front of them.</strong> Write the <code>if</code> half, run it,
+    press the button, let the light refuse to go out. Ask what is missing. Then add <code>else</code>.
+    Three minutes, worth more than any explanation.</li>
+    <li><strong>The decision widget is worth four minutes on the projector.</strong> Hold the pad: pin
+    value, answer, road and light all move together. Then <em>Compare with 1</em>, then <em>Take the else
+    away</em>. Two clicks replace a lot of talking.</li>
+    <li><strong>&ldquo;One equals puts, two equals asks.&rdquo;</strong> Say it, make them say it back.
+    It sounds childish and it works.</li>
+    <li><strong>Draw the fork as a real fork in a road</strong>, with a signpost, and walk your finger
+    down it. Students who are shaky are usually imagining both roads or neither.</li>
+    <li><strong>Two indent levels is new.</strong> Some will indent everything by eight, including
+    <code>else</code>, because it is all &ldquo;inside&rdquo; something. Ask <em>inside what</em>, line by
+    line.</li>
+    <li>The word <strong>condition</strong> is in the vocabulary table but not leaned on.
+    &ldquo;The question&rdquo; is what the page says everywhere else.</li>
+    <li>Resist <code>elif</code>. It arrives in <a href="teacher-9.html">Activity 9</a>, where three
+    zones make it worth having; here it only makes the two-road picture harder to hold.</li>
+    <li>Safety rules unchanged: never 5V to a GP pin, never a power pin to GND, power off at SW5 before
+    changing wires.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Links</h2>
+  <table>
+    <tbody>
+      <tr><td>Student page</td><td><a href="activity-5.html">activity-5.html</a></td></tr>
+      <tr><td>All teacher notes</td><td><a href="teacher.html">teacher.html</a></td></tr>
+      <tr><td>Next activity</td><td><a href="activity-6.html">activity-6.html</a> &middot; <a href="teacher-6.html">teacher-6.html</a></td></tr>
+      <tr><td>Previous activity</td><td><a href="activity-4.html">activity-4.html</a> &middot; <a href="teacher-4.html">teacher-4.html</a></td></tr>
+      <tr><td>Wokwi &middot; Thonny</td><td><a href="https://wokwi.com" target="_blank" rel="noopener">wokwi.com</a> &middot; <a href="https://thonny.org" target="_blank" rel="noopener">thonny.org</a></td></tr>
+      <tr><td>Pin reference</td><td><a href="pinout.html">pinout.html</a></td></tr>
+      <tr><td>Repository</td><td><a href="https://github.com/ump-stemlab/pico-iot-module">github.com/ump-stemlab/pico-iot-module</a></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Pins used so far</h2>
+  <table>
+    <thead><tr><th>Pin</th><th>Used for</th><th>Activity 5</th></tr></thead>
+    <tbody>
+      <tr><td><span class="gp">GP2</span></td><td>Button SW1</td><td><strong>required</strong></td></tr>
+      <tr><td><span class="gp">GP3</span></td><td>Button SW2</td><td><strong>exercise</strong></td></tr>
+      <tr><td><span class="gp">GP4</span></td><td>Button SW3</td><td>going-further only</td></tr>
+      <tr><td><span class="gp">GP11</span></td><td>LED1 red</td><td><strong>required</strong></td></tr>
+      <tr><td><span class="gp">GP12</span></td><td>LED2 yellow</td><td>going-further only</td></tr>
+      <tr><td><span class="gp">GP13</span></td><td>LED3 green</td><td><strong>exercise</strong></td></tr>
+      <tr><td><span class="gp">GP14</span></td><td>Buzzer BZ1</td><td>going-further only</td></tr>
+      <tr><td><span class="gp">GP15</span></td><td>Slide switch SW4</td><td>going-further only</td></tr>
+    </tbody>
+  </table>
+  <p class="muted">Activity 5 adds no new pins. It is the first activity to use an <strong>input and an
+  output at the same time</strong> &mdash; the thing to check on each board before the lesson.</p>
+</section>
+
+<section>
+  <h2>&#x1F9E9; Tiered Activity 5 Answers</h2>
+  <div class="tbanner">These are the model answers for
+    <a href="activity5-tiers.html">Tiered Activity 5 — Making Decisions</a>.
+    Share only after students have attempted each tier.
+  </div>
+
+  <h3>Tier 1 — Fill in the Blanks</h3>
+  <table>
+    <thead><tr><th>#</th><th>Clue</th><th>Answer</th></tr></thead>
+    <tbody>
+      <tr><td><strong>[1]</strong></td><td>hardware module</td><td><code>machine</code></td></tr>
+      <tr><td><strong>[2]</strong></td><td>first condition keyword</td><td><code>if</code></td></tr>
+      <tr><td><strong>[3]</strong></td><td>second condition keyword</td><td><code>elif</code></td></tr>
+      <tr><td><strong>[4]</strong></td><td>reset counter to starting value</td><td><code>0</code></td></tr>
+      <tr><td><strong>[5]</strong></td><td>runs when both conditions above are false</td><td><code>else</code></td></tr>
+      <tr><td><strong>[6]</strong></td><td>turn green LED on</td><td><code>on</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Tier 2 — Debug the Code</h3>
+  <table>
+    <thead><tr><th>Bug</th><th>Corrected line</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Bug 1 — assignment instead of comparison</strong></td><td><code>if btn.value() == 0:</code></td></tr>
+      <tr><td><strong>Bug 2 — wrong elif value</strong></td><td><code>elif btn.value() == 1:</code></td></tr>
+      <tr><td><strong>Bug 3 — missing colon on else</strong></td><td><code>else:</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Tier 3 — Extend: Three-state traffic light — button cycles Green → Amber → Red → Green. if/elif/else controls exactly one LED per state.</h3>
+  <div class="codebox"><button class="copybtn">Copy</button><pre><code>import machine, time
+btn   = machine.Pin(14, machine.Pin.IN, machine.Pin.PULL_UP)
+led_g = machine.Pin(16, machine.Pin.OUT)
+led_a = machine.Pin(17, machine.Pin.OUT)
+led_r = machine.Pin(15, machine.Pin.OUT)
+state = 0    # 0=green, 1=amber, 2=red
+prev  = 1
+
+while True:
+    curr = btn.value()
+    if curr == 0 and prev == 1:
+        state = (state + 1) % 3
+        if state == 0:
+            led_g.on(); led_a.off(); led_r.off()
+            print("Green")
+        elif state == 1:
+            led_g.off(); led_a.on(); led_r.off()
+            print("Amber")
+        else:
+            led_g.off(); led_a.off(); led_r.on()
+            print("Red")
+    prev = curr
+    time.sleep(0.05)</code></pre></div>
+
+  <h3>Tier 4 — Create: Smart alarm — Zone A blinks fast, Zone B blinks slow, both → solid ON with "BOTH ZONES ALERT". if/elif/elif/else structure.</h3>
+  <div class="codebox"><button class="copybtn">Copy</button><pre><code>import machine, time
+btnA = machine.Pin(14, machine.Pin.IN, machine.Pin.PULL_UP)
+btnB = machine.Pin(15, machine.Pin.IN, machine.Pin.PULL_UP)
+led  = machine.Pin(25, machine.Pin.OUT)
+
+while True:
+    a = btnA.value()
+    b = btnB.value()
+    if a == 0 and b == 0:
+        led.on()
+        print("BOTH ZONES ALERT")
+        time.sleep(0.05)
+    elif a == 0:
+        led.on(); time.sleep(0.1); led.off(); time.sleep(0.1)
+    elif b == 0:
+        led.on(); time.sleep(0.5); led.off(); time.sleep(0.5)
+    else:
+        led.off()
+        time.sleep(0.05)</code></pre></div>
+
+  <h3>Concept Check (10 MCQs)</h3>
+  <table>
+    <thead><tr><th>Question</th><th>Correct answer</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Q1</strong></td><td>if</td></tr>
+      <tr><td><strong>Q2</strong></td><td>As many as needed</td></tr>
+      <tr><td><strong>Q3</strong></td><td>==</td></tr>
+      <tr><td><strong>Q4</strong></td><td>When all preceding if and elif conditions are False</td></tr>
+      <tr><td><strong>Q5</strong></td><td>= is assignment; use == for comparison</td></tr>
+      <tr><td><strong>Q6</strong></td><td>else if</td></tr>
+      <tr><td><strong>Q7</strong></td><td>a colon :</td></tr>
+      <tr><td><strong>Q8</strong></td><td>Is not equal to</td></tr>
+      <tr><td><strong>Q9</strong></td><td>if btn.value() == 0:</td></tr>
+      <tr><td><strong>Q10</strong></td><td>x >= 7</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</div>
+</div>
+
+<script>
+(function(){
+  var b = document.getElementById('gatebtn');
+  b.addEventListener('click', function(){
+    document.getElementById('gate').hidden = true;
+    document.getElementById('tcontent').hidden = false;
+  });
+})();
+</script>
+
+<footer>
+  <div class="wrap">
+    <p><strong>See &middot; Think &middot; Explore &middot; Marvel</strong><br>UMPSA STEM LAB</p>
+    <p><a href="index.html">Home</a> &middot; <a href="activity-0.html">Activity 0</a> &middot; <a href="activity-1.html">Activity 1</a> &middot;
+       <a href="activity-2.html">Activity 2</a> &middot;
+       <a href="activity-3.html">Activity 3</a> &middot;
+       <a href="activity-4.html">Activity 4</a> &middot;
+       <a href="activity-5.html">Activity 5</a> &middot;
+       <a href="activity-6.html">Activity 6</a> &middot;
+       <a href="activity-7.html">Activity 7</a> &middot;
+       <a href="activity-8.html">Activity 8</a> &middot;
+       <a href="activity-9.html">Activity 9</a> &middot;
+       <a href="activity-10.html">Activity 10</a> &middot;
+       <a href="activity-11.html">Activity 11</a> &middot;
+       <a href="activity-12.html">Activity 12</a> &middot;
+       <a href="activity-13.html">Activity 13</a> &middot;
+       <a href="pinout.html">Pin reference</a> &middot;
+       <a href="https://github.com/ump-stemlab/pico-iot-module">Source on GitHub</a></p>
+  </div>
+</footer>
+<script src="code.js"></script>
+<script>
+document.querySelectorAll('.copybtn').forEach(function(b){
+  b.addEventListener('click',function(){
+    var t=b.parentElement.querySelector('code').textContent;
+    navigator.clipboard.writeText(t).then(function(){
+      b.textContent='Copied!';b.classList.add('copied');
+      setTimeout(function(){b.textContent='Copy';b.classList.remove('copied');},2000);
+    });
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teacher notes &mdash; Activity 1 | LilEx5 Pico IoT Module</title>
+<meta name="description" content="Instructor notes for Activity 1.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%2302ADA5'/%3E%3C/svg%3E">
+<style>
+.codebox{position:relative;margin:1em 0}
+.codebox pre{margin:0;padding:1.1em 1em 1em;background:var(--code-bg,#1e1e2e);color:var(--code-fg,#cdd6f4);border-radius:6px;overflow-x:auto;font-size:.88em;line-height:1.5;tab-size:4}
+.codebox code{font-family:'Cascadia Code','Fira Mono',monospace;white-space:pre}
+.copybtn{position:absolute;top:.45em;right:.45em;padding:.22em .6em;font-size:.78em;font-weight:600;background:#02ADA5;color:#fff;border:none;border-radius:4px;cursor:pointer;opacity:.82;transition:opacity .15s}
+.copybtn:hover{opacity:1}
+.copybtn.copied{background:#4caf50}
+</style>
+</head>
+<body>
+
+<div class="chev"><span>See</span><span>Think</span><span>Explore</span><span>Marvel</span></div>
+<nav class="sitenav"><div class="wrap">
+  <a class="brand" href="index.html">LilEx5 <span>Pico IoT Module</span></a>
+  <a class="nl" href="index.html">Home</a>
+  <details class="navsel">
+    <summary>Activity 1: Light Up an LED</summary>
+    <div class="navmenu" role="menu">
+      <a href="teacher-0.html"><b>Activity 0</b>: Getting Started</a>
+      <a href="teacher-1.html" aria-current="page"><b>Activity 1</b>: Light Up an LED</a>
+      <a href="teacher-2.html"><b>Activity 2</b>: Make an LED Blink</a>
+      <a href="teacher-3.html"><b>Activity 3</b>: Digital Output &amp; Servo</a>
+      <a href="teacher-4.html"><b>Activity 4</b>: Digital Input</a>
+      <a href="teacher-5.html"><b>Activity 5</b>: Making Decisions</a>
+      <a href="teacher-6.html"><b>Activity 6</b>: And, Or, Not</a>
+      <a href="teacher-7.html"><b>Activity 7</b>: Words on a Screen</a>
+      <a href="teacher-8.html"><b>Activity 8</b>: Sensors and Numbers</a>
+      <a href="teacher-9.html"><b>Activity 9</b>: Soil Moisture</a>
+      <a href="teacher-10.html"><b>Activity 10</b>: Internet and Data</a>
+      <a href="teacher-11.html"><b>Activity 11</b>: Control from Anywhere</a>
+      <a href="teacher-12.html"><b>Activity 12</b>: Sending Messages by Radio</a>
+      <a href="teacher-13.html"><b>Activity 13</b>: Sending Data to a Live Dashboard</a>
+    </div>
+  </details>
+  <a class="nl" href="pinout.html">Pin reference</a>
+</div></nav>
+
+<div class="gate" id="gate">
+  <h2>&#128274; Teacher notes</h2>
+  <p>This page holds the exercise answers for <strong>Activity 1 &mdash; Light Up an LED</strong>.
+  It is not linked from the student pages.</p>
+  <p><strong>Students: please go back and try the exercise first.</strong></p>
+  <button class="cta" id="gatebtn" type="button">I'm a teacher &mdash; show the notes</button>
+  <p style="margin-top:16px"><a href="activity-1.html">&larr; Back to the student page</a></p>
+</div>
+
+<div id="tcontent" hidden>
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">LilEx5 &middot; Pico IoT Module &middot; Instructor notes</p>
+    <h1>Activity 1 &mdash; teacher notes</h1>
+    <p class="sub">Light Up an LED. One idea: a name points at a pin, and a pin makes a light come on.</p>
+    <div class="hero-cta">
+      <a class="cta alt" href="activity-1.html">&#9654; Student page</a>
+      <a class="cta alt" href="teacher.html">&#128218; All teacher notes</a>
+      <a class="cta alt" href="pinout.html">&#128204; Pin reference</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<div class="tbanner"><b>Keep this link to yourself.</b> Unlisted and hidden from search engines, but the
+repository is public &mdash; anyone with the URL can read it.</div>
+
+<section>
+  <h2>What is being taught</h2>
+  <ul>
+    <li><strong>One idea:</strong> a nickname points at a pin, and switching that pin on lights
+    something. Variables, comments and GP numbers all arrive in service of it.</li>
+    <li><strong>No <code>print()</code>, on purpose.</strong> The mission is a light, and a console
+    message competes with it. <code>print()</code> arrives in Activity 4. If a student adds one, praise
+    it and move on.</li>
+    <li><strong>Do not skip Wokwi.</strong> On the LilEx5 the LED wiring is inside the PCB, so students
+    never see a circuit unless they build one. That step is where the electronics is taught.</li>
+    <li>The light stays on for ever, and nothing turns it off. Ask <em>&ldquo;what would make it
+    stop?&rdquo;</em> &mdash; that is Activity 2.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Exercise answer
+  <div class="codebox"><button class="copybtn" type="button">Copy</button><pre><code>from machine import Pin
+
+# Each LED needs its own nickname
+red = Pin(11, Pin.OUT)
+yellow = Pin(12, Pin.OUT)
+green = Pin(13, Pin.OUT)
+
+# Now switch all three on
+red.on()
+yellow.on()
+green.on()</code></pre></div>
+  <ul>
+    <li><strong>The point is the second clue: one nickname can only point at one pin.</strong> Students
+    who reuse <code>led</code> three times light only the green LED. Let them hit that before you rescue
+    them &mdash; it is where variables stop being decoration.</li>
+    <li>Accept any sensible names. Push back only on names that lie, such as calling GP13
+    <code>red</code>.</li>
+    <li>Order does not matter. Name-then-switch-on per LED is equally correct and worth showing.</li>
+  </ul>
+
+ &mdash; all three LEDs</h2>
+  <p><a href="https://wokwi.com/projects/473931417949006849" target="_blank" rel="noopener" class="cta alt">&#9654;&nbsp;Try this answer on Wokwi</a></p>
+</section>
+
+<section>
+  <h2>Going-further answers</h2>
+  <table>
+    <thead><tr><th>Task</th><th>Answer / what to say</th></tr></thead>
+    <tbody>
+      <tr><td>Only red and green</td><td>Delete the yellow lines, or just its <code>.on()</code>. Ask which is tidier.</td></tr>
+      <tr><td>Name all three <code>led</code></td><td>Only <strong>green</strong> lights: each new
+      <code>led = Pin(...)</code> overwrites the nickname, and the first two pins were never switched on.
+      The most useful misconception in the activity.</td></tr>
+      <tr><td><code>red.off()</code> at the end</td><td>Red appears never to light &mdash; it does, for a
+      few thousandths of a second. Sets up <code>sleep</code> in Activity 2.</td></tr>
+      <tr><td><code>Pin(14, Pin.OUT)</code></td><td>The buzzer sounds continuously. Demonstrate once from
+      the front rather than letting thirty pairs find it together.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Before the lesson</h2>
+  <ul>
+    <li>A board and USB cable per pair; check <strong>SW5</strong> (power) on each.</li>
+    <li>Thonny installed, interpreter preset to <em>MicroPython (Raspberry Pi Pico)</em>.</li>
+    <li>The <a href="https://wokwi.com/projects/473931417949006849" target="_blank" rel="noopener">Wokwi project</a> up on the projector.</li>
+    <li>The <a href="pinout.html">pin reference</a> open on every machine &mdash; needed from here on.</li>
+    <li>Decide the route. Most classes do Wokwi first and boards in the second half.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>The pin numbers students get wrong</h2>
+  <table>
+    <thead><tr><th>Part</th><th>Pin</th><th>If they miss it</th></tr></thead>
+    <tbody>
+      <tr><td>LED1 red</td><td><span class="gp">11</span></td><td>&mdash;</td></tr>
+      <tr><td>LED2 yellow</td><td><span class="gp">12</span></td><td>Wrong colour lights, no error</td></tr>
+      <tr><td>LED3 green</td><td><span class="gp">13</span></td><td>Wrong colour lights, no error</td></tr>
+      <tr><td>Buzzer BZ1</td><td><span class="gp">14</span></td><td>Loud continuous tone</td></tr>
+    </tbody>
+  </table>
+  <p>12 versus 13 is the quiet mistake: nothing errors, the wrong colour simply lights. Say it plainly
+  &mdash; a program that runs without an error is not the same as a program that does what you meant.</p>
+</section>
+
+<section>
+  <h2>Teaching notes</h2>
+  <ul>
+    <li>The most common typo is lowercase <code>pin</code>. MicroPython is case-sensitive; the
+    type-it-here box on the student page catches exactly this.</li>
+    <li><code>led</code> is not a keyword. Renaming it to <code>lamp</code> throughout is a 30-second
+    demonstration that variables are nicknames &mdash; and it pre-teaches the exercise.</li>
+    <li><strong>Comments are new here.</strong> Students think <code>#</code> lines do something. Delete
+    every comment, re-run, identical behaviour &mdash; then ask why anyone bothers.</li>
+    <li>The buzzer mistake is the best one in the activity: loud, obvious, and it makes the
+    &ldquo;code must match the copper&rdquo; point better than any explanation.</li>
+    <li>Safety rules from day one: never 5V to a GP pin, never a power pin to GND, power off at SW5
+    before changing wires.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Links</h2>
+  <div class="tablescroll">
+  <table>
+    <tbody>
+      <tr><td>Student page</td><td><a href="activity-1.html">activity-1.html</a></td></tr>
+      <tr><td>All teacher notes</td><td><a href="teacher.html">teacher.html</a></td></tr>
+      <tr><td>Wokwi project (Activity 1)</td><td><a href="https://wokwi.com/projects/473931417949006849" target="_blank" rel="noopener">wokwi.com/projects/473931417949006849</a></td></tr>
+      <tr><td>Wokwi &middot; Thonny</td><td><a href="https://wokwi.com" target="_blank" rel="noopener">wokwi.com</a> &middot; <a href="https://thonny.org" target="_blank" rel="noopener">thonny.org</a></td></tr>
+      <tr><td>Pin reference</td><td><a href="pinout.html">pinout.html</a></td></tr>
+      <tr><td>Repository</td><td><a href="https://github.com/ump-stemlab/pico-iot-module">github.com/ump-stemlab/pico-iot-module</a></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>Pins used so far</h2>
+  <table>
+    <thead><tr><th>Pin</th><th>Used for</th><th>First seen</th></tr></thead>
+    <tbody>
+      <tr><td><span class="gp">GP11</span></td><td>LED1 red</td><td>Activity 1</td></tr>
+      <tr><td><span class="gp">GP12</span></td><td>LED2 yellow</td><td>Activity 1 (exercise)</td></tr>
+      <tr><td><span class="gp">GP13</span></td><td>LED3 green</td><td>Activity 1 (exercise)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</div>
+</div>
+
+<script>
+(function(){
+  var b = document.getElementById('gatebtn');
+  b.addEventListener('click', function(){
+    document.getElementById('gate').hidden = true;
+    document.getElementById('tcontent').hidden = false;
+  });
+})();
+</script>
+
+<footer>
+  <div class="wrap">
+    <p><strong>See &middot; Think &middot; Explore &middot; Marvel</strong><br>UMPSA STEM LAB</p>
+    <p><a href="index.html">Home</a> &middot; <a href="activity-0.html">Activity 0</a> &middot; <a href="activity-1.html">Activity 1</a> &middot;
+       <a href="activity-2.html">Activity 2</a> &middot;
+       <a href="activity-3.html">Activity 3</a> &middot;
+       <a href="activity-4.html">Activity 4</a> &middot;
+       <a href="activity-5.html">Activity 5</a> &middot;
+       <a href="activity-6.html">Activity 6</a> &middot;
+       <a href="activity-7.html">Activity 7</a> &middot;
+       <a href="activity-8.html">Activity 8</a> &middot;
+       <a href="activity-9.html">Activity 9</a> &middot;
+       <a href="activity-10.html">Activity 10</a> &middot;
+       <a href="activity-11.html">Activity 11</a> &middot;
+       <a href="activity-12.html">Activity 12</a> &middot;
+       <a href="activity-13.html">Activity 13</a> &middot;
+       <a href="pinout.html">Pin reference</a> &middot;
+       <a href="https://github.com/ump-stemlab/pico-iot-module">Source on GitHub</a></p>
+  </div>
+</footer>
+<script src="code.js"></script>
+<script>
+document.querySelectorAll('.copybtn').forEach(function(b){
+  b.addEventListener('click',function(){
+    var t=b.parentElement.querySelector('code').textContent;
+    navigator.clipboard.writeText(t).then(function(){
+      b.textContent='Copied!';b.classList.add('copied');
+      setTimeout(function(){b.textContent='Copy';b.classList.remove('copied');},2000);
+    });
+  });
+});
+</script>
+</body>
+</html>

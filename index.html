@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LilEx5 Pico IoT Module | UMPSA STEM LAB</title>
+<meta name="description" content="Interactive MicroPython tutorials for the LilEx5 Raspberry Pi Pico IoT board.">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%2302ADA5'/%3E%3C/svg%3E">
+<style id="gate-css">
+/* ── Full-screen registration gate ── */
+#reg-gate{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#031c1b 0%,#042e2b 55%,#031e30 100%);display:flex;align-items:center;justify-content:center;padding:1rem;overflow-y:auto;}
+#reg-gate.hidden{display:none;}
+.gate-box{background:#0d2525;border:1px solid rgba(2,173,165,.3);border-radius:18px;padding:2rem 1.8rem 1.8rem;width:100%;max-width:620px;box-shadow:0 20px 60px rgba(0,0,0,.55);}
+.gate-logo{text-align:center;margin-bottom:1.4rem;}
+.gate-logo .badge{display:inline-block;background:rgba(2,173,165,.18);border:1px solid rgba(2,173,165,.4);border-radius:999px;font-size:.72rem;font-weight:700;padding:.2rem .9rem;letter-spacing:.05em;color:#02ADA5;}
+.gate-logo h2{font-size:1.5rem;font-weight:800;margin:.5rem 0 .3rem;background:linear-gradient(135deg,#02ADA5,#0D55A7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.gate-logo p{font-size:.82rem;color:rgba(255,255,255,.5);}
+.gate-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem .9rem;margin-bottom:.9rem;}
+.gate-group{display:flex;flex-direction:column;gap:.28rem;}
+.gate-group.full{grid-column:1/-1;}
+.gate-group label{font-size:.74rem;font-weight:700;color:rgba(255,255,255,.55);letter-spacing:.04em;text-transform:uppercase;}
+.gate-req{color:#f5a21d;margin-left:2px;}
+.gate-group input,.gate-group select{font-family:inherit;font-size:.86rem;padding:.5rem .75rem;border:1.5px solid rgba(255,255,255,.12);border-radius:8px;background:rgba(255,255,255,.07);color:#f1f5f9;outline:none;transition:border .15s;width:100%;box-sizing:border-box;}
+.gate-group input:focus,.gate-group select:focus{border-color:#02ADA5;background:rgba(2,173,165,.1);}
+.gate-group input::placeholder{color:rgba(255,255,255,.25);}
+.gate-group select{cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,.4)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px;}
+.gate-group select option{background:#0d2525;color:#f1f5f9;}
+.gate-err{font-size:.78rem;color:#f97316;margin:.35rem 0;display:none;font-weight:600;}
+.gate-submit{width:100%;background:linear-gradient(135deg,#02ADA5,#0D55A7);color:#fff;border:none;border-radius:999px;padding:.85rem 1.5rem;font-size:.93rem;font-weight:800;cursor:pointer;transition:opacity .2s;margin-top:.4rem;font-family:inherit;letter-spacing:.02em;}
+.gate-submit:hover{opacity:.88;}
+.gate-submit:disabled{opacity:.4;cursor:not-allowed;}
+.gate-msg{text-align:center;font-size:.82rem;margin-top:.6rem;color:#02ADA5;font-weight:600;}
+.gate-privacy{font-size:.7rem;color:rgba(255,255,255,.3);text-align:center;margin-top:.75rem;line-height:1.5;}
+@media(max-width:460px){.gate-grid{grid-template-columns:1fr;}}
+
+/* ── Student chip in nav ── */
+#activeStudentChip{display:none;align-items:center;gap:.4rem;background:rgba(2,173,165,.18);border:1px solid rgba(2,173,165,.4);border-radius:999px;padding:.22rem .75rem .22rem .5rem;font-size:.72rem;color:#02ADA5;white-space:nowrap;max-width:200px;}
+#activeStudentChip .chip-av{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#02ADA5,#0D55A7);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;color:#fff;flex-shrink:0;}
+#activeStudentChip .chip-nm{overflow:hidden;text-overflow:ellipsis;font-weight:700;}
+#switchStudentBtn{background:none;border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.45);font-size:.72rem;font-weight:600;cursor:pointer;padding:.25rem .65rem;border-radius:6px;font-family:inherit;letter-spacing:.03em;transition:all .15s;white-space:nowrap;}
+#switchStudentBtn:hover{background:rgba(220,38,38,.2);border-color:rgba(220,38,38,.55);color:#fca5a5;}
+
+/* ── branded footer ── */
+.site-footer{background:#031e1d;border-top:1px solid rgba(2,173,165,.15);padding:2.2rem 0 1.6rem;margin-top:3rem;}
+.sf-top{text-align:center;margin-bottom:1.4rem;}
+.sf-motto{font-size:1rem;font-weight:800;color:#fff;letter-spacing:.02em;}
+.sf-motto span{color:#02ADA5;}
+.sf-org{font-size:.82rem;font-weight:600;color:rgba(255,255,255,.55);letter-spacing:.12em;text-transform:uppercase;margin-top:.3rem;}
+.sf-bottom{display:flex;align-items:center;justify-content:center;gap:1rem;border-top:1px solid rgba(255,255,255,.07);padding-top:1.2rem;flex-wrap:wrap;}
+.sf-copy{font-size:.78rem;color:rgba(255,255,255,.35);}
+.sf-icons{display:flex;gap:.55rem;}
+.sf-icon{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(2,173,165,.5);color:#02ADA5;text-decoration:none;font-size:1rem;transition:background .2s,border-color .2s;}
+.sf-icon:hover{background:rgba(2,173,165,.18);border-color:#02ADA5;}
+
+
+/* ── Pre / Post test panel ── */
+.test-panel{background:rgba(2,173,165,.06);border:1.5px solid rgba(2,173,165,.22);border-radius:14px;padding:1.4rem 1.6rem;display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap;}
+.test-panel-icon{font-size:2rem;flex-shrink:0;}
+.test-panel-body{flex:1;min-width:200px;}
+.test-panel-body h3{font-size:1rem;font-weight:800;margin:0 0 .2rem;color:#fff;}
+.test-panel-body p{font-size:.83rem;color:rgba(255,255,255,.55);margin:0 0 .75rem;line-height:1.5;}
+.test-btns{display:flex;gap:.6rem;flex-wrap:wrap;}
+.test-btn{display:inline-flex;align-items:center;gap:.4rem;padding:.42rem 1rem;border-radius:999px;font-size:.8rem;font-weight:700;text-decoration:none;border:1.5px solid;transition:background .2s,opacity .2s;}
+.test-btn-pre{background:rgba(13,85,167,.18);border-color:rgba(13,85,167,.55);color:#6aaef6;}
+.test-btn-pre:hover{background:rgba(13,85,167,.35);}
+.test-btn-post{background:rgba(2,173,165,.14);border-color:rgba(2,173,165,.5);color:#02ADA5;}
+.test-btn-post:hover{background:rgba(2,173,165,.28);}
+.test-divider{display:flex;align-items:center;gap:1rem;margin:1.5rem 0;}
+.test-divider::before,.test-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08);}
+.test-divider span{font-size:.72rem;font-weight:700;color:rgba(255,255,255,.25);letter-spacing:.08em;white-space:nowrap;}
+
+</style>
+</head>
+<body>
+<!-- ═══ REGISTRATION GATE ═══ -->
+<div id="reg-gate">
+  <div class="gate-box">
+    <div class="gate-logo">
+      <div class="badge">🤖 LilEx5 Pico IoT · UMPSA STEM LAB</div>
+      <h2>Welcome! Register to Begin</h2>
+      <p>Fill in your details to access the LilEx5 activities. All ✱ fields are required.</p>
+    </div>
+    <div class="gate-grid">
+      <div class="gate-group full">
+        <label>Full Name <span class="gate-req">✱</span></label>
+        <input type="text" id="g-name" placeholder="Ahmad bin Ali" autocomplete="name">
+      </div>
+      <div class="gate-group">
+        <label>Matric / Student ID <span class="gate-req">✱</span></label>
+        <input type="text" id="g-matric" placeholder="RE25001" autocomplete="off">
+      </div>
+      <div class="gate-group">
+        <label>Class / Programme <span class="gate-req">✱</span></label>
+        <input type="text" id="g-kelas" placeholder="2BET" autocomplete="off">
+      </div>
+      <div class="gate-group">
+        <label>IC / MyKid No. <span class="gate-req">✱</span></label>
+        <input type="text" id="g-mykid" placeholder="071203010001" autocomplete="off">
+      </div>
+      <div class="gate-group">
+        <label>Age <span class="gate-req">✱</span></label>
+        <input type="number" id="g-age" min="10" max="30" placeholder="16">
+      </div>
+      <div class="gate-group">
+        <label>Gender <span class="gate-req">✱</span></label>
+        <select id="g-gender">
+          <option value="">Select…</option>
+          <option value="M">Male / Lelaki</option>
+          <option value="F">Female / Perempuan</option>
+          <option value="N">Prefer not to say</option>
+        </select>
+      </div>
+      <div class="gate-group">
+        <label>Contact No.</label>
+        <input type="tel" id="g-phone" placeholder="0123456789">
+      </div>
+      <div class="gate-group">
+        <label>Email</label>
+        <input type="email" id="g-email" placeholder="ahmad@student.edu.my">
+      </div>
+      <div class="gate-group">
+        <label>School / Inst. Code <span class="gate-req">✱</span></label>
+        <input type="text" id="g-school-code" placeholder="e.g. SKB001 or UMPSA" autocomplete="off">
+      </div>
+      <div class="gate-group">
+        <label>Institution / School Name <span class="gate-req">✱</span></label>
+        <input type="text" id="g-school" placeholder="e.g. SMK Semambu Kuantan" autocomplete="organization">
+      </div>
+      <div class="gate-group full">
+        <label>Home State <span class="gate-req">✱</span></label>
+        <select id="g-state">
+          <option value="">Select…</option>
+          <option>Johor</option><option>Kedah</option><option>Kelantan</option>
+          <option>Melaka</option><option>Negeri Sembilan</option><option>Pahang</option>
+          <option>Perak</option><option>Perlis</option><option>Pulau Pinang</option>
+          <option>Sabah</option><option>Sarawak</option><option>Selangor</option>
+          <option>Terengganu</option><option>W.P. Kuala Lumpur</option>
+          <option>W.P. Labuan</option><option>W.P. Putrajaya</option>
+        </select>
+      </div>
+    </div>
+    <p class="gate-err" id="gate-err">⚠ Please fill in all required (✱) fields.</p>
+    <button class="gate-submit" id="gate-submit-btn" onclick="gateRegister()">✔ Register &amp; Enter LilEx5 →</button>
+    <div class="gate-msg" id="gate-msg"></div>
+    <p class="gate-privacy">Your data is kept confidential and used for educational research only.</p>
+  </div>
+</div>
+<!-- ═══ END REGISTRATION GATE ═══ -->
+
+<div class="chev"><span>See</span><span>Think</span><span>Explore</span><span>Marvel</span></div>
+<nav class="sitenav"><div class="wrap">
+  <a class="brand" href="index.html">LilEx5 <span>Pico IoT Module</span></a>
+  <a class="nl" href="index.html" aria-current="page">Home</a>
+  <details class="navsel">
+    <summary>Activities</summary>
+    <div class="navmenu" role="menu">
+      <a href="activity-0.html"><b>Activity 0</b>: Getting Started</a>
+      <a href="activity-1.html"><b>Activity 1</b>: Light Up an LED</a>
+      <a href="activity-2.html"><b>Activity 2</b>: Make an LED Blink</a>
+      <a href="activity-3.html"><b>Activity 3</b>: Digital Output &amp; Servo</a>
+      <a href="activity-4.html"><b>Activity 4</b>: Digital Input</a>
+      <a href="activity-5.html"><b>Activity 5</b>: Making Decisions</a>
+      <a href="activity-6.html"><b>Activity 6</b>: And, Or, Not</a>
+      <a href="activity-7.html"><b>Activity 7</b>: Words on a Screen</a>
+      <a href="activity-8.html"><b>Activity 8</b>: Sensors and Numbers</a>
+      <a href="activity-9.html"><b>Activity 9</b>: Soil Moisture</a>
+      <a href="activity-10.html"><b>Activity 10</b>: Internet and Data</a>
+      <a href="activity-11.html"><b>Activity 11</b>: Control from Anywhere</a>
+      <a href="activity-12.html"><b>Activity 12</b>: Sending Messages by Radio</a>
+      <a href="activity-13.html"><b>Activity 13</b>: Sending Data to a Live Dashboard</a>
+    </div>
+  </details>
+  <a class="nl" href="pinout.html">Pin reference</a>
+  <div id="activeStudentChip"><div class="chip-av" id="chipAv"></div><span class="chip-nm" id="chipNm"></span></div>
+  <button id="switchStudentBtn" onclick="switchStudent()" title="Clear and register new student">⇄ Switch Student</button>
+</div></nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">UMPSA STEM LAB</p>
+    <h1>Pico IoT Module</h1>
+    <p class="sub">Learn to code a real Internet-of-Things board, one activity at a time.<br>
+    No electronics experience needed &mdash; and you can start without a board at all.</p>
+    <div class="hero-cta">
+      <a class="cta" href="activity-0.html">&#9654; Start Activity 0</a>
+      <a class="cta alt" href="pinout.html">&#128204; Pin reference</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<section>
+  <h2>What this is</h2>
+  <p class="lede">A MicroPython teaching module for the <strong>LilEx5</strong> board.</p>
+  <p>The LilEx5 is a Raspberry Pi Pico with three LEDs, a buzzer, buttons, a screen, a set of sensors
+  and a long-range radio all built onto one board. These activities take you from switching on a
+  single light to sending data across the internet.</p>
+  <figure class="board"><img src="img/lilex5-board.png"
+    alt="The LilEx5 board seen from above" loading="lazy">
+    <figcaption>The LilEx5 board. Everything you will use for every one of these activities is
+    already on it &mdash; see the <a href="pinout.html">pin reference</a> to find each part.</figcaption>
+  </figure>
+  <p>Every idea is introduced from scratch, in plain language, one step at a time.</p>
+
+  <h3>Every activity gives you two routes</h3>
+  <div class="grid2">
+    <div class="mini"><h4>&#129514; Wokwi &mdash; an online simulator</h4>
+      <p>Just a web browser. Nothing to plug in, nothing can burn out.</p></div>
+    <div class="mini"><h4>&#128268; The real LilEx5 board</h4>
+      <p>The board, a USB cable and <a href="https://thonny.org" target="_blank" rel="noopener">Thonny</a>.</p></div>
+  </div>
+  <div class="cal tip"><b>We always start in Wokwi</b>
+  Even when the real board is on the desk. On the LilEx5 the wiring is hidden inside the circuit
+  board, so the simulator is the only place you get to see a circuit and build one yourself.</div>
+</section>
+
+<section id="activities">
+  <h2>Activities</h2>
+  <p class="lede">Numbered exactly as they are in your Classroom. Each one adds exactly one new idea.</p>
+  <div class="actlist">
+    <a class="act" href="activity-0.html"><span class="n">0</span><span class="t"><b>Getting Started</b><small>the board, Thonny, and your first run</small></span></a>
+    <a class="act" href="activity-1.html"><span class="n">1</span><span class="t"><b>Light Up an LED</b><small>variables, comments, GPIO pins</small></span></a>
+    <a class="act" href="activity-2.html"><span class="n">2</span><span class="t"><b>Make an LED Blink</b><small>loops, indentation, sleep</small></span></a>
+    <a class="act" href="activity-3.html"><span class="n">3</span><span class="t"><b>Digital Output &amp; Servo</b><small>moving something, not just lighting it</small></span></a>
+    <a class="act" href="activity-4.html"><span class="n">4</span><span class="t"><b>Digital Input</b><small>reading buttons, print()</small></span></a>
+    <a class="act" href="activity-5.html"><span class="n">5</span><span class="t"><b>Making Decisions</b><small>if / else, comparing with ==</small></span></a>
+    <a class="act" href="activity-6.html"><span class="n">6</span><span class="t"><b>And, Or, Not</b><small>and / or / not, joining two questions</small></span></a>
+    <a class="act" href="activity-7.html"><span class="n">7</span><span class="t"><b>Words on a Screen</b><small>the OLED screen, the I&sup2;C bus, adding a library</small></span></a>
+    <a class="act" href="activity-8.html"><span class="n">8</span><span class="t"><b>Sensors and Numbers</b><small>a sensor on the same bus, decimals, round()</small></span></a>
+    <a class="act" href="activity-9.html"><span class="n">9</span><span class="t"><b>Soil Moisture</b><small>an analogue pin, elif, and calibrating it yourself</small></span></a>
+    <a class="act" href="activity-10.html"><span class="n">10</span><span class="t"><b>Internet and Data</b><small>joining WiFi, MQTT, a live graph on the internet</small></span></a>
+    <a class="act" href="activity-11.html"><span class="n">11</span><span class="t"><b>Control from Anywhere</b><small>subscribing, your first function, and a switch on the web</small></span></a>
+    <a class="act" href="activity-12.html"><span class="n">12</span><span class="t"><b>Sending Messages by Radio</b><small>UART, mode pins, channels, and no server at all</small></span></a>
+    <a class="act" href="activity-13.html"><span class="n">13</span><span class="t"><b>Sending Data to a Live Dashboard</b><small>WiFi, Google Apps Script, live sensor graphs in any browser</small></span></a>
+  </div>
+</section>
+
+<div class="test-divider"><span>CONCEPT INVENTORY</span></div>
+<section>
+  <div class="test-panel">
+    <div class="test-panel-icon">📋</div>
+    <div class="test-panel-body">
+      <h3>Pre-Test &amp; Post-Test</h3>
+      <p>Take the <strong>Pre-Test</strong> before you start any activity to record your baseline knowledge.
+         Take the <strong>Post-Test</strong> after finishing all six modules to see how far you've come.
+         Each test has 60 questions — 10 per module.</p>
+      <div class="test-btns">
+        <a class="test-btn test-btn-pre" href="pre-test.html">📝 Pre-Test <span style="opacity:.6">— take before activities</span></a>
+        <a class="test-btn test-btn-post" href="post-test.html">✅ Post-Test <span style="opacity:.6">— take after activities</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="test-divider"><span></span></div>
+
+<section>
+  <h2>Before your first activity</h2>
+  <div class="step"><div class="idx">1</div><div class="body">
+    <h4>Open the pin reference</h4>
+    <p>Every part on the board has a <strong>GP number</strong>, and your code has to use the right
+    one. Keep <a href="pinout.html">the pin reference</a> somewhere you can see it.</p>
+  </div></div>
+  <div class="step"><div class="idx">2</div><div class="body">
+    <h4>If you are using the real board</h4>
+    <p>Install <a href="https://thonny.org" target="_blank" rel="noopener">Thonny</a> and set the
+    interpreter (bottom-right corner) to <code>MicroPython (Raspberry Pi Pico)</code>.</p>
+  </div></div>
+  <div class="step"><div class="idx">3</div><div class="body">
+    <h4>If you are using the simulator</h4>
+    <p>Just open <a href="https://wokwi.com" target="_blank" rel="noopener">wokwi.com</a>. Nothing to install.</p>
+  </div></div>
+  <div class="cal warn"><b>Three safety rules, every time</b>
+  Never connect a 5V pin to a GP pin &mdash; they are 3.3&nbsp;V only. Never join a power pin to a
+  GND pin. Switch the board off at <strong>SW5</strong> before changing any wires.</div>
+</section>
+
+<section>
+  <h2>For teachers</h2>
+  <p>Each activity has its own <strong>teacher notes page</strong> &mdash; the exercise answer,
+  before-the-lesson checks, teaching notes and a running list of which pins have been used so far.
+  One index page links them all.</p>
+  <div class="cal note"><b>Teacher notes are kept separate</b>
+  They are not linked from these pages, so students do not stumble into the answers. Ask the STEM Lab
+  for the link.</div>
+  <p>Source, and the sensor libraries the later activities use, are on GitHub:
+  <a href="https://github.com/ump-stemlab/pico-iot-module">pico-iot-module</a> &middot;
+  <a href="https://github.com/ump-stemlab/stemcube">stemcube</a>.</p>
+</section>
+
+</div>
+
+<footer class="site-footer">
+  <div class="sf-top">
+    <div class="sf-motto">
+      <span>See</span> &middot; <span>Think</span> &middot; <span>Explore</span> &middot; <span>Marvel</span>
+    </div>
+    <div class="sf-org">UMPSA STEM LAB</div>
+  </div>
+  <div class="sf-bottom">
+    <span class="sf-copy">&copy; 2026 UMPSA STEM Lab Engineering Education</span>
+    <div class="sf-icons">
+      <a class="sf-icon" href="https://ee.ump.edu.my/hazlina/#research" target="_blank" rel="noopener" title="Research Website">&#x1F310;</a>
+      <a class="sf-icon" href="mailto:hazlina@umpsa.edu.my" title="Email">&#x2709;</a>
+    </div>
+  </div>
+</footer>
+<script src="code.js"></script>
+<script id="gate-js">
+(function(){
+  var LMS_KEY = 'lilex_lms_student';
+  /* ── Paste your Google Apps Script Web App URL here when ready ── */
+  var GAS_URL='https://script.google.com/macros/s/AKfycbwEKS3VdUL8CaenRJ80wQ7ynRGE2lUNMdNs9BR5iqfMsD_rsu18e17t5JblEiuLP2RM/exec';
+
+  function lmsLoad(){try{return JSON.parse(localStorage.getItem(LMS_KEY)||'null');}catch(e){return null;}}
+
+  /* ── Geolocation (silent, best-effort) ── */
+  function getLocation(cb){
+    if(!navigator.geolocation){cb(null);return;}
+    navigator.geolocation.getCurrentPosition(
+      function(p){cb({lat:p.coords.latitude.toFixed(5),lng:p.coords.longitude.toFixed(5),acc:Math.round(p.coords.accuracy)});},
+      function(){cb(null);},{timeout:8000,maximumAge:300000}
+    );
+  }
+  function reverseGeo(lat,lng,cb){
+    fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat='+lat+'&lon='+lng)
+      .then(function(r){return r.json();})
+      .then(function(d){
+        var city=(d.address&&(d.address.city||d.address.town||d.address.village||d.address.county))||'';
+        var st=(d.address&&d.address.state)||'';
+        cb(city+(city&&st?', ':'')+st);
+      }).catch(function(){cb('');});
+  }
+
+  function gasPost(event,d){
+    if(!GAS_URL)return;
+    fetch(GAS_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(Object.assign({event:event,ts:Date.now()},d))}).catch(function(){});
+  }
+
+  function showChip(d){
+    var chip=document.getElementById('activeStudentChip');
+    var av=document.getElementById('chipAv');
+    var nm=document.getElementById('chipNm');
+    if(!chip||!d)return;
+    av.textContent=(d.name||'?').charAt(0).toUpperCase();
+    nm.textContent=(d.name||'')+(d.matric?' · '+d.matric:'');
+    chip.style.display='flex';
+  }
+
+  function openGate(){
+    var msg=document.getElementById('gate-msg');
+    if(msg)msg.textContent='✅ Registered! Welcome to LilEx5.';
+    setTimeout(function(){
+      var gate=document.getElementById('reg-gate');
+      if(gate)gate.classList.add('hidden');
+      document.body.style.overflow='';
+      var d=lmsLoad();
+      showChip(d);
+    },700);
+  }
+
+  window.gateRegister=function(){
+    var name   =(document.getElementById('g-name')||{}).value||''; name=name.trim();
+    var matric =(document.getElementById('g-matric')||{}).value||''; matric=matric.trim();
+    var kelas  =(document.getElementById('g-kelas')||{}).value||''; kelas=kelas.trim();
+    var mykid  =(document.getElementById('g-mykid')||{}).value||''; mykid=mykid.trim();
+    var age    =(document.getElementById('g-age')||{}).value||''; age=age.trim();
+    var gender =(document.getElementById('g-gender')||{}).value||'';
+    var phone  =(document.getElementById('g-phone')||{}).value||''; phone=phone.trim();
+    var email  =(document.getElementById('g-email')||{}).value||''; email=email.trim();
+    var school =(document.getElementById('g-school')||{}).value||''; school=school.trim();
+    var school_code=(document.getElementById('g-school-code')||{}).value||''; school_code=school_code.trim();
+    var state  =(document.getElementById('g-state')||{}).value||'';
+    var errEl=document.getElementById('gate-err');
+    if(!name||!matric||!kelas||!mykid||!age||!gender||!school_code||!school||!state){
+      errEl.style.display='block';return;
+    }
+    errEl.style.display='none';
+    document.getElementById('gate-submit-btn').disabled=true;
+    document.getElementById('gate-submit-btn').textContent='Saving…';
+
+    var base={name:name,matric:matric,kelas:kelas,mykid:mykid,age:age,gender:gender,phone:phone,email:email,school:school,school_code:school_code,state:state,ts:Date.now()};
+
+    function finish(geo){
+      var d=Object.assign({},base,geo||{});
+      try{localStorage.setItem(LMS_KEY,JSON.stringify(d));}catch(e){}
+      gasPost('index_register',d);
+      openGate();
+    }
+
+    getLocation(function(geo){
+      if(geo){
+        reverseGeo(geo.lat,geo.lng,function(place){
+          finish({lat:geo.lat,lng:geo.lng,geo_acc:geo.acc,geo_place:place||''});
+        });
+      }else{finish(null);}
+    });
+  };
+
+  window.switchStudent=function(){
+    if(!confirm('Switch to a different student?\nThis will clear the current registration.'))return;
+    try{localStorage.removeItem(LMS_KEY);}catch(e){}
+    location.reload();
+  };
+
+  /* Enter key on any input */
+  ['g-name','g-matric','g-kelas','g-mykid','g-age','g-phone','g-email','g-school-code','g-school'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el)el.addEventListener('keydown',function(e){if(e.key==='Enter')window.gateRegister();});
+  });
+
+  /* ── On page load ── */
+  (function(){
+    var d=lmsLoad();
+    var gate=document.getElementById('reg-gate');
+    if(d&&d.name&&d.matric&&d.kelas){
+      if(gate)gate.classList.add('hidden');
+      showChip(d);
+      gasPost('index_revisit',{name:d.name,matric:d.matric,kelas:d.kelas,school:d.school,state:d.state});
+    }else{
+      if(gate){document.body.style.overflow='hidden';}
+    }
+  })();
+})();
+</script>
+</body>
+</html>

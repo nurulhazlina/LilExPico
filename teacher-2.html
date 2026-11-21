@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teacher notes &mdash; Activity 2 | LilEx5 Pico IoT Module</title>
+<meta name="description" content="Instructor notes for Activity 2.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%2302ADA5'/%3E%3C/svg%3E">
+<style>
+.codebox{position:relative;margin:1em 0}
+.codebox pre{margin:0;padding:1.1em 1em 1em;background:var(--code-bg,#1e1e2e);color:var(--code-fg,#cdd6f4);border-radius:6px;overflow-x:auto;font-size:.88em;line-height:1.5;tab-size:4}
+.codebox code{font-family:'Cascadia Code','Fira Mono',monospace;white-space:pre}
+.copybtn{position:absolute;top:.45em;right:.45em;padding:.22em .6em;font-size:.78em;font-weight:600;background:#02ADA5;color:#fff;border:none;border-radius:4px;cursor:pointer;opacity:.82;transition:opacity .15s}
+.copybtn:hover{opacity:1}
+.copybtn.copied{background:#4caf50}
+</style>
+</head>
+<body>
+
+<div class="chev"><span>See</span><span>Think</span><span>Explore</span><span>Marvel</span></div>
+<nav class="sitenav"><div class="wrap">
+  <a class="brand" href="index.html">LilEx5 <span>Pico IoT Module</span></a>
+  <a class="nl" href="index.html">Home</a>
+  <details class="navsel">
+    <summary>Activity 2: Make an LED Blink</summary>
+    <div class="navmenu" role="menu">
+      <a href="teacher-0.html"><b>Activity 0</b>: Getting Started</a>
+      <a href="teacher-1.html"><b>Activity 1</b>: Light Up an LED</a>
+      <a href="teacher-2.html" aria-current="page"><b>Activity 2</b>: Make an LED Blink</a>
+      <a href="teacher-3.html"><b>Activity 3</b>: Digital Output &amp; Servo</a>
+      <a href="teacher-4.html"><b>Activity 4</b>: Digital Input</a>
+      <a href="teacher-5.html"><b>Activity 5</b>: Making Decisions</a>
+      <a href="teacher-6.html"><b>Activity 6</b>: And, Or, Not</a>
+      <a href="teacher-7.html"><b>Activity 7</b>: Words on a Screen</a>
+      <a href="teacher-8.html"><b>Activity 8</b>: Sensors and Numbers</a>
+      <a href="teacher-9.html"><b>Activity 9</b>: Soil Moisture</a>
+      <a href="teacher-10.html"><b>Activity 10</b>: Internet and Data</a>
+      <a href="teacher-11.html"><b>Activity 11</b>: Control from Anywhere</a>
+      <a href="teacher-12.html"><b>Activity 12</b>: Sending Messages by Radio</a>
+      <a href="teacher-13.html"><b>Activity 13</b>: Sending Data to a Live Dashboard</a>
+    </div>
+  </details>
+  <a class="nl" href="pinout.html">Pin reference</a>
+</div></nav>
+
+<div class="gate" id="gate">
+  <h2>&#128274; Teacher notes</h2>
+  <p>This page holds the exercise answers for <strong>Activity 2 &mdash; Make an LED Blink</strong>.
+  It is not linked from the student pages.</p>
+  <p><strong>Students: please go back and try the exercise first.</strong></p>
+  <button class="cta" id="gatebtn" type="button">I'm a teacher &mdash; show the notes</button>
+  <p style="margin-top:16px"><a href="activity-2.html">&larr; Back to the student page</a></p>
+</div>
+
+<div id="tcontent" hidden>
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">LilEx5 &middot; Pico IoT Module &middot; Instructor notes</p>
+    <h1>Activity 2 &mdash; teacher notes</h1>
+    <p class="sub">Make an LED Blink. One idea: a block of code can repeat.</p>
+    <div class="hero-cta">
+      <a class="cta alt" href="activity-2.html">&#9654; Student page</a>
+      <a class="cta alt" href="teacher.html">&#128218; All teacher notes</a>
+      <a class="cta alt" href="teacher-1.html">&#8592; Activity 1 notes</a>
+      <a class="cta alt" href="pinout.html">&#128204; Pin reference</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<div class="tbanner"><b>Keep this link to yourself.</b> Unlisted and hidden from search engines, but the
+repository is public &mdash; anyone with the URL can read it.</div>
+
+<section>
+  <h2>What is being taught</h2>
+  <ul>
+    <li><strong>One idea:</strong> a block of code can repeat. The loop, the pause and the four spaces
+    are all machinery in service of it.</li>
+    <li><strong>Indentation is the lesson</strong>, not the blink. It is the first time whitespace
+    changes meaning, and most of the class will get it wrong at least once. Do not rush the two
+    comparison diagrams.</li>
+    <li><strong>Stopping a forever-loop is taught here</strong> and assumed from now on. Every activity
+    after this one runs in a loop.</li>
+    <li><strong>Still no <code>print()</code>.</strong> A blinking light is its own output; it arrives in
+    Activity 4.</li>
+  </ul>
+  <div class="cal tip"><b>The question to open with</b>
+  &ldquo;In Activity 1 your light stayed on. What would it take to make it go off again?&rdquo; Let them
+  answer, then ask why adding an <code>off</code> at the end of Activity 1&rsquo;s program does not appear
+  to work. That is the whole activity, in one question.</div>
+</section>
+
+<section>
+  <h2>The main program</h2>
+  <div class="codebox"><button class="copybtn" type="button">Copy</button><pre><code># Two tools this time: Pin for the LED, sleep for the pause
+from machine import Pin
+from time import sleep
+
+# LED1 is the red one, wired to GP11
+led = Pin(11, Pin.OUT)
+
+# Keep doing everything below, for ever
+while True:
+    led.on()      # light on
+    sleep(0.5)    # wait half a second
+    led.off()     # light off
+    sleep(0.5)    # wait again</code></pre></div>
+  <p>Six working lines; the comments are optional. Do not mark a student down for a program without
+  them.</p>
+</section>
+
+<section>
+  <h2>Exercise answer
+  <div class="codebox"><button class="copybtn" type="button">Copy</button><pre><code>from machine import Pin
+from time import sleep
+
+# One name for each LED
+red = Pin(11, Pin.OUT)
+yellow = Pin(12, Pin.OUT)
+green = Pin(13, Pin.OUT)
+
+# The whole sequence repeats, for ever
+while True:
+    red.on()        # stop
+    sleep(4)
+    red.off()
+
+    green.on()      # go
+    sleep(4)
+    green.off()
+
+    yellow.on()     # about to stop
+    sleep(1)
+    yellow.off()</code></pre></div>
+  <p>Three groups of three inside one loop. It needs <strong>one thing from Activity 1</strong> (each LED
+  gets its own name) and <strong>two from this one</strong> (the loop, and an unequal delay). Accept any
+  sensible order and names; insist on three things:</p>
+  <ul>
+    <li><strong>Every colour is switched off again</strong> before the next comes on. Students who only
+    switch on end up with all three lit &mdash; an obvious, useful failure.</li>
+    <li><strong>All nine lines indented.</strong> One group left at the left edge is the classic mistake,
+    and the symptom is subtle: that colour appears to be skipped.</li>
+    <li><strong>The yellow really is shorter.</strong> Three equal delays means they have not read the
+    task.</li>
+  </ul>
+  <p>Praise blank lines between the groups out loud &mdash; first formatting for a human reader since
+  comments.</p>
+  <div class="cal info"><b>If a pair finishes very early</b>
+  Ask them to make the sequence twice as fast by editing one line only. They cannot &mdash; unless they
+  invent a variable for the delay, which is going-further task 3 and an elegant answer for a beginner.</div>
+
+ &mdash; the traffic light</h2>
+  <p><a href="https://wokwi.com/projects/473931586293795841" target="_blank" rel="noopener" class="cta alt">&#9654;&nbsp;Try this answer on Wokwi</a></p>
+</section>
+
+<section>
+  <h2>Going-further answers</h2>
+  <table>
+    <thead><tr><th>Task</th><th>Answer / what to say</th></tr></thead>
+    <tbody>
+      <tr><td>Yellow blinks three times</td><td>Six more lines inside the loop. Someone will ask for a
+      shorter way &mdash; there is one (<code>for</code>) and it is not in this module. Tell them the
+      instinct is right and counted loops are the next thing they would learn.</td></tr>
+      <tr><td>Red and yellow together</td><td>Two <code>on</code> lines with no <code>off</code> between,
+      a wait, then two <code>off</code> lines. Proves a pin holds its state until something changes it.</td></tr>
+      <tr><td>Name the delay</td><td>A nickname set to 4 above the loop, used instead of the number. One
+      edit changes the whole light. Best of the five &mdash; show it to the class.</td></tr>
+      <tr><td>A waiting time of <code>0</code></td><td>No error. That colour flashes for microseconds and
+      looks like it never came on. Same lesson as the too-fast preset.</td></tr>
+      <tr><td>Buzzer on <span class="gp">14</span></td><td>A short beep every cycle. Loud &mdash; demonstrate
+      from the front. Also a reminder that the buzzer is switched exactly like an LED.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Before the lesson</h2>
+  <ul>
+    <li>Activity 1 done. Wiring, pin numbers and variables are not re-taught.</li>
+    <li>A board and USB cable per pair; check <strong>SW5</strong> on each.</li>
+    <li>Thonny installed, interpreter preset to <em>MicroPython (Raspberry Pi Pico)</em>.</li>
+    <li><a href="https://wokwi.com" target="_blank" rel="noopener">Wokwi</a> on the projector. If the
+    class saved Activity 1 projects, remind them to reopen rather than rebuild.</li>
+    <li><strong>Know where the Stop button is in both tools.</strong> You will be asked within five
+    minutes, by everyone, at once.</li>
+    <li>The <a href="pinout.html">pin reference</a> open on every machine.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>The mistakes students actually make</h2>
+  <div class="tablescroll">
+  <table>
+    <thead><tr><th>What they did</th><th>What they see</th><th>What to say</th></tr></thead>
+    <tbody>
+      <tr><td>The <code>off</code> lines not indented</td><td>LED on and stays on, no error</td>
+      <td><strong>The big one.</strong> Ask them to say out loud which lines are inside the loop; they
+      usually spot it themselves.</td></tr>
+      <tr><td>Nothing indented under <code>while</code></td><td><code>IndentationError</code></td>
+      <td>The message names the line. A loop must contain something.</td></tr>
+      <tr><td>Missing colon on the <code>while</code> line</td><td><code>SyntaxError</code></td>
+      <td>The editor stops auto-indenting too, so it looks doubly broken. Fix the colon, then re-indent.</td></tr>
+      <tr><td>Lowercase <code>true</code></td><td><code>NameError</code> or <code>SyntaxError</code></td>
+      <td>Same lesson as lowercase <code>pin</code>. The type-it-here box catches it.</td></tr>
+      <tr><td>No <code>sleep</code> import</td><td><code>NameError: name 'sleep' is not defined</code></td>
+      <td>They borrowed <code>Pin</code> and forgot the second toolbox. Point at line 2 of their own
+      program.</td></tr>
+      <tr><td>Only one <code>sleep</code>, after the <code>on</code></td><td>Looks permanently on, slightly
+      dim</td><td>Hard to see. Slow it to five seconds each way and the missing dark half is obvious.</td></tr>
+      <tr><td>Tabs mixed with spaces</td><td><code>TabError</code>, or lines that look aligned</td>
+      <td>Delete the leading whitespace and retype it.</td></tr>
+      <tr><td>Cannot save; Thonny appears frozen</td><td>No <code>&gt;&gt;&gt;</code> in the Shell</td>
+      <td>The old forever-loop is still running. Stop, or <kbd>Ctrl</kbd>+<kbd>C</kbd>. Expect this
+      repeatedly &mdash; it is new this activity.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>Teaching notes</h2>
+  <ul>
+    <li><strong>Teach stopping before starting.</strong> Show the Stop button and
+    <kbd>Ctrl</kbd>+<kbd>C</kbd> <em>before</em> anyone runs a forever-loop.</li>
+    <li><strong>The blink widget is worth two minutes on the projector.</strong> Put the &ldquo;too
+    fast&rdquo; preset up and ask what the LED is doing. Nearly everyone says &ldquo;it is on&rdquo;. It
+    is blinking fifty times a second.</li>
+    <li><strong>Indentation deserves a physical demonstration.</strong> Drag one line left on the board
+    and ask what changes. Do not accept &ldquo;it breaks&rdquo; &mdash; make them say <em>which</em>
+    lines now repeat.</li>
+    <li><code>while True</code> is not explained as boolean logic here, on purpose. &ldquo;True means
+    keep going&rdquo; is enough; <code>True</code> and <code>False</code> get their proper treatment in
+    Activities 5 and 6.</li>
+    <li>The module borrows single tools (<code>from time import sleep</code>) so every activity&rsquo;s
+    import lines look alike. The other style is shown once, in a <em>details</em> block.</li>
+    <li>Encourage fiddling with the waiting numbers. Nothing can break, and the link between a number in
+    a file and a thing happening in the world is the point of the course.</li>
+    <li>Safety rules unchanged: never 5V to a GP pin, never a power pin to GND, power off at SW5 before
+    changing wires.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Links</h2>
+  <table>
+    <tbody>
+      <tr><td>Student page</td><td><a href="activity-2.html">activity-2.html</a></td></tr>
+      <tr><td>All teacher notes</td><td><a href="teacher.html">teacher.html</a></td></tr>
+      <tr><td>Previous activity</td><td><a href="activity-1.html">activity-1.html</a> &middot; <a href="teacher-1.html">teacher-1.html</a></td></tr>
+      <tr><td>Wokwi &middot; Thonny</td><td><a href="https://wokwi.com" target="_blank" rel="noopener">wokwi.com</a> &middot; <a href="https://thonny.org" target="_blank" rel="noopener">thonny.org</a></td></tr>
+      <tr><td>Pin reference</td><td><a href="pinout.html">pinout.html</a></td></tr>
+      <tr><td>Repository</td><td><a href="https://github.com/ump-stemlab/pico-iot-module">github.com/ump-stemlab/pico-iot-module</a></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Pins used so far</h2>
+  <table>
+    <thead><tr><th>Pin</th><th>Used for</th><th>First seen</th></tr></thead>
+    <tbody>
+      <tr><td><span class="gp">GP11</span></td><td>LED1 red</td><td>Activity 1</td></tr>
+      <tr><td><span class="gp">GP12</span></td><td>LED2 yellow</td><td>Activity 1 (exercise), Activity 2 (exercise)</td></tr>
+      <tr><td><span class="gp">GP13</span></td><td>LED3 green</td><td>Activity 1 (exercise), Activity 2 (exercise)</td></tr>
+      <tr><td><span class="gp">GP14</span></td><td>Buzzer BZ1</td><td>Going-further only</td></tr>
+    </tbody>
+  </table>
+  <p class="muted">No new pins in Activity 2 &mdash; the new material is all in the language.</p>
+</section>
+
+<section>
+  <h2>&#x1F9E9; Tiered Activity 2 Answers</h2>
+  <div class="tbanner">These are the model answers for
+    <a href="activity2-tiers.html">Tiered Activity 2 — Make an LED Blink</a>.
+    Share only after students have attempted each tier.
+  </div>
+
+  <h3>Tier 1 — Fill in the Blanks</h3>
+  <table>
+    <thead><tr><th>#</th><th>Clue</th><th>Answer</th></tr></thead>
+    <tbody>
+      <tr><td><strong>[1]</strong></td><td>keyword to load a module</td><td><code>import</code></td></tr>
+      <tr><td><strong>[2]</strong></td><td>built-in LED pin number on Pico</td><td><code>25</code></td></tr>
+      <tr><td><strong>[3]</strong></td><td>pin direction for output</td><td><code>OUT</code></td></tr>
+      <tr><td><strong>[4]</strong></td><td>boolean that makes loop run forever</td><td><code>True</code></td></tr>
+      <tr><td><strong>[5]</strong></td><td>method that alternates LED on/off</td><td><code>toggle</code></td></tr>
+      <tr><td><strong>[6]</strong></td><td>function that pauses execution</td><td><code>sleep</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Tier 2 — Debug the Code</h3>
+  <table>
+    <thead><tr><th>Bug</th><th>Corrected line</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Bug 1 — missing colon</strong></td><td><code>while True:</code></td></tr>
+      <tr><td><strong>Bug 2 — wrong pin direction</strong></td><td><code>led = machine.Pin(25, machine.Pin.OUT)</code></td></tr>
+      <tr><td><strong>Bug 3 — missing argument</strong></td><td><code>time.sleep(0.5)</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Tier 3 — Extend: Add second LED on Pin 15 blinking in opposite phase to onboard LED on Pin 25.</h3>
+  <div class="codebox"><button class="copybtn">Copy</button><pre><code>import machine
+import time
+led = machine.Pin(25, machine.Pin.OUT)
+led2 = machine.Pin(15, machine.Pin.OUT)
+while True:
+    led.toggle()
+    led2.value(1 - led.value())
+    time.sleep(0.5)</code></pre></div>
+
+  <h3>Tier 4 — Create: Traffic light — Red Pin 2 → 3 s, Yellow Pin 3 → 1 s, Green Pin 4 → 2 s.</h3>
+  <div class="codebox"><button class="copybtn">Copy</button><pre><code>import machine
+import time
+red    = machine.Pin(2, machine.Pin.OUT)
+yellow = machine.Pin(3, machine.Pin.OUT)
+green  = machine.Pin(4, machine.Pin.OUT)
+while True:
+    red.on();    time.sleep(3); red.off()
+    yellow.on(); time.sleep(1); yellow.off()
+    green.on();  time.sleep(2); green.off()</code></pre></div>
+
+  <h3>Concept Check (10 MCQs)</h3>
+  <table>
+    <thead><tr><th>Question</th><th>Correct answer</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Q1</strong></td><td>Runs the loop forever until the program is interrupted</td></tr>
+      <tr><td><strong>Q2</strong></td><td>machine</td></tr>
+      <tr><td><strong>Q3</strong></td><td>Drive a voltage signal out of the pin to control a component</td></tr>
+      <tr><td><strong>Q4</strong></td><td>25</td></tr>
+      <tr><td><strong>Q5</strong></td><td>Switches the LED between ON and OFF — if it was ON it turns OFF, and vice versa</td></tr>
+      <tr><td><strong>Q6</strong></td><td>Half a second (500 ms)</td></tr>
+      <tr><td><strong>Q7</strong></td><td>led = machine.Pin(25, machine.Pin.OUT)</td></tr>
+      <tr><td><strong>Q8</strong></td><td>time.sleep(1) — toggle once per second</td></tr>
+      <tr><td><strong>Q9</strong></td><td>The LED will not turn on — an input pin cannot drive current to the LED</td></tr>
+      <tr><td><strong>Q10</strong></td><td>import → Pin setup → while True → toggle → sleep</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</div>
+</div>
+
+<script>
+(function(){
+  var b = document.getElementById('gatebtn');
+  b.addEventListener('click', function(){
+    document.getElementById('gate').hidden = true;
+    document.getElementById('tcontent').hidden = false;
+  });
+})();
+</script>
+
+<footer>
+  <div class="wrap">
+    <p><strong>See &middot; Think &middot; Explore &middot; Marvel</strong><br>UMPSA STEM LAB</p>
+    <p><a href="index.html">Home</a> &middot; <a href="activity-0.html">Activity 0</a> &middot; <a href="activity-1.html">Activity 1</a> &middot;
+       <a href="activity-2.html">Activity 2</a> &middot;
+       <a href="activity-3.html">Activity 3</a> &middot;
+       <a href="activity-4.html">Activity 4</a> &middot;
+       <a href="activity-5.html">Activity 5</a> &middot;
+       <a href="activity-6.html">Activity 6</a> &middot;
+       <a href="activity-7.html">Activity 7</a> &middot;
+       <a href="activity-8.html">Activity 8</a> &middot;
+       <a href="activity-9.html">Activity 9</a> &middot;
+       <a href="activity-10.html">Activity 10</a> &middot;
+       <a href="activity-11.html">Activity 11</a> &middot;
+       <a href="activity-12.html">Activity 12</a> &middot;
+       <a href="activity-13.html">Activity 13</a> &middot;
+       <a href="pinout.html">Pin reference</a> &middot;
+       <a href="https://github.com/ump-stemlab/pico-iot-module">Source on GitHub</a></p>
+  </div>
+</footer>
+<script src="code.js"></script>
+<script>
+document.querySelectorAll('.copybtn').forEach(function(b){
+  b.addEventListener('click',function(){
+    var t=b.parentElement.querySelector('code').textContent;
+    navigator.clipboard.writeText(t).then(function(){
+      b.textContent='Copied!';b.classList.add('copied');
+      setTimeout(function(){b.textContent='Copy';b.classList.remove('copied');},2000);
+    });
+  });
+});
+</script>
+</body>
+</html>

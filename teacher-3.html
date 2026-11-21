@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teacher notes &mdash; Activity 3 | LilEx5 Pico IoT Module</title>
+<meta name="description" content="Instructor notes for Activity 3.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%2302ADA5'/%3E%3C/svg%3E">
+<style>
+.codebox{position:relative;margin:1em 0}
+.codebox pre{margin:0;padding:1.1em 1em 1em;background:var(--code-bg,#1e1e2e);color:var(--code-fg,#cdd6f4);border-radius:6px;overflow-x:auto;font-size:.88em;line-height:1.5;tab-size:4}
+.codebox code{font-family:'Cascadia Code','Fira Mono',monospace;white-space:pre}
+.copybtn{position:absolute;top:.45em;right:.45em;padding:.22em .6em;font-size:.78em;font-weight:600;background:#02ADA5;color:#fff;border:none;border-radius:4px;cursor:pointer;opacity:.82;transition:opacity .15s}
+.copybtn:hover{opacity:1}
+.copybtn.copied{background:#4caf50}
+</style>
+</head>
+<body>
+
+<div class="chev"><span>See</span><span>Think</span><span>Explore</span><span>Marvel</span></div>
+<nav class="sitenav"><div class="wrap">
+  <a class="brand" href="index.html">LilEx5 <span>Pico IoT Module</span></a>
+  <a class="nl" href="index.html">Home</a>
+  <details class="navsel">
+    <summary>Activity 3: Digital Output &amp; Servo</summary>
+    <div class="navmenu" role="menu">
+      <a href="teacher-0.html"><b>Activity 0</b>: Getting Started</a>
+      <a href="teacher-1.html"><b>Activity 1</b>: Light Up an LED</a>
+      <a href="teacher-2.html"><b>Activity 2</b>: Make an LED Blink</a>
+      <a href="teacher-3.html" aria-current="page"><b>Activity 3</b>: Digital Output &amp; Servo</a>
+      <a href="teacher-4.html"><b>Activity 4</b>: Digital Input</a>
+      <a href="teacher-5.html"><b>Activity 5</b>: Making Decisions</a>
+      <a href="teacher-6.html"><b>Activity 6</b>: And, Or, Not</a>
+      <a href="teacher-7.html"><b>Activity 7</b>: Words on a Screen</a>
+      <a href="teacher-8.html"><b>Activity 8</b>: Sensors and Numbers</a>
+      <a href="teacher-9.html"><b>Activity 9</b>: Soil Moisture</a>
+      <a href="teacher-10.html"><b>Activity 10</b>: Internet and Data</a>
+      <a href="teacher-11.html"><b>Activity 11</b>: Control from Anywhere</a>
+      <a href="teacher-12.html"><b>Activity 12</b>: Sending Messages by Radio</a>
+      <a href="teacher-13.html"><b>Activity 13</b>: Sending Data to a Live Dashboard</a>
+    </div>
+  </details>
+  <a class="nl" href="pinout.html">Pin reference</a>
+</div></nav>
+
+<div class="gate" id="gate">
+  <h2>&#128274; Teacher notes</h2>
+  <p>This page holds the exercise answer for <strong>Activity 3 &mdash; Servo Motor</strong>.
+  It is not linked from the student pages.</p>
+  <p><strong>Students: please go back and try the exercise first.</strong></p>
+  <button class="cta" id="gatebtn" type="button">I&rsquo;m a teacher &mdash; show the notes</button>
+  <p style="margin-top:16px"><a href="activity-3.html">&larr; Back to the student page</a></p>
+</div>
+
+<div id="tcontent" hidden>
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">LilEx5 &middot; Pico IoT Module &middot; Instructor notes</p>
+    <h1>Activity 3 &mdash; teacher notes</h1>
+    <p class="sub">Servo Motor. The first time a student moves something physical &mdash; and the first
+    time a number sent to a pin has three distinct meanings instead of two.</p>
+    <div class="hero-cta">
+      <a class="cta alt" href="activity-3.html">&#9654; Student page</a>
+      <a class="cta alt" href="teacher.html">&#128218; All teacher notes</a>
+      <a class="cta alt" href="teacher-2.html">&#8592; Activity 2 notes</a>
+      <a class="cta alt" href="teacher-4.html">&#8594; Activity 4 notes</a>
+      <a class="cta alt" href="pinout.html">&#128204; Pin reference</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<div class="tbanner"><b>Keep this link to yourself.</b> Unlisted and hidden from search engines, but the
+repository is public &mdash; anyone with the URL can read it.</div>
+
+<section>
+  <h2>What is being taught</h2>
+  <ul>
+    <li><strong>The one idea is the servo and PWM.</strong> A pin that flickers at a controlled rate,
+    where the <em>length</em> of each pulse decides an angle. Nothing before today does this.</li>
+    <li><strong><code>print()</code> arrives here for the first time</strong>, deliberately early.
+    Students see the Shell responding in real time to what the servo does, which makes it immediately
+    useful and not abstract. Every activity from here on can use it. This was Kamil&rsquo;s call
+    (originally planned for Activity 4).</li>
+    <li><strong>The pin trap is the hardest part</strong>, and it is not a mistake students will make
+    once and not repeat. GP28 = GPIO18 (silkscreen) = header pin&nbsp;12. Say it, put it on the board,
+    and check wiring before every power-on.</li>
+    <li><strong>VBUS not 3V3.</strong> The SG90 needs 5&thinsp;V. A group that wires V+ to pin&nbsp;1
+    (3V3) will see the servo twitch once and do nothing; the Pico survives but the experience is
+    misleading. Check pin&nbsp;2 before power-on for every group.</li>
+    <li><strong>No <code>for</code> loops.</strong> This is a module-wide rule through Activity 8. The
+    exercise is solvable with <code>while True:</code>, <code>sleep()</code>, <code>print()</code>,
+    and <code>duty_u16()</code> only. Do not let students reach for a for loop.</li>
+    <li><strong>One servo per pair on the real board.</strong> The Wokwi simulator gives each person
+    their own, so the two experiences diverge here. Tell groups to disconnect before swapping who
+    runs the code.</li>
+    <li><strong>Reused, not re-taught:</strong> <code>while True:</code>, <code>sleep()</code>,
+    variables, assignment, comments, and indentation are all from Activities&nbsp;1 and 2.
+    <code>from machine import</code> is from Activity&nbsp;1. PWM was introduced in Activity&nbsp;2
+    for LED dimming; here it is repurposed without being re-explained from scratch.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Common mistakes and how dangerous they are</h2>
+  <div class="tablescroll">
+  <table>
+    <thead><tr><th>Mistake</th><th>What happens</th><th>How dangerous</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Red wire in H1 pin&nbsp;1 (3V3) instead of pin&nbsp;2 (+5V) &mdash; one row out, not one pad out</td>
+        <td>Servo twitches once, then nothing</td>
+        <td><strong>Not dangerous to hardware</strong>, but very misleading. Fix before anything else.</td>
+      </tr>
+      <tr>
+        <td>Orange wire in wrong pin (not pin&nbsp;12 / GPIO18)</td>
+        <td>Servo does not respond; no error</td>
+        <td><strong>Safe</strong>, just silent. Count along the top row of H1 carefully.</td>
+      </tr>
+      <tr>
+        <td><code>servo = PWM(Pin(18))</code> instead of <code>Pin(28)</code></td>
+        <td>Wrong pin activated; servo silent or another device moves</td>
+        <td><strong>Safe</strong>. Classic victim of the three-names trap. The silkscreen says 18; the code needs 28.</td>
+      </tr>
+      <tr>
+        <td>Missing <code>servo.freq(50)</code></td>
+        <td><code>TypeError</code> or silent misfire</td>
+        <td><strong>Safe</strong>. The freq line must come before any <code>duty_u16()</code> call.</td>
+      </tr>
+      <tr>
+        <td>Servo arm already at stop position</td>
+        <td>Arm appears not to move on one of the three steps</td>
+        <td><strong>Safe</strong>. Explain that the arm is already at the limit and cannot go further.</td>
+      </tr>
+      <tr>
+        <td>Exercise uses a <code>for</code> loop</td>
+        <td>Works correctly</td>
+        <td><strong>Not an error</strong>, but against the module rule. Ask them to rewrite using only <code>while True:</code>.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>Timing and pacing</h2>
+  <div class="tablescroll">
+  <table>
+    <thead><tr><th>Phase</th><th>Suggested time</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>What is a servo / PWM concept</td><td>5&ndash;8 min</td><td>The diagrams on the student page cover this. Keep it brisk &mdash; the payoff is watching it move.</td></tr>
+      <tr><td>The three numbers explanation</td><td>3&ndash;5 min</td><td>Point to the number line. 1638 / 4915 / 8150 do not need deriving &mdash; just state them.</td></tr>
+      <tr><td>The pin trap (GPIO18 = GP28 = pin&nbsp;12)</td><td>5 min</td><td>Do this before wiring. Check every group&rsquo;s connection before you let them power on.</td></tr>
+      <tr><td>Wiring + first run</td><td>10&ndash;15 min</td><td>Budget extra if it is the first time they have connected anything external. Most problems are wiring.</td></tr>
+      <tr><td>Shell + print() discussion</td><td>3&ndash;5 min</td><td>Watch the Shell together. Ask: which line of code produced this word?</td></tr>
+      <tr><td>Exercise</td><td>10&ndash;15 min</td><td>Most groups finish quickly. Encourage going-further task (different hold times, more stops).</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>Exercise answer
+  <div class="codebox"><button class="copybtn" type="button">Copy</button><pre><code>from machine import Pin, PWM
+from time import sleep
+
+servo = PWM(Pin(28))
+servo.freq(50)
+
+# four named stops - change these numbers to move them
+stop_a = 1638   # full left
+stop_b = 3200   # left of centre
+stop_c = 6500   # right of centre
+stop_d = 8150   # full right
+
+while True:
+    servo.duty_u16(stop_a)
+    print(&quot;stop A - full left&quot;)
+    sleep(2)                    # longer hold at the start
+
+    servo.duty_u16(stop_b)
+    print(&quot;stop B - left of centre&quot;)
+    sleep(1)
+
+    servo.duty_u16(stop_c)
+    print(&quot;stop C - right of centre&quot;)
+    sleep(1)
+
+    servo.duty_u16(stop_d)
+    print(&quot;stop D - full right&quot;)
+    sleep(3)                    # longest hold at the end</code></pre></div>
+
+  <ul>
+    <li><strong>The key requirement is four stops.</strong> Students who only rearrange the existing
+    three positions without adding a fourth have not met it. Ask them to add one more variable.</li>
+    <li><strong>Accept any four values between 1638 and 8150.</strong> The numbers in the answer above
+    (3200 and 6500) are one possibility; 2000, 3800, 5500 would be equally correct.</li>
+    <li><strong>At least one different hold time.</strong> The exercise says &ldquo;make at least one
+    hold time different from the others.&rdquo; Two identical sleeps plus one different one meets this.
+    Accept any variation.</li>
+    <li><strong>A <code>print()</code> after each move.</strong> The message text is free &mdash;
+    do not mark down a group that prints a number instead of a name.</li>
+    <li><strong>The most common shortcut to watch for:</strong> copying the original three-stop loop
+    and adding a fourth call without renaming the variable. Works fine; just confirm they understand
+    what each number means.</li>
+  </ul>
+
+ &mdash; four custom stops</h2>
+  <p><a href="https://wokwi.com/projects/473932663871909889" target="_blank" rel="noopener" class="cta alt">&#9654;&nbsp;Try this answer on Wokwi</a></p>
+</section>
+
+<section>
+  <h2>Pin quick-reference for this activity</h2>
+  <div class="tablescroll"><table>
+    <thead><tr><th>Purpose</th><th>Wire colour</th><th>LilEx5 H1 pin</th><th>Board silkscreen</th><th>Wokwi &mdash; Pico pin</th><th>Code name</th></tr></thead>
+    <tbody>
+      <tr><td>5&thinsp;V power</td><td>Red</td><td>Pin 2 (top row, 1st pad)</td><td>+5V</td><td>Pin 40 (VBUS)</td><td>&mdash;</td></tr>
+      <tr><td>Ground</td><td>Black / Brown</td><td>Pin 6 (top row, 3rd pad)</td><td>GND</td><td>Pin 38 (GND)</td><td>&mdash;</td></tr>
+      <tr><td>Signal (PWM)</td><td>Orange</td><td>Pin 12 (top row, 6th pad)</td><td>GPIO18</td><td>Pin 34 (GP28)</td><td><code>GP28</code></td></tr>
+    </tbody>
+  </table></div>
+  <p>All three are in the <strong>top row</strong> of H1, the 40-pin header along the <strong>top edge</strong>
+  of the board: even pins run along the top row, nearest the board edge, odd pins along the bottom row.
+  Pin&nbsp;1 is the left-hand end of the <em>bottom</em> row, the corner nearest CN2 &mdash; so 3V3 (pin&nbsp;1)
+  sits below +5V (pin&nbsp;2), and a red wire one row out is the classic failure.</p>
+  <p>Wokwi is a bare Pico, so the numbers there are the Pico&rsquo;s own physical pins (40, 38, 34) &mdash;
+  a different set of numbers for the same three connections. Do not read the H1 numbers onto the Wokwi
+  diagram or the other way round.</p>
+</section>
+
+</div><!-- /.wrap -->
+</div><!-- /#tcontent -->
+
+<script>
+(function(){
+  var b = document.getElementById('gatebtn');
+  b.addEventListener('click', function(){
+    document.getElementById('gate').hidden = true;
+    document.getElementById('tcontent').hidden = false;
+  });
+})();
+</script>
+<footer>
+  <div class="wrap">
+    <p><strong>See &middot; Think &middot; Explore &middot; Marvel</strong><br>UMPSA STEM LAB</p>
+    <p><a href="index.html">Home</a> &middot; <a href="activity-0.html">Activity 0</a> &middot; <a href="activity-1.html">Activity 1</a> &middot;
+       <a href="activity-2.html">Activity 2</a> &middot;
+       <a href="activity-3.html">Activity 3</a> &middot;
+       <a href="activity-4.html">Activity 4</a> &middot;
+       <a href="activity-5.html">Activity 5</a> &middot;
+       <a href="activity-6.html">Activity 6</a> &middot;
+       <a href="activity-7.html">Activity 7</a> &middot;
+       <a href="activity-8.html">Activity 8</a> &middot;
+       <a href="activity-9.html">Activity 9</a> &middot;
+       <a href="activity-10.html">Activity 10</a> &middot;
+       <a href="activity-11.html">Activity 11</a> &middot;
+       <a href="activity-12.html">Activity 12</a> &middot;
+       <a href="activity-13.html">Activity 13</a> &middot;
+       <a href="pinout.html">Pin reference</a> &middot;
+       <a href="https://github.com/ump-stemlab/pico-iot-module">Source on GitHub</a></p>
+  </div>
+</footer>
+<script src="code.js"></script>
+<script>
+document.querySelectorAll('.copybtn').forEach(function(b){
+  b.addEventListener('click',function(){
+    var t=b.parentElement.querySelector('code').textContent;
+    navigator.clipboard.writeText(t).then(function(){
+      b.textContent='Copied!';b.classList.add('copied');
+      setTimeout(function(){b.textContent='Copy';b.classList.remove('copied');},2000);
+    });
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LilEx5 Sensor Dashboard | UMPSA STEM LAB</title>
+<meta name="description" content="Live sensor readings from the LilEx5 Raspberry Pi Pico IoT board.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%2302ADA5'/%3E%3C/svg%3E">
+
+<!-- ================================================================
+     DEFAULT SETTINGS — edit the URL below to match your deployed
+     Apps Script web app.  Students override everything in ⚙ Settings
+     without touching this file.
+     ================================================================ -->
+<script>
+const DEFAULT_API_URL    = "https://script.google.com/macros/s/AKfycbzkgdXQMhTnerYwF2XB2ZJflbJOEMp4r5EfCFIyFNNCpQ8czQGyA8O7tJa-QzG5pzN3/exec";
+const DEFAULT_REFRESH_MS = 10000;   // ms between live polls
+const MAX_GRAPH_POINTS   = 30;      // samples kept per graph
+</script>
+
+<!-- XLSX — local file reading -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>
+/* ================================================================
+   DESIGN TOKENS — LilEx5 / UMPSA STEM LAB house theme
+   ================================================================ */
+:root {
+  --teal:      #02ADA5;
+  --teal-dark: #0B4F4B;
+  --blue:      #0D55A7;
+  --red:       #C80000;
+  --orange:    #F5A21D;
+  --green:     #1F9D55;
+  --ink:       #1F2933;
+  --muted:     #5B7284;
+  --bg:        #F6F8F9;
+  --card:      #FFFFFF;
+  --line:      #DCE4E7;
+  /* graph colours */
+  --c-red:     #C80000;
+  --c-blue:    #0D55A7;
+  --c-teal:    #02ADA5;
+  --c-orange:  #D2860B;
+  --c-green:   #1F9D55;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:       #111A1F;
+    --card:     #182429;
+    --line:     #2B3A41;
+    --ink:      #E8EEF0;
+    --muted:    #9BB0B9;
+    --c-red:    #FF6B6B;
+    --c-blue:   #6FB0F5;
+    --c-teal:   #3FD5CC;
+    --c-orange: #FFC154;
+    --c-green:  #4ED37F;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:       #111A1F;
+  --card:     #182429;
+  --line:     #2B3A41;
+  --ink:      #E8EEF0;
+  --muted:    #9BB0B9;
+  --c-red:    #FF6B6B;
+  --c-blue:   #6FB0F5;
+  --c-teal:   #3FD5CC;
+  --c-orange: #FFC154;
+  --c-green:  #4ED37F;
+}
+:root[data-theme="light"] {
+  --bg:#F6F8F9; --card:#FFFFFF; --line:#DCE4E7; --ink:#1F2933; --muted:#5B7284;
+  --c-red:#C80000; --c-blue:#0D55A7; --c-teal:#02ADA5;
+  --c-orange:#D2860B; --c-green:#1F9D55;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Verdana, Roboto, sans-serif;
+}
+
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+
+/* ---- chevron strip ---- */
+.chev {
+  display: flex;
+  font-size: 12px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: #fff; user-select: none;
+}
+.chev span { flex: 1; text-align: center; padding: 7px 4px; }
+.chev span:nth-child(1) { background: var(--blue);   }
+.chev span:nth-child(2) { background: var(--red);    }
+.chev span:nth-child(3) { background: var(--orange); }
+.chev span:nth-child(4) { background: var(--teal);   }
+
+
+/* ---- site nav ---- */
+.sitenav { background: #08312F; border-bottom: 1px solid rgba(255,255,255,.08); }
+.sitenav .wrap {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  padding-top: 10px; padding-bottom: 10px;
+}
+.sitenav .brand { color: #fff; font-weight: 700; font-size: 15px; margin-right: auto; letter-spacing: -.01em; }
+.sitenav .brand span { color: var(--teal); }
+.sitenav .nl { color: #B9E4E1; font-size: 14px; padding: 5px 12px; border-radius: 7px; }
+.sitenav .nl.current { background: var(--teal); color: #fff; }
+
+
+/* ---- hero ---- */
+header.hero { background: var(--teal-dark); color: #fff; padding: 38px 0 34px; }
+header.hero .eyebrow {
+  font-size: 13px; letter-spacing: .18em; text-transform: uppercase;
+  color: #8FD9D5; margin: 0 0 10px; font-weight: 700;
+}
+header.hero h1 { margin: 0 0 12px; font-size: clamp(28px,5vw,42px); line-height: 1.12; letter-spacing: -.02em; }
+header.hero p.sub { margin: 0; color: #B9E4E1; font-size: 16px; }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.pill {
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22);
+  color: #EAF7F6; border-radius: 999px; padding: 6px 14px; font-size: 13px;
+}
+.pill b { font-weight: 700; }
+
+#statusDot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  margin-right: 6px; vertical-align: 1px; background: currentColor;
+  box-shadow: 0 0 8px 1px currentColor;
+}
+#statusText { font-weight: 700; }
+.pill-status.ok     { color: #5BE58A; }
+.pill-status.warn   { color: #FFD426; }
+.pill-status.error  { color: #FF8A8A; }
+
+
+/* ---- sections ---- */
+section.data-section {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: 14px; padding: 24px 26px; margin: 22px 0;
+}
+h2 { font-size: 24px; margin: 0 0 6px; letter-spacing: -.01em; }
+h2 .num { color: var(--teal); font-variant-numeric: tabular-nums; }
+.lede { color: var(--muted); margin: 0 0 18px; font-size: 15px; }
+.lede code {
+  background: rgba(2,173,165,.13); color: var(--teal-dark);
+  border-radius: 5px; padding: 1px 7px;
+  font: 700 13px "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { .lede code { color: #7FE3DD; } }
+:root[data-theme="dark"] .lede code { color: #7FE3DD; }
+
+
+/* ---- tiles ---- */
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(215px,1fr)); gap: 14px; }
+.tile {
+  border: 1px solid var(--line); border-radius: 12px;
+  padding: 15px 17px; background: transparent; transition: border-color .15s;
+}
+.tile:hover { border-color: var(--teal); }
+.tile h3 {
+  margin: 0; font-size: 12px; font-weight: 700;
+  letter-spacing: .07em; text-transform: uppercase; color: var(--muted);
+}
+.tile .part {
+  display: block; margin-top: 3px;
+  font: 700 11.5px "SFMono-Regular", Consolas, monospace; color: var(--teal);
+}
+.val {
+  margin-top: 12px;
+  font: 700 34px/1.05 "SFMono-Regular", Consolas, monospace;
+  color: var(--ink); font-variant-numeric: tabular-nums; word-break: break-all;
+}
+.unit { margin-top: 6px; font-size: 12.5px; letter-spacing: .05em; color: var(--muted); }
+
+
+/* ---- axis rows (IMU / magnetometer) ---- */
+.axes { margin-top: 12px; }
+.axis-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 8px 0; border-bottom: 1px solid var(--line);
+}
+.axis-row:last-child { border-bottom: none; }
+.axis-row .ax { font: 700 12px "SFMono-Regular", Consolas, monospace; letter-spacing: .08em; color: var(--muted); }
+.axis-row .num { font: 700 19px "SFMono-Regular", Consolas, monospace; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+
+/* ---- graphs ---- */
+.graph { border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; margin-top: 14px; }
+.graph h3 { margin: 0 0 4px; font-size: 16px; }
+.graph p  { margin: 0 0 6px; font-size: 13px; color: var(--muted); }
+canvas { width: 100%; height: 260px; display: block; }
+
+
+/* ---- refresh area ---- */
+.refresh { text-align: center; margin: 26px 0 6px; }
+.btn {
+  background: var(--teal); color: #fff; border: none;
+  border-radius: 8px; padding: 11px 22px;
+  font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit;
+}
+.btn:hover { background: #019a93; }
+.btn:disabled { opacity: .6; cursor: not-allowed; }
+.timestamp { color: var(--muted); margin-top: 11px; font-size: 13px; }
+
+
+/* ---- footer ---- */
+footer {
+  background: var(--teal-dark); color: #B9E4E1;
+  padding: 30px 0; margin-top: 34px; text-align: center; font-size: 14px;
+}
+footer a { color: #8FD9D5; }
+footer p { margin: 6px 0; }
+
+
+/* ---- mobile ---- */
+@media (max-width: 600px) {
+  header.hero { padding: 30px 0 26px; }
+  section.data-section { padding: 20px 17px; }
+  .val { font-size: 29px; }
+  canvas { height: 220px; }
+  .graph { padding: 14px 12px; }
+}
+
+
+/* ================================================================
+   SETTINGS OVERLAY
+   ================================================================ */
+
+/* The settings button in the nav */
+#settingsButton {
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.20);
+  border-radius: 7px;
+  color: #B9E4E1;
+  font-size: 14px;
+  padding: 5px 13px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  letter-spacing: .01em;
+  transition: background .15s;
+}
+#settingsButton:hover { background: rgba(255,255,255,.18); }
+
+/* Full-screen semi-transparent backdrop */
+.settings-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 200;
+  align-items: flex-start; justify-content: center;
+  padding: 6vh 16px 40px;
+  background: rgba(8,49,47,.55);
+  overflow-y: auto;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+.settings-overlay.visible { display: flex; }
+
+/* The white/dark modal card */
+.settings-modal {
+  width: min(530px, 100%);
+  padding: 26px 28px 30px;
+  border-radius: 18px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: 0 28px 64px rgba(8,49,47,.35);
+}
+
+.settings-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.settings-head h2 { margin: 0; font-size: 1.25rem; letter-spacing: -.02em; }
+
+/* ✕ close button */
+.icon-button {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  width: 32px; height: 32px;
+  cursor: pointer; color: var(--muted); font-size: 15px;
+  display: flex; align-items: center; justify-content: center;
+}
+.icon-button:hover { background: var(--bg); }
+
+/* Settings sub-sections */
+.settings-modal section.settings-section {
+  padding-top: 18px; margin-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.settings-modal section.settings-section h3 { margin: 0 0 4px; font-size: 1rem; font-weight: 700; }
+.settings-hint { margin: 0 0 12px; color: var(--muted); font-size: .84rem; line-height: 1.55; }
+.settings-hint strong { color: var(--ink); }
+
+/* Bare select and text inputs inside the modal */
+.settings-modal select,
+.settings-modal input[type="text"],
+.settings-modal input[type="url"] {
+  display: block; width: 100%;
+  padding: 9px 12px; margin-bottom: 10px;
+  border: 1px solid var(--line); border-radius: 9px;
+  font-size: .92rem; color: var(--ink); background: var(--bg);
+  font-family: inherit; -webkit-appearance: none; appearance: none;
+}
+.settings-modal select:focus,
+.settings-modal input[type="text"]:focus,
+.settings-modal input[type="url"]:focus {
+  outline: 2px solid var(--teal); outline-offset: 1px;
+}
+
+/* Source radio group */
+.source-toggle { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.source-toggle label {
+  display: flex; align-items: center; gap: 9px;
+  font-size: .92rem; cursor: pointer;
+  padding: 9px 11px;
+  border: 1px solid var(--line); border-radius: 9px;
+  transition: border-color .15s, background .15s;
+}
+.source-toggle label:hover { border-color: var(--teal); background: rgba(2,173,165,.05); }
+.source-toggle input[type="radio"] { accent-color: var(--teal); }
+
+/* Dashed field group */
+.source-fields {
+  padding: 14px 16px;
+  border: 1px dashed var(--line);
+  border-radius: 12px; background: var(--bg);
+}
+.field-label {
+  display: block; margin: 0 0 4px;
+  font-size: .78rem; font-weight: 700;
+  color: var(--muted); text-transform: uppercase; letter-spacing: .04em;
+}
+.source-fields input[type="file"] { width: 100%; margin-bottom: 10px; font-size: .86rem; color: var(--ink); }
+
+/* Apply buttons inside settings */
+.button.primary {
+  background: var(--teal); color: #fff;
+  border: none; border-radius: 8px;
+  padding: 10px 18px;
+  font-size: .92rem; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  transition: background .15s;
+  margin-top: 4px;
+}
+.button.primary:hover    { background: #019a93; }
+.button.primary:disabled { opacity: .6; cursor: wait; }
+
+/* File-status feedback line */
+#fileStatus:empty { display: none; }
+#fileStatus.ok  { color: var(--green); }
+#fileStatus.err { color: var(--red);   }
+</style>
+</head>
+
+<body>
+
+
+<!-- ================================================================
+     CHEVRON STRIP
+     ================================================================ -->
+<div class="chev">
+  <span>See</span><span>Think</span><span>Explore</span><span>Marvel</span>
+</div>
+
+
+<!-- ================================================================
+     SITE NAV
+     ================================================================ -->
+<nav class="sitenav">
+  <div class="wrap">
+    <span class="brand">LilEx5 <span>Pico IoT Module</span></span>
+    <button id="settingsButton" type="button">⚙&nbsp;Settings</button>
+    <span class="nl current">Dashboard</span>
+  </div>
+</nav>
+
+
+<!-- ================================================================
+     HERO
+     ================================================================ -->
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">UMPSA STEM LAB</p>
+    <h1>LilEx5 Sensor Dashboard</h1>
+    <p class="sub">Every reading the board is sending &mdash;
+    environment, motion, magnetic field and the four analogue channels.</p>
+    <div class="pills">
+      <span class="pill" id="statusPill">
+        <span id="statusDot"></span><span id="statusText">Connecting&hellip;</span>
+      </span>
+      <span class="pill" id="refreshPill">Refreshes every <b>10&nbsp;s</b></span>
+      <span class="pill" id="samplesPill">Last <b>30</b> samples graphed</span>
+      <span class="pill" id="sourcePill">Source: <b>Live</b></span>
+    </div>
+  </div>
+</header>
+
+
+<!-- ================================================================
+     SETTINGS OVERLAY
+     ================================================================ -->
+<div id="settingsOverlay" class="settings-overlay">
+  <div class="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+
+    <div class="settings-head">
+      <h2 id="settingsTitle">Dashboard settings</h2>
+      <button id="settingsClose" class="icon-button" type="button" aria-label="Close settings">✕</button>
+    </div>
+
+    <section class="settings-section">
+      <h3>Refresh rate</h3>
+      <p class="settings-hint">How often the dashboard checks for new data. Faster rates use more requests.</p>
+      <select id="refreshRateSelect">
+        <option value="3000">Every 3 seconds</option>
+        <option value="5000">Every 5 seconds</option>
+        <option value="10000" selected>Every 10 seconds</option>
+        <option value="15000">Every 15 seconds</option>
+        <option value="30000">Every 30 seconds</option>
+        <option value="60000">Every 1 minute</option>
+        <option value="300000">Every 5 minutes</option>
+        <option value="0">Manual only (no auto-refresh)</option>
+      </select>
+    </section>
+
+    <section class="settings-section">
+      <h3>Data source</h3>
+      <p class="settings-hint">Switch to a backup spreadsheet file if the Pico W or the live Google Sheet is unavailable.</p>
+
+      <div class="source-toggle">
+        <label><input type="radio" name="sourceMode" value="sheets" checked> Google Sheets (live)</label>
+        <label><input type="radio" name="sourceMode" value="file"> Upload Excel / CSV file</label>
+      </div>
+
+      <div id="sheetsFields" class="source-fields">
+        <label class="field-label" for="sheetUrlInput">Apps Script URL</label>
+        <input id="sheetUrlInput" type="text" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off" spellcheck="false">
+        <label class="field-label" for="sheetKeyInput">API key</label>
+        <input id="sheetKeyInput" type="text" placeholder="API key (optional for JSONP mode)">
+        <button id="sheetsApplyButton" class="button primary" type="button">Save &amp; connect</button>
+      </div>
+
+      <div id="fileFields" class="source-fields" hidden>
+        <label class="field-label" for="fileInput">Choose file</label>
+        <input id="fileInput" type="file" accept=".xlsx,.xls,.csv">
+        <p class="settings-hint" style="margin-top:6px">
+          Expected columns (any order, any casing):
+          <strong>timestamp, temperature, humidity, pressure, tvoc, proximity,
+          accelX, accelY, accelZ, gyroX, gyroY, gyroZ,
+          magX, magY, magZ, heading, ch0, ch1, ch2, ch3</strong>
+        </p>
+        <button id="fileApplyButton" class="button primary" type="button" disabled>Load file</button>
+        <p id="fileStatus" class="settings-hint"></p>
+      </div>
+    </section>
+
+  </div><!-- /settings-modal -->
+</div><!-- /settings-overlay -->
+
+
+<!-- ================================================================
+     MAIN CONTENT
+     ================================================================ -->
+<div class="wrap">
+
+
+<!-- 01 — ENVIRONMENT -->
+<section class="data-section">
+  <h2><span class="num">01</span>&nbsp; Environment</h2>
+  <p class="lede">Temperature, humidity and pressure from the <code>BME280</code>,
+  air quality from the <code>AGS10</code>, and proximity from the <code>VCNL36821S</code>.</p>
+
+  <div class="grid">
+    <div class="tile">
+      <h3>Temperature <span class="part">BME280</span></h3>
+      <div class="val" id="temperature">--</div>
+      <div class="unit">degrees Celsius (&deg;C)</div>
+    </div>
+    <div class="tile">
+      <h3>Humidity <span class="part">BME280</span></h3>
+      <div class="val" id="humidity">--</div>
+      <div class="unit">relative humidity (%RH)</div>
+    </div>
+    <div class="tile">
+      <h3>Pressure <span class="part">BME280</span></h3>
+      <div class="val" id="pressure">--</div>
+      <div class="unit">hectopascal (hPa)</div>
+    </div>
+    <div class="tile">
+      <h3>TVOC <span class="part">AGS10</span></h3>
+      <div class="val" id="tvoc">--</div>
+      <div class="unit">parts per billion (ppb)</div>
+    </div>
+    <div class="tile">
+      <h3>Proximity <span class="part">VCNL36821S</span></h3>
+      <div class="val" id="proximity">--</div>
+      <div class="unit">counts</div>
+    </div>
+  </div>
+
+  <div class="graph">
+    <h3>Temperature &amp; humidity</h3>
+    <p>Two scales: temperature on the left, humidity on the right.</p>
+    <canvas id="environmentGraph"></canvas>
+  </div>
+  <div class="graph">
+    <h3>Atmospheric pressure</h3>
+    <p>The scale zooms in on whatever range it finds.</p>
+    <canvas id="pressureGraph"></canvas>
+  </div>
+</section>
+
+
+<!-- 02 — MOTION -->
+<section class="data-section">
+  <h2><span class="num">02</span>&nbsp; Motion</h2>
+  <p class="lede">The <code>BMI323</code> reports three axes of acceleration and three of rotation.</p>
+
+  <div class="grid">
+    <div class="tile">
+      <h3>Accelerometer <span class="part">BMI323</span></h3>
+      <div class="axes">
+        <div class="axis-row"><span class="ax">X</span><span class="num" id="accelX">--</span></div>
+        <div class="axis-row"><span class="ax">Y</span><span class="num" id="accelY">--</span></div>
+        <div class="axis-row"><span class="ax">Z</span><span class="num" id="accelZ">--</span></div>
+      </div>
+      <div class="unit">g &mdash; multiples of Earth&rsquo;s gravity</div>
+    </div>
+    <div class="tile">
+      <h3>Gyroscope <span class="part">BMI323</span></h3>
+      <div class="axes">
+        <div class="axis-row"><span class="ax">X</span><span class="num" id="gyroX">--</span></div>
+        <div class="axis-row"><span class="ax">Y</span><span class="num" id="gyroY">--</span></div>
+        <div class="axis-row"><span class="ax">Z</span><span class="num" id="gyroZ">--</span></div>
+      </div>
+      <div class="unit">degrees per second (&deg;/s)</div>
+    </div>
+  </div>
+
+  <div class="graph">
+    <h3>Acceleration over time</h3>
+    <p>Still board = flat lines; pick it up and they separate.</p>
+    <canvas id="motionGraph"></canvas>
+  </div>
+</section>
+
+
+<!-- 03 — MAGNETIC FIELD -->
+<section class="data-section">
+  <h2><span class="num">03</span>&nbsp; Magnetic field</h2>
+  <p class="lede">The <code>QMC6309</code> measures the magnetic field in three directions.
+  Heading is the compass bearing derived from those three values.</p>
+
+  <div class="grid">
+    <div class="tile">
+      <h3>Magnetic field <span class="part">QMC6309</span></h3>
+      <div class="axes">
+        <div class="axis-row"><span class="ax">X</span><span class="num" id="magX">--</span></div>
+        <div class="axis-row"><span class="ax">Y</span><span class="num" id="magY">--</span></div>
+        <div class="axis-row"><span class="ax">Z</span><span class="num" id="magZ">--</span></div>
+      </div>
+      <div class="unit">Gauss</div>
+    </div>
+    <div class="tile">
+      <h3>Compass heading <span class="part">QMC6309</span></h3>
+      <div class="val" id="heading">--</div>
+      <div class="unit">degrees from north</div>
+    </div>
+  </div>
+
+  <div class="graph">
+    <h3>Magnetic field over time</h3>
+    <p>Bring a magnet near the board and watch which line jumps.</p>
+    <canvas id="magnetGraph"></canvas>
+  </div>
+</section>
+
+
+<!-- 04 — ANALOGUE INPUTS -->
+<section class="data-section">
+  <h2><span class="num">04</span>&nbsp; Analogue inputs</h2>
+  <p class="lede">The four channels on the <code>H3</code> connector, read via the
+  <code>ADS1115</code> converter over I&sup2;C.</p>
+
+  <div class="grid">
+    <div class="tile">
+      <h3>Channel 0 <span class="part">ADS1115 &middot; A0</span></h3>
+      <div class="val" id="ch0">--</div>
+      <div class="unit">volts (V)</div>
+    </div>
+    <div class="tile">
+      <h3>Channel 1 <span class="part">ADS1115 &middot; A1</span></h3>
+      <div class="val" id="ch1">--</div>
+      <div class="unit">volts (V)</div>
+    </div>
+    <div class="tile">
+      <h3>Channel 2 <span class="part">ADS1115 &middot; A2</span></h3>
+      <div class="val" id="ch2">--</div>
+      <div class="unit">volts (V)</div>
+    </div>
+    <div class="tile">
+      <h3>Channel 3 <span class="part">ADS1115 &middot; A3</span></h3>
+      <div class="val" id="ch3">--</div>
+      <div class="unit">volts (V)</div>
+    </div>
+  </div>
+
+  <div class="graph">
+    <h3>All four channels over time</h3>
+    <p>An unconnected channel still reads a small drifting voltage — that is normal.</p>
+    <canvas id="adsGraph"></canvas>
+  </div>
+</section>
+
+
+<!-- REFRESH -->
+<div class="refresh">
+  <button id="refreshButton" class="btn" type="button">Refresh now</button>
+  <div class="timestamp" id="timestamp">Last update: --</div>
+</div>
+
+
+</div><!-- /wrap -->
+
+
+<!-- ================================================================
+     FOOTER
+     ================================================================ -->
+<footer>
+  <div class="wrap">
+    <p><strong>See &middot; Think &middot; Explore &middot; Marvel</strong><br>UMPSA STEM LAB</p>
+    <p>LilEx5 sensor monitoring system</p>
+  </div>
+</footer>
+
+
+<!-- ================================================================
+     MAIN SCRIPT
+     ================================================================ -->
+<script>
+
+// ================================================================
+// SAFE STORAGE HELPERS
+// localStorage throws on file:// URLs in some browsers.
+// Wrapping every access prevents silent failures.
+// ================================================================
+function lsGet(key, fallback) {
+  try { const v = localStorage.getItem(key); return v !== null ? v : fallback; }
+  catch (e) { return fallback; }
+}
+function lsSet(key, val) {
+  try { localStorage.setItem(key, String(val)); } catch (e) { /* ignore */ }
+}
+
+
+// ================================================================
+// RUNTIME STATE  (restored from localStorage)
+// ================================================================
+let API_URL    = lsGet("lilex_apiUrl",     DEFAULT_API_URL);
+let REFRESH_MS = Number(lsGet("lilex_refreshMs", DEFAULT_REFRESH_MS));
+if (!Number.isFinite(REFRESH_MS) || REFRESH_MS < 0) REFRESH_MS = DEFAULT_REFRESH_MS;
+
+// "sheets" = live Google Sheets JSONP  |  "file" = uploaded spreadsheet
+let sourceMode     = lsGet("lilex_sourceMode", "sheets");
+let refreshTimer   = null;
+let callbackCount  = 0;
+let loadedFileName = "";
+
+
+// ================================================================
+// DOM ELEMENT CACHE  — same pattern as egg_monitor_dashboard
+// ================================================================
+const el = {
+  settingsButton:    document.getElementById("settingsButton"),
+  settingsOverlay:   document.getElementById("settingsOverlay"),
+  settingsClose:     document.getElementById("settingsClose"),
+  refreshRateSelect: document.getElementById("refreshRateSelect"),
+  sourceModeRadios:  document.querySelectorAll('input[name="sourceMode"]'),
+  sheetsFields:      document.getElementById("sheetsFields"),
+  fileFields:        document.getElementById("fileFields"),
+  sheetUrlInput:     document.getElementById("sheetUrlInput"),
+  sheetKeyInput:     document.getElementById("sheetKeyInput"),
+  sheetsApplyButton: document.getElementById("sheetsApplyButton"),
+  fileInput:         document.getElementById("fileInput"),
+  fileApplyButton:   document.getElementById("fileApplyButton"),
+  fileStatus:        document.getElementById("fileStatus"),
+  statusPill:        document.getElementById("statusPill"),
+  statusDot:         document.getElementById("statusDot"),
+  statusText:        document.getElementById("statusText"),
+  refreshPill:       document.getElementById("refreshPill"),
+  sourcePill:        document.getElementById("sourcePill"),
+  refreshButton:     document.getElementById("refreshButton"),
+  timestamp:         document.getElementById("timestamp")
+};
+
+
+// ================================================================
+// THEME COLOURS  (read CSS custom props so graphs match light/dark)
+// ================================================================
+const FONT = '-apple-system, BlinkMacSystemFont, "Segoe UI", Verdana, Roboto, sans-serif';
+const MONO = '"SFMono-Regular", Consolas, monospace';
+
+function themeColors() {
+  const s = getComputedStyle(document.documentElement);
+  const t = name => s.getPropertyValue(name).trim();
+  return {
+    red:    t("--c-red")    || "#C80000",
+    blue:   t("--c-blue")  || "#0D55A7",
+    teal:   t("--c-teal")  || "#02ADA5",
+    orange: t("--c-orange")|| "#D2860B",
+    green:  t("--c-green") || "#1F9D55",
+    ink:    t("--ink")     || "#1F2933",
+    muted:  t("--muted")   || "#5B7284",
+    line:   t("--line")    || "#DCE4E7"
+  };
+}
+
+
+// ================================================================
+// GRAPH DATA BUFFERS
+// ================================================================
+const graphData = {
+  temperature: [], humidity:  [], pressure: [],
+  accelX: [],  accelY: [],  accelZ: [],
+  gyroX:  [],  gyroY:  [],  gyroZ:  [],
+  magX:   [],  magY:   [],  magZ:   [],
+  ch0:    [],  ch1:    [],  ch2:    [],  ch3: []
+};
+
+
+// ================================================================
+// SMALL HELPERS
+// ================================================================
+function numberValue(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
+function valueOrDash(v) {
+  return (v === undefined || v === null || v === "") ? "--" : v;
+}
+function addPoint(arr, v) {
+  const n = numberValue(v);
+  if (n === null) return;
+  arr.push(n);
+  if (arr.length > MAX_GRAPH_POINTS) arr.shift();
+}
+// Write a value into a tile element by ID
+function setTile(id, val) {
+  const node = document.getElementById(id);
+  if (node) node.textContent = valueOrDash(val);
+}
+
+
+// ================================================================
+// UPDATE GRAPH BUFFERS
+// ================================================================
+function updateGraphData(d) {
+  addPoint(graphData.temperature, d.temperature);
+  addPoint(graphData.humidity,    d.humidity);
+  addPoint(graphData.pressure,    d.pressure);
+  addPoint(graphData.accelX,  d.accelX);
+  addPoint(graphData.accelY,  d.accelY);
+  addPoint(graphData.accelZ,  d.accelZ);
+  addPoint(graphData.gyroX,   d.gyroX);
+  addPoint(graphData.gyroY,   d.gyroY);
+  addPoint(graphData.gyroZ,   d.gyroZ);
+  addPoint(graphData.magX,    d.magX);
+  addPoint(graphData.magY,    d.magY);
+  addPoint(graphData.magZ,    d.magZ);
+  addPoint(graphData.ch0,     d.ch0);
+  addPoint(graphData.ch1,     d.ch1);
+  addPoint(graphData.ch2,     d.ch2);
+  addPoint(graphData.ch3,     d.ch3);
+}
+
+
+// ================================================================
+// POPULATE TILES FROM A DATA OBJECT
+// ================================================================
+function populateTiles(d) {
+  setTile("temperature", d.temperature);
+  setTile("humidity",    d.humidity);
+  setTile("pressure",    d.pressure);
+  setTile("tvoc",        d.tvoc);
+  setTile("proximity",   d.proximity);
+  setTile("accelX", d.accelX); setTile("accelY", d.accelY); setTile("accelZ", d.accelZ);
+  setTile("gyroX",  d.gyroX);  setTile("gyroY",  d.gyroY);  setTile("gyroZ",  d.gyroZ);
+  setTile("magX",   d.magX);   setTile("magY",   d.magY);   setTile("magZ",   d.magZ);
+  setTile("heading", d.heading);
+  setTile("ch0", d.ch0); setTile("ch1", d.ch1);
+  setTile("ch2", d.ch2); setTile("ch3", d.ch3);
+}
+
+
+// ================================================================
+// LIVE MODE — JSONP CALLBACK  (called when Apps Script responds)
+// ================================================================
+function handleLiveData(data) {
+  if (!data || !data.success) {
+    throw new Error(data && data.error ? data.error : "Invalid sensor data");
+  }
+
+  populateTiles(data);
+  updateGraphData(data);
+
+  el.statusDot.className  = "";
+  el.statusText.textContent = "Online";
+  el.statusPill.className = "pill pill-status ok";
+
+  if (data.timestamp) {
+    const t = new Date(Number(data.timestamp));
+    if (!isNaN(t.getTime())) {
+      el.timestamp.textContent = "Last sensor update: " + t.toLocaleTimeString();
+    }
+  }
+
+  drawAllGraphs();
+}
+
+
+// ================================================================
+// LIVE MODE — JSONP FETCH
+// ================================================================
+function loadDashboard() {
+  if (sourceMode !== "sheets") return;
+
+  el.statusText.textContent = "Updating…";
+  el.statusPill.className   = "pill pill-status warn";
+
+  const cbName = "lilexCb_" + Date.now() + "_" + (callbackCount++);
+
+  window[cbName] = function(data) {
+    try   { handleLiveData(data); }
+    catch (err) {
+      console.error("Dashboard data error:", err);
+      el.statusText.textContent = "Offline";
+      el.statusPill.className   = "pill pill-status error";
+    }
+    delete window[cbName];
+  };
+
+  const script  = document.createElement("script");
+  script.src    = API_URL + "?action=read&callback=" + encodeURIComponent(cbName) + "&t=" + Date.now();
+
+  script.onerror = function() {
+    console.error("Apps Script connection failed");
+    el.statusText.textContent = "Offline";
+    el.statusPill.className   = "pill pill-status error";
+    el.timestamp.textContent  = "Unable to retrieve sensor data";
+    delete window[cbName];
+    if (script.parentNode) script.parentNode.removeChild(script);
+  };
+
+  document.body.appendChild(script);
+
+  // Safety timeout — remove callback if the script never calls it
+  setTimeout(function() {
+    if (window[cbName]) {
+      el.statusText.textContent = "Offline";
+      el.statusPill.className   = "pill pill-status error";
+      delete window[cbName];
+    }
+    if (script.parentNode) script.parentNode.removeChild(script);
+  }, 10000);
+}
+
+
+// ================================================================
+// FILE MODE — normalise one spreadsheet row → API data shape
+// ================================================================
+function normalizeFileRow(record) {
+  // Build a lookup keyed by lower-cased, symbol-stripped header names
+  const lk = {};
+  Object.keys(record).forEach(function(k) {
+    lk[k.toLowerCase().replace(/[\s_\-.]/g, "")] = record[k];
+  });
+
+  function pick(names) {
+    for (let i = 0; i < names.length; i++) {
+      const v = lk[names[i]];
+      if (v !== undefined && v !== null && v !== "") return v;
+    }
+    return null;
+  }
+
+  const ts = pick(["timestamp","time","date","datetime"]);
+
+  return {
+    timestamp:   ts instanceof Date ? ts.toISOString() : (ts ?? null),
+    temperature: pick(["temperature","temp"]),
+    humidity:    pick(["humidity","humid","rh","relativehumidity"]),
+    pressure:    pick(["pressure","pres","baro"]),
+    tvoc:        pick(["tvoc","voc","airquality","tvocppb"]),
+    proximity:   pick(["proximity","prox","distance"]),
+    accelX: pick(["accelx","ax","accelerometerx"]),
+    accelY: pick(["accely","ay","accelerometery"]),
+    accelZ: pick(["accelz","az","accelerometerz"]),
+    gyroX:  pick(["gyrox","gx","gyroscopex"]),
+    gyroY:  pick(["gyroy","gy","gyroscopey"]),
+    gyroZ:  pick(["gyroz","gz","gyroscopez"]),
+    magX:    pick(["magx","mx","magnetometerx","magneticx"]),
+    magY:    pick(["magy","my","magnetometery","magneticy"]),
+    magZ:    pick(["magz","mz","magnetometerz","magneticz"]),
+    heading: pick(["heading","compass","bearing"]),
+    ch0: pick(["ch0","channel0","a0","adc0"]),
+    ch1: pick(["ch1","channel1","a1","adc1"]),
+    ch2: pick(["ch2","channel2","a2","adc2"]),
+    ch3: pick(["ch3","channel3","a3","adc3"])
+  };
+}
+
+
+// Load all rows from an uploaded file onto the dashboard
+function loadFileData(rows) {
+  Object.keys(graphData).forEach(function(k) { graphData[k] = []; });
+  rows.slice(-MAX_GRAPH_POINTS).forEach(updateGraphData);
+
+  const latest = rows[rows.length - 1];
+  populateTiles(latest);
+
+  el.statusText.textContent = "File loaded";
+  el.statusPill.className   = "pill pill-status ok";
+
+  const ts = latest.timestamp;
+  el.timestamp.textContent = ts
+    ? "Last record: " + String(ts)
+    : rows.length + " rows loaded from file";
+
+  drawAllGraphs();
+}
+
+
+// ================================================================
+// AUTO-REFRESH CONTROL
+// ================================================================
+function restartAutoRefresh() {
+  if (refreshTimer) clearInterval(refreshTimer);
+  refreshTimer = null;
+  if (sourceMode === "sheets" && REFRESH_MS > 0) {
+    refreshTimer = setInterval(loadDashboard, REFRESH_MS);
+  }
+}
+
+function setRefreshButtonMode() {
+  if (el.refreshButton) {
+    el.refreshButton.disabled    = sourceMode === "file";
+    el.refreshButton.textContent = sourceMode === "file" ? "Using file data" : "Refresh now";
+  }
+}
+
+
+// ================================================================
+// UPDATE HERO PILLS
+// ================================================================
+function updatePills() {
+  if (el.refreshPill) {
+    if (sourceMode === "file") {
+      el.refreshPill.innerHTML = "File mode &mdash; no auto-refresh";
+    } else if (REFRESH_MS <= 0) {
+      el.refreshPill.textContent = "Manual refresh only";
+    } else if (REFRESH_MS < 60000) {
+      el.refreshPill.innerHTML = "Refreshes every <b>" + (REFRESH_MS / 1000) + "&nbsp;s</b>";
+    } else {
+      el.refreshPill.innerHTML = "Refreshes every <b>" + Math.round(REFRESH_MS / 60000) + "&nbsp;min</b>";
+    }
+  }
+
+  if (el.sourcePill) {
+    el.sourcePill.innerHTML = sourceMode === "file"
+      ? "Source: <b>" + (loadedFileName || "file") + "</b>"
+      : "Source: <b>Live</b>";
+  }
+
+  setRefreshButtonMode();
+}
+
+
+// ================================================================
+// SETTINGS PANEL  — open / close / toggle
+// ================================================================
+function openSettings() {
+  el.refreshRateSelect.value = String(REFRESH_MS);
+  el.sheetUrlInput.value     = API_URL;
+  el.sheetKeyInput.value     = "";
+  el.sourceModeRadios.forEach(function(r) { r.checked = r.value === sourceMode; });
+  toggleSourceFields();
+  el.settingsOverlay.classList.add("visible");
+}
+
+function closeSettings() {
+  el.settingsOverlay.classList.remove("visible");
+}
+
+function toggleSourceFields() {
+  const checked = document.querySelector('input[name="sourceMode"]:checked');
+  const mode    = checked ? checked.value : sourceMode;
+  el.sheetsFields.hidden = mode !== "sheets";
+  el.fileFields.hidden   = mode !== "file";
+}
+
+
+// ================================================================
+// SETTINGS EVENT WIRING  — exact same pattern as egg_monitor_dashboard
+// ================================================================
+
+el.settingsButton.addEventListener("click", openSettings);
+el.settingsClose.addEventListener("click", closeSettings);
+el.settingsOverlay.addEventListener("click", function(event) {
+  if (event.target === el.settingsOverlay) closeSettings();
+});
+
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") closeSettings();
+});
+
+el.refreshRateSelect.addEventListener("change", function() {
+  REFRESH_MS = Number(el.refreshRateSelect.value);
+  lsSet("lilex_refreshMs", REFRESH_MS);
+  restartAutoRefresh();
+  updatePills();
+});
+
+el.sourceModeRadios.forEach(function(radio) {
+  radio.addEventListener("change", toggleSourceFields);
+});
+
+el.sheetsApplyButton.addEventListener("click", function() {
+  const url = el.sheetUrlInput.value.trim();
+  if (!url.startsWith("https://script.google.com/macros/s/") || !url.endsWith("/exec")) {
+    alert("Enter a valid deployed Apps Script URL\n(starts with https://script.google.com/macros/s/ and ends with /exec).");
+    return;
+  }
+  API_URL    = url;
+  sourceMode = "sheets";
+  lsSet("lilex_apiUrl",     API_URL);
+  lsSet("lilex_sourceMode", sourceMode);
+
+  Object.keys(graphData).forEach(function(k) { graphData[k] = []; });
+  setRefreshButtonMode();
+  restartAutoRefresh();
+  closeSettings();
+  loadDashboard();
+});
+
+el.fileInput.addEventListener("change", function() {
+  el.fileApplyButton.disabled = !el.fileInput.files.length;
+  el.fileStatus.textContent   = "";
+  el.fileStatus.className     = "settings-hint";
+});
+
+el.fileApplyButton.addEventListener("click", function() {
+  const file = el.fileInput.files[0];
+  if (!file) return;
+
+  el.fileApplyButton.disabled    = true;
+  el.fileApplyButton.textContent = "Loading…";
+  el.fileStatus.textContent      = "";
+  el.fileStatus.className        = "settings-hint";
+
+  const reader = new FileReader();
+
+  reader.onload = function(event) {
+    try {
+      const workbook    = XLSX.read(event.target.result, { type: "array", cellDates: true });
+      const firstSheet  = workbook.SheetNames[0];
+      const sheet       = workbook.Sheets[firstSheet];
+      const records     = XLSX.utils.sheet_to_json(sheet, { defval: null });
+      const parsedRows  = records.map(normalizeFileRow).filter(function(r) {
+        return Object.keys(r).some(function(k) {
+          return k !== "timestamp" && r[k] !== null;
+        });
+      });
+
+      if (!parsedRows.length) {
+        throw new Error("No usable rows found. Check that the column headers match the expected names.");
+      }
+
+      sourceMode     = "file";
+      loadedFileName = file.name;
+      lsSet("lilex_sourceMode", sourceMode);
+
+      if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
+
+      loadFileData(parsedRows);
+      updatePills();
+
+      el.fileStatus.textContent = "✓ Loaded " + parsedRows.length + " row(s) from “" + file.name + "”";
+      el.fileStatus.className   = "settings-hint ok";
+      closeSettings();
+
+    } catch (err) {
+      el.fileStatus.textContent = "Could not read file: " + err.message;
+      el.fileStatus.className   = "settings-hint err";
+    } finally {
+      el.fileApplyButton.disabled    = false;
+      el.fileApplyButton.textContent = "Load file";
+    }
+  };
+
+  reader.onerror = function() {
+    el.fileStatus.textContent      = "File could not be read.";
+    el.fileStatus.className        = "settings-hint err";
+    el.fileApplyButton.disabled    = false;
+    el.fileApplyButton.textContent = "Load file";
+  };
+
+  reader.readAsArrayBuffer(file);
+});
+
+el.refreshButton.addEventListener("click", loadDashboard);
+
+
+// ================================================================
+// GRAPH DRAWING
+// ================================================================
+
+function formatAxisValue(v, span) {
+  if (!Number.isFinite(span) || span <= 0) return String(v.toFixed(2));
+  const step = span / 5;
+  let d = 0;
+  if (step < 0.01) d = 4;
+  else if (step < 0.1) d = 3;
+  else if (step < 1)   d = 2;
+  else if (step < 10)  d = 1;
+  return v.toFixed(d);
+}
+
+
+function drawGraph(canvasId, datasets, yLabel) {
+  const C = themeColors();
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const rect = canvas.getBoundingClientRect();
+  const W = rect.width, H = rect.height;
+  if (W <= 0 || H <= 0) return;
+
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width  = Math.round(W * dpr);
+  canvas.height = Math.round(H * dpr);
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+
+  const L = 55, R = 20, T = 25, B = 45;
+  const gw = W - L - R, gh = H - T - B;
+
+  let vals = [];
+  datasets.forEach(function(ds) {
+    ds.data.forEach(function(v) { if (Number.isFinite(v)) vals.push(v); });
+  });
+
+  if (!vals.length) {
+    ctx.fillStyle = C.muted; ctx.font = "14px " + FONT; ctx.textAlign = "center";
+    ctx.fillText("Waiting for data…", W / 2, H / 2);
+    return;
+  }
+
+  let mn = Math.min(...vals), mx = Math.max(...vals);
+  if (mn === mx) { const a = Math.abs(mn) * 0.05 || 1; mn -= a; mx += a; }
+  const span = mx - mn;
+  mn -= span * 0.10; mx += span * 0.10;
+
+  ctx.strokeStyle = C.line; ctx.lineWidth = 1;
+  ctx.font = "11px " + MONO; ctx.fillStyle = C.muted; ctx.textAlign = "right";
+  for (let i = 0; i <= 5; i++) {
+    const ratio = i / 5, y = T + ratio * gh;
+    ctx.beginPath(); ctx.moveTo(L, y); ctx.lineTo(W - R, y); ctx.stroke();
+    ctx.fillText(formatAxisValue(mx - ratio * (mx - mn), mx - mn), L - 8, y + 4);
+  }
+
+  ctx.textAlign = "left"; ctx.fillStyle = C.muted; ctx.font = "12px " + FONT;
+  ctx.fillText(yLabel, L, 15);
+
+  const longest = Math.max(...datasets.map(function(ds) { return ds.data.length; }));
+  if (longest > 1) {
+    ctx.font = "10px " + MONO; ctx.fillStyle = C.muted;
+    const xN = Math.min(6, longest);
+    for (let i = 0; i < xN; i++) {
+      const rx = i / Math.max(xN - 1, 1);
+      ctx.textAlign = i === 0 ? "left" : i === xN - 1 ? "right" : "center";
+      ctx.fillText("Sample " + Math.round(rx * (longest - 1)), L + rx * gw, H - 12);
+    }
+  }
+
+  datasets.forEach(function(ds) {
+    if (!ds.data.length) return;
+    ctx.beginPath();
+    ds.data.forEach(function(v, i) {
+      if (!Number.isFinite(v)) return;
+      const x = L + (i / Math.max(ds.data.length - 1, 1)) * gw;
+      const y = T + (1 - (v - mn) / (mx - mn)) * gh;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.strokeStyle = ds.color; ctx.lineWidth = 2.5;
+    ctx.lineJoin = "round"; ctx.lineCap = "round"; ctx.stroke();
+    // dot on last point
+    let li = -1;
+    for (let i = ds.data.length - 1; i >= 0; i--) { if (Number.isFinite(ds.data[i])) { li = i; break; } }
+    if (li < 0) return;
+    const lx = L + (li / Math.max(ds.data.length - 1, 1)) * gw;
+    const ly = T + (1 - (ds.data[li] - mn) / (mx - mn)) * gh;
+    ctx.beginPath(); ctx.arc(lx, ly, 4, 0, Math.PI * 2);
+    ctx.fillStyle = ds.color; ctx.fill();
+  });
+
+  // legend
+  let lx = L;
+  const ly = H - 27;
+  ctx.font = "12px " + FONT;
+  datasets.forEach(function(ds) {
+    if (!ds.data.length) return;
+    ctx.fillStyle = ds.color; ctx.fillRect(lx, ly - 9, 10, 10);
+    ctx.fillStyle = C.muted; ctx.textAlign = "left";
+    ctx.fillText(ds.label, lx + 16, ly);
+    lx += 115;
+  });
+}
+
+
+function drawTemperatureHumidityGraph() {
+  const C = themeColors();
+  const canvas = document.getElementById("environmentGraph");
+  if (!canvas) return;
+  const rect = canvas.getBoundingClientRect();
+  const W = rect.width, H = rect.height;
+  if (W <= 0 || H <= 0) return;
+
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width  = Math.round(W * dpr);
+  canvas.height = Math.round(H * dpr);
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+
+  const L = 55, R = 55, T = 25, B = 45;
+  const gw = W - L - R, gh = H - T - B;
+
+  const tv = graphData.temperature.filter(Number.isFinite);
+  const hv = graphData.humidity.filter(Number.isFinite);
+
+  if (!tv.length && !hv.length) {
+    ctx.fillStyle = C.muted; ctx.font = "14px " + FONT; ctx.textAlign = "center";
+    ctx.fillText("Waiting for data…", W / 2, H / 2);
+    return;
+  }
+
+  function calcRange(arr, fMin, fMax) {
+    if (!arr.length) return { mn: fMin, mx: fMax };
+    let mn = Math.min(...arr), mx = Math.max(...arr);
+    if (mn === mx) { const a = Math.abs(mn) * 0.05 || 1; mn -= a; mx += a; }
+    const r = mx - mn;
+    return { mn: mn - r * 0.10, mx: mx + r * 0.10 };
+  }
+  const TR = calcRange(tv, 0, 1);
+  const HR = calcRange(hv, 0, 100);
+
+  ctx.strokeStyle = C.line; ctx.lineWidth = 1; ctx.font = "11px " + MONO;
+  for (let i = 0; i <= 5; i++) {
+    const ratio = i / 5, y = T + ratio * gh;
+    ctx.beginPath(); ctx.moveTo(L, y); ctx.lineTo(W - R, y); ctx.stroke();
+    if (tv.length) {
+      ctx.fillStyle = C.red; ctx.textAlign = "right";
+      ctx.fillText(formatAxisValue(TR.mx - ratio * (TR.mx - TR.mn), TR.mx - TR.mn), L - 8, y + 4);
+    }
+    if (hv.length) {
+      ctx.fillStyle = C.blue; ctx.textAlign = "left";
+      ctx.fillText(formatAxisValue(HR.mx - ratio * (HR.mx - HR.mn), HR.mx - HR.mn), W - R + 8, y + 4);
+    }
+  }
+
+  ctx.font = "12px " + FONT;
+  if (tv.length) { ctx.fillStyle = C.red;  ctx.textAlign = "left";  ctx.fillText("Temperature (°C)", L, 15); }
+  if (hv.length) { ctx.fillStyle = C.blue; ctx.textAlign = "right"; ctx.fillText("Humidity (%RH)", W - R, 15); }
+
+  const longest = Math.max(graphData.temperature.length, graphData.humidity.length);
+  if (longest > 1) {
+    ctx.font = "10px " + MONO; ctx.fillStyle = C.muted;
+    const xN = Math.min(6, longest);
+    for (let i = 0; i < xN; i++) {
+      const rx = i / Math.max(xN - 1, 1);
+      ctx.textAlign = i === 0 ? "left" : i === xN - 1 ? "right" : "center";
+      ctx.fillText("Sample " + Math.round(rx * (longest - 1)), L + rx * gw, H - 12);
+    }
+  }
+
+  function drawLine(arr, range, color) {
+    if (!arr.length) return;
+    ctx.beginPath();
+    arr.forEach(function(v, i) {
+      if (!Number.isFinite(v)) return;
+      const x = L + (i / Math.max(arr.length - 1, 1)) * gw;
+      const y = T + (1 - (v - range.mn) / (range.mx - range.mn)) * gh;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.strokeStyle = color; ctx.lineWidth = 2.5;
+    ctx.lineJoin = "round"; ctx.lineCap = "round"; ctx.stroke();
+    let li = -1;
+    for (let i = arr.length - 1; i >= 0; i--) { if (Number.isFinite(arr[i])) { li = i; break; } }
+    if (li < 0) return;
+    const lx = L + (li / Math.max(arr.length - 1, 1)) * gw;
+    const ly = T + (1 - (arr[li] - range.mn) / (range.mx - range.mn)) * gh;
+    ctx.beginPath(); ctx.arc(lx, ly, 4, 0, Math.PI * 2);
+    ctx.fillStyle = color; ctx.fill();
+  }
+
+  drawLine(graphData.temperature, TR, C.red);
+  drawLine(graphData.humidity,    HR, C.blue);
+
+  let lx = L; const ly = H - 27; ctx.font = "12px " + FONT;
+  if (tv.length) {
+    ctx.fillStyle = C.red;  ctx.fillRect(lx, ly - 9, 10, 10);
+    ctx.fillStyle = C.muted; ctx.textAlign = "left"; ctx.fillText("Temperature", lx + 16, ly);
+    lx += 120;
+  }
+  if (hv.length) {
+    ctx.fillStyle = C.blue; ctx.fillRect(lx, ly - 9, 10, 10);
+    ctx.fillStyle = C.muted; ctx.textAlign = "left"; ctx.fillText("Humidity", lx + 16, ly);
+  }
+}
+
+
+function drawAllGraphs() {
+  const C = themeColors();
+  drawTemperatureHumidityGraph();
+  drawGraph("pressureGraph",
+    [{ data: graphData.pressure, label: "Pressure", color: C.green }],
+    "hPa");
+  drawGraph("motionGraph",
+    [
+      { data: graphData.accelX, label: "Accel X", color: C.red   },
+      { data: graphData.accelY, label: "Accel Y", color: C.blue  },
+      { data: graphData.accelZ, label: "Accel Z", color: C.teal  }
+    ], "g");
+  drawGraph("magnetGraph",
+    [
+      { data: graphData.magX, label: "Mag X", color: C.red   },
+      { data: graphData.magY, label: "Mag Y", color: C.blue  },
+      { data: graphData.magZ, label: "Mag Z", color: C.teal  }
+    ], "Gauss");
+  drawGraph("adsGraph",
+    [
+      { data: graphData.ch0, label: "CH0", color: C.red    },
+      { data: graphData.ch1, label: "CH1", color: C.blue   },
+      { data: graphData.ch2, label: "CH2", color: C.teal   },
+      { data: graphData.ch3, label: "CH3", color: C.orange }
+    ], "Volts");
+}
+
+window.addEventListener("resize", drawAllGraphs);
+
+
+// ================================================================
+// STARTUP
+// ================================================================
+
+// Restore the saved refresh rate into the dropdown
+el.refreshRateSelect.value = String(REFRESH_MS);
+
+updatePills();
+
+if (sourceMode === "sheets") {
+  loadDashboard();
+  restartAutoRefresh();
+} else {
+  // Last session used a file — ask the student to re-upload
+  el.statusText.textContent = "No file";
+  el.statusPill.className   = "pill pill-status warn";
+  el.timestamp.textContent  = "Open ⚙ Settings to upload an Excel or CSV file, or switch to Google Sheets.";
+  updatePills();
+}
+
+</script>
+</body>
+</html>

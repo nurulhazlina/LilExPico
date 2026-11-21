@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Activity 4 — Tiered Practice | LilEx Pico LMS</title>
+<link rel="stylesheet" href="style.css">
+<style>
+
+:root{
+  --teal:#02ADA5;--teal-dark:#063f3b;
+  --blue:#0D55A7;--red:#e53e3e;--orange:#f5a21d;
+  --line:#d8e6e5;--ink:#1f2933;--muted:#5b7284;
+  --card:#eef6f5;--code-bg:#1a2332;--bg:#e6f0ef;
+  --fg:var(--ink,#1f2933);--fg-soft:var(--muted,#5b7284)
+}
+.site-header{background:var(--teal-dark);color:#fff;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.28)}
+.header-inner{max-width:1100px;margin:0 auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:52px;gap:16px}
+.logo{color:#fff;text-decoration:none;font-weight:800;font-size:17px;white-space:nowrap;letter-spacing:-.01em}
+.logo:hover{opacity:.85}
+.step-nav{display:flex;gap:3px;align-items:center;flex-wrap:wrap}
+.step-nav a{color:rgba(255,255,255,.75);text-decoration:none;font-size:13px;font-weight:600;padding:5px 9px;border-radius:6px;transition:background .15s,color .15s;line-height:1}
+.step-nav a:hover{background:rgba(255,255,255,.15);color:#fff}
+.step-nav a.active{background:rgba(255,255,255,.22);color:#fff;font-weight:800}
+body{background:var(--bg)}
+.container{max-width:1100px;margin:0 auto;padding:0 20px}
+.main-content{padding:28px 0 64px}
+section.hero{background:linear-gradient(135deg,var(--teal-dark) 0%,#063f3b 100%);color:#fff;border:none;border-radius:0;margin:0;padding:32px 0 24px}
+.act-badge{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:12px}
+.hero-title{font-size:clamp(22px,4vw,30px);font-weight:800;margin:0 0 8px;line-height:1.2}
+.hero-sub{font-size:15px;margin:0;opacity:.85;line-height:1.5}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--teal);color:#fff;font-weight:700;font-size:14px;padding:10px 22px;border-radius:8px;text-decoration:none;border:none;cursor:pointer;transition:opacity .15s;white-space:nowrap;line-height:1;font-family:inherit}
+.btn:hover{opacity:.85}
+.btn-outline{background:transparent;border:2px solid rgba(255,255,255,.55);color:#fff}
+.btn-outline:hover{background:rgba(255,255,255,.1);opacity:1}
+.tier-progress{display:flex;align-items:center;margin-bottom:24px;padding:14px 0;overflow-x:auto}
+.tier-step{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:60px}
+.tier-num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;background:var(--line);color:var(--muted);transition:background .3s,color .3s}
+.tier-step.active .tier-num{background:var(--teal);color:#fff}
+.tier-step.done .tier-num{background:var(--teal-dark);color:#fff}
+.tier-label{font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap}
+.tier-connector{flex:1;min-width:14px;height:3px;background:var(--line);transition:background .3s;align-self:flex-start;margin-top:19px}
+.tier-connector.done{background:var(--teal)}
+.tier-card{border:1.5px solid var(--line);border-radius:12px;margin-bottom:20px;overflow:hidden;background:var(--card)}
+.tier-card.tier-locked{opacity:.45;pointer-events:none}
+.tier-card:not(.tier-locked){opacity:1;pointer-events:auto}
+.tier-header{padding:13px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--line);background:rgba(0,0,0,.025)}
+.tier-body{padding:18px}
+.tier-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;padding:3px 10px;border-radius:20px;background:var(--teal);color:#fff;white-space:nowrap;text-transform:uppercase}
+.tier-title{font-size:15px;font-weight:700;color:var(--ink)}
+.tier-desc{font-size:13px;color:var(--muted)}
+.tier-intro{font-size:14px;color:var(--ink);margin:0 0 12px;line-height:1.6}
+.code-block{background:var(--code-bg);border-radius:8px;padding:14px 16px;font-family:"SFMono-Regular",Consolas,monospace;font-size:13px;line-height:1.65;overflow-x:auto;margin-bottom:12px;color:#cdd;white-space:pre}
+.tier-textarea{width:100%;background:var(--code-bg);border:1px solid rgba(100,130,150,.35);border-radius:6px;color:#cdd;font-size:13px;font-family:"SFMono-Regular",Consolas,monospace;padding:10px 12px;resize:vertical;box-sizing:border-box;line-height:1.5}
+.tier-textarea:focus{outline:none;border-color:var(--teal)}
+.starter-code{background:var(--code-bg);border-radius:8px;padding:14px 16px;font-family:"SFMono-Regular",Consolas,monospace;font-size:13px;line-height:1.6;overflow-x:auto;margin-bottom:12px;white-space:pre;color:#cdd}
+.blank-row{display:flex;align-items:center;gap:10px;margin:4px 0;flex-wrap:wrap}
+.blank-num{min-width:22px;font-size:12px;font-weight:700;color:var(--muted)}
+.blank-label{font-size:13px;font-family:monospace;color:var(--fg-soft);flex:1;min-width:160px}
+.blank-input{background:var(--code-bg);border:1px solid var(--line);border-radius:5px;color:#cdd;font-family:monospace;font-size:14px;padding:5px 10px;width:200px}
+.blank-input:focus{outline:none;border-color:var(--teal)}
+.blank-input.correct{border-color:#22bb55;background:rgba(0,180,0,.08)}
+.blank-input.wrong{border-color:var(--red);background:rgba(200,0,0,.06)}
+.bug-card{border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:12px;background:var(--bg)}
+.bug-card h4{margin:0 0 8px;font-size:14px;color:var(--orange)}
+.bug-line{font-family:monospace;font-size:13px;background:var(--code-bg);padding:6px 10px;border-radius:5px;margin:6px 0;color:#f88;word-break:break-all}
+.bug-fix-input{width:100%;background:var(--code-bg);border:1px solid var(--line);border-radius:5px;color:#cdd;font-family:monospace;font-size:13px;padding:6px 10px;box-sizing:border-box}
+.bug-fix-input:focus{outline:none;border-color:var(--blue)}
+.bug-hint{font-size:12px;color:var(--muted);margin-top:4px;font-style:italic}
+.cal-gate{background:linear-gradient(135deg,rgba(11,79,75,.12),rgba(2,173,165,.06));border:2px solid var(--teal);border-radius:12px;margin-bottom:24px;overflow:hidden}
+.cal-gate-header{background:linear-gradient(90deg,rgba(2,173,165,.2),transparent);padding:12px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.cal-gate-body{padding:18px}
+.cal-label{font-weight:700;font-size:14px;margin-bottom:6px;display:block;line-height:1.5}
+.cal-sub{font-size:13px;color:var(--muted);margin-bottom:10px;display:block}
+.conf-slider-wrap{display:flex;align-items:center;gap:10px;margin:8px 0 16px}
+.conf-slider-wrap input[type=range]{flex:1;accent-color:var(--teal)}
+.conf-val{min-width:2em;font-family:monospace;font-weight:800;font-size:20px;color:var(--teal);text-align:center}
+.pred-input{background:var(--code-bg);border:1px solid var(--line);border-radius:6px;color:#cdd;font-family:monospace;font-size:16px;padding:8px 12px;width:110px;text-align:center;font-weight:700}
+.pred-input:focus{outline:none;border-color:var(--teal)}
+.cal-tip{background:rgba(2,173,165,.08);border-left:3px solid var(--teal);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:16px;font-size:13px;line-height:1.6;color:var(--ink)}
+.refl-gate{border:1.5px solid rgba(13,85,167,.4);border-radius:12px;margin-bottom:20px;overflow:hidden;background:rgba(13,85,167,.04)}
+.refl-gate.tier-locked{opacity:.45;pointer-events:none}
+.refl-gate:not(.tier-locked){opacity:1;pointer-events:auto}
+.refl-gate-header{background:linear-gradient(90deg,rgba(13,85,167,.15),transparent);padding:12px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.refl-badge{font-size:11px;font-weight:700;letter-spacing:.06em;padding:3px 8px;border-radius:20px;background:var(--blue);color:#fff;white-space:nowrap}
+.refl-gate-body{padding:18px}
+.id-block{background:linear-gradient(135deg,#08312F,#0a3d39);border-radius:12px;padding:20px 22px;margin-bottom:22px;border:2px solid rgba(2,173,165,.3)}
+.id-block.id-confirmed{border-color:#02ADA5;background:linear-gradient(135deg,#052e16,#073d2e)}
+.id-block-title{font-weight:800;font-size:15px;color:#fff;display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.id-required-badge{background:#02ADA5;color:#fff;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;letter-spacing:.05em;flex-shrink:0}
+.id-subtitle{font-weight:400;font-size:13px;color:rgba(255,255,255,.6)}
+.id-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px 12px;align-items:end}
+.id-field{display:flex;flex-direction:column;gap:5px}
+.id-field.id-w2{grid-column:span 2}
+.id-field label{font-size:11px;font-weight:700;color:rgba(255,255,255,.65);letter-spacing:.06em;text-transform:uppercase}
+.id-req{color:#f5a21d;margin-left:2px}
+.id-field input,.id-field select{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.18);border-radius:7px;padding:9px 12px;color:#fff;font-size:13px;font-family:inherit;width:100%;box-sizing:border-box;transition:border-color .2s}
+.id-field select{cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,.5)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.id-field select option{background:#0a3d39;color:#fff}
+.id-field input:focus,.id-field select:focus{outline:none;border-color:#02ADA5;background:rgba(2,173,165,.12)}
+.id-field input::placeholder{color:rgba(255,255,255,.3)}
+.id-save-btn{background:#02ADA5;color:#fff;border:none;border-radius:8px;padding:11px 22px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;transition:opacity .2s;width:100%;margin-top:14px}
+.id-save-btn:hover{opacity:.88}
+.id-confirmed-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.id-confirmed-name{font-weight:700;font-size:16px;color:#fff}
+.id-confirmed-meta{color:rgba(255,255,255,.65);font-size:13px}
+.id-edit-btn{background:transparent;border:1.5px solid rgba(255,255,255,.35);color:rgba(255,255,255,.75);border-radius:6px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+.id-edit-btn:hover{border-color:#fff;color:#fff}
+.id-notice{background:rgba(245,162,29,.12);border:1.5px solid rgba(245,162,29,.45);border-radius:8px;padding:9px 14px;color:#f5a21d;font-size:13px;font-weight:600;margin-top:12px;display:none}
+.tier-btn{padding:9px 22px;border:none;border-radius:8px;background:var(--teal);color:#fff;font-weight:700;font-size:14px;cursor:pointer;transition:opacity .2s;font-family:inherit}
+.tier-btn:hover:not(:disabled){opacity:.85}
+.tier-btn:disabled{opacity:.4;cursor:not-allowed}
+.feedback-success{background:rgba(0,180,100,.12);border:1px solid rgba(0,180,100,.35);border-radius:8px;padding:10px 14px;color:#166534;font-size:13px;font-weight:600}
+.feedback-error{background:rgba(200,0,0,.08);border:1px solid rgba(200,0,0,.3);border-radius:8px;padding:10px 14px;color:#9b1c1c;font-size:13px;font-weight:600}
+.feedback-warning{background:rgba(200,130,0,.08);border:1px solid rgba(200,130,0,.3);border-radius:8px;padding:10px 14px;color:#92400e;font-size:13px;font-weight:600}
+.feedback-anim{animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.complete-banner{background:linear-gradient(135deg,rgba(2,173,165,.15),rgba(11,79,75,.1));border:2px solid var(--teal);border-radius:12px;padding:20px 24px;text-align:center;margin-top:24px}
+.complete-banner h2{margin:0 0 8px;color:var(--teal-dark)}
+.complete-banner p{margin:0;color:var(--muted)}
+.journal-prompt{margin-bottom:16px}
+.journal-prompt label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;line-height:1.5}
+.jp-num{display:inline-flex;align-items:center;justify-content:center;background:var(--blue);color:#fff;font-size:11px;font-weight:800;width:20px;height:20px;border-radius:50%;margin-right:4px;vertical-align:middle}
+.concept-check-card{border:1.5px solid rgba(13,85,167,.35);border-radius:12px;margin-bottom:20px;overflow:hidden;background:rgba(13,85,167,.03)}
+.concept-check-card.tier-locked{opacity:.45;pointer-events:none}
+.concept-check-card:not(.tier-locked){opacity:1;pointer-events:auto}
+.concept-check-header{background:linear-gradient(90deg,rgba(13,85,167,.18),transparent);padding:13px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px solid rgba(13,85,167,.18)}
+.concept-check-body{padding:18px}
+.concept-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;padding:3px 10px;border-radius:20px;background:var(--blue);color:#fff;white-space:nowrap;text-transform:uppercase}
+.cq-block{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin-bottom:12px}
+.cq-text{margin:0 0 10px;font-size:14px;font-weight:600;line-height:1.5;color:var(--ink)}
+.cq-num{display:inline-block;background:var(--blue);color:#fff;font-size:11px;font-weight:800;min-width:22px;height:22px;line-height:22px;text-align:center;border-radius:4px;margin-right:6px;vertical-align:middle}
+.cq-opts{display:flex;flex-direction:column;gap:7px}
+.cq-opt{display:flex;align-items:flex-start;gap:9px;cursor:pointer;font-size:13px;line-height:1.45;color:var(--ink)}
+.cq-opt input[type=radio]{margin-top:3px;flex-shrink:0;cursor:pointer;accent-color:var(--blue)}
+.cq-fb{margin-top:7px;font-size:12px;padding:5px 10px;border-radius:6px;display:none}
+.cq-fb.correct{background:#16a34a22;color:#166534;border:1px solid #16a34a44;display:block}
+.cq-fb.incorrect{background:#dc262622;color:#991b1b;border:1px solid #dc262644;display:block}
+.cq-score-bar{background:var(--line);border-radius:8px;height:8px;margin:12px 0 4px;overflow:hidden}
+.cq-score-fill{height:100%;background:var(--blue);border-radius:8px;transition:width .5s ease}
+.stm-banner{display:flex;width:100%;overflow:hidden;height:40px}
+.stm-seg{flex:1;display:flex;align-items:center;justify-content:center;position:relative;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#fff}
+.stm-seg::after{content:'';position:absolute;right:-16px;top:0;width:0;height:0;border-top:20px solid transparent;border-bottom:20px solid transparent;z-index:2}
+.stm-seg:last-child::after{display:none}
+.stm-see{background:#2D5FA6}.stm-see::after{border-left:16px solid #2D5FA6}
+.stm-think{background:#B83232}.stm-think::after{border-left:16px solid #B83232}
+.stm-explore{background:#D4993A}.stm-explore::after{border-left:16px solid #D4993A}
+.stm-marvel{background:#02ADA5}
+.stm-seg:not(:first-child){padding-left:20px}
+.site-footer{background:#0d3b38;color:rgba(255,255,255,.75);text-align:center;padding:32px 20px 24px}
+.footer-tagline{font-size:16px;font-weight:700;color:#fff;margin:0 0 4px;letter-spacing:.01em}
+.footer-lab{font-size:13px;color:rgba(255,255,255,.65);margin:0 0 20px}
+.footer-copy{font-size:12px;color:rgba(255,255,255,.45);display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.footer-icon{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(2,173,165,.6);color:rgba(2,173,165,.9)}
+.footer-icon svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+</style>
+</head>
+<body>
+
+<div class="stm-banner" role="banner" aria-label="Learning phases">
+  <div class="stm-seg stm-see">See</div>
+  <div class="stm-seg stm-think">Think</div>
+  <div class="stm-seg stm-explore">Explore</div>
+  <div class="stm-seg stm-marvel">Marvel</div>
+</div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="logo" href="index.html">LilEx Pico</a>
+    <nav class="step-nav">
+      <a href="activity0.html">0</a>
+      <a href="activity1.html">1</a>
+      <a href="activity2.html">2</a>
+      <a href="activity2-tiers.html">2&#x2605;</a>
+      <a href="activity3.html">3</a>
+      <a href="activity4-tiers.html" class="active">4&#x2605;</a>
+      <a href="activity5-tiers.html">5&#x2605;</a>
+      <a href="activity6.html">6</a>
+      <a href="activity7.html">7</a>
+      <a href="activity8-tiers.html">8&#x2605;</a>
+      <a href="activity9.html">9</a>
+      <a href="activity10-tiers.html">10&#x2605;</a>
+      <a href="activity11.html">11</a>
+      <a href="activity12.html">12</a>
+      <a href="activity13-tiers.html">13&#x2605;</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <div class="act-badge">Week 8 &nbsp;&middot;&nbsp; Tier 1 &nbsp;&middot;&nbsp; High Scaffold</div>
+    <h1 class="hero-title">Activity 4 &mdash; Digital Input</h1>
+    <p class="hero-sub">Read a button with <code>machine.Pin.IN</code> and pull-up resistors</p>
+    <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+      <a href="activity4.html" class="btn btn-outline">&#x1F4D6; Tutorial</a>
+      <a href="index.html" class="btn btn-outline">&#x2190; Activities</a>
+    </div>
+  </div>
+</section>
+
+<div class="main-content">
+<div class="container">
+
+<!-- STEPPER -->
+<div class="tier-progress" id="tierProgress">
+  <div class="tier-step active" id="tp0"><span class="tier-num">&#x1F3AF;</span><span class="tier-label">Calibrate</span></div>
+  <div class="tier-connector" id="tc01"></div>
+  <div class="tier-step" id="tp1"><span class="tier-num">1</span><span class="tier-label">Fill-in</span></div>
+  <div class="tier-connector" id="tc12"></div>
+  <div class="tier-step" id="tp2"><span class="tier-num">2</span><span class="tier-label">Debug</span></div>
+  <div class="tier-connector" id="tc23"></div>
+  <div class="tier-step" id="tp3"><span class="tier-num">3</span><span class="tier-label">Extend</span></div>
+  <div class="tier-connector" id="tc34"></div>
+  <div class="tier-step" id="tp4"><span class="tier-num">4</span><span class="tier-label">Create</span></div>
+  <div class="tier-connector" id="tc4c"></div>
+  <div class="tier-step" id="tpc"><span class="tier-num">&#x1F9E0;</span><span class="tier-label">Concept</span></div>
+  <div class="tier-connector" id="tccr"></div>
+  <div class="tier-step" id="tpr"><span class="tier-num">&#x1F4D3;</span><span class="tier-label">Reflect</span></div>
+</div>
+
+<div class="id-block" id="id-block">
+  <div class="id-block-title">
+    <span>&#x1F393; Student Profile</span>
+    <span class="id-required-badge">REQUIRED</span>
+    <span class="id-subtitle">Saved once — appears on all activities</span>
+  </div>
+  <div id="id-form-area">
+    <div class="id-grid">
+      <div class="id-field id-w2"><label>Full Name <span class="id-req">*</span></label><input id="id-name" placeholder="Nurul Hazlina binti Ahmad" autocomplete="name"></div>
+      <div class="id-field"><label>Matric / Student ID <span class="id-req">*</span></label><input id="id-matric" placeholder="CB22080" autocomplete="off"></div>
+      <div class="id-field"><label>Class / Programme <span class="id-req">*</span></label><input id="id-kelas" placeholder="2 BET" autocomplete="off"></div>
+      <div class="id-field"><label>IC / MyKid No.</label><input id="id-mykid" placeholder="020102-14-5678" autocomplete="off"></div>
+      <div class="id-field"><label>Age</label><input id="id-age" type="number" min="10" max="99" placeholder="20"></div>
+      <div class="id-field"><label>Gender</label>
+        <select id="id-gender"><option value="">Select…</option><option>Male</option><option>Female</option><option>Prefer not to say</option></select>
+      </div>
+      <div class="id-field"><label>Contact No.</label><input id="id-phone" placeholder="011-23456789" autocomplete="tel"></div>
+      <div class="id-field"><label>Email</label><input id="id-email" type="email" placeholder="student@umpsa.edu.my" autocomplete="email"></div>
+      <div class="id-field"><label>Institution</label><input id="id-school" placeholder="UMPSA" autocomplete="organization"></div>
+      <div class="id-field"><label>State</label>
+        <select id="id-state"><option value="">Select…</option><option>Johor</option><option>Kedah</option><option>Kelantan</option><option>Melaka</option><option>Negeri Sembilan</option><option>Pahang</option><option>Perak</option><option>Perlis</option><option>Pulau Pinang</option><option>Sabah</option><option>Sarawak</option><option>Selangor</option><option>Terengganu</option><option>W.P. Kuala Lumpur</option><option>W.P. Labuan</option><option>W.P. Putrajaya</option></select>
+      </div>
+    </div>
+    <div class="id-notice" id="id-notice">Please fill in Name, Matric ID, and Class before continuing.</div>
+    <button class="id-save-btn" id="id-save-btn" onclick="saveProfile()">Save Profile &amp; Start Activity &#x2192;</button>
+  </div>
+  <div id="id-confirmed-area" style="display:none">
+    <div class="id-confirmed-row">
+      <span class="id-confirmed-name" id="id-conf-name"></span>
+      <span class="id-confirmed-meta" id="id-conf-meta"></span>
+      <button class="id-edit-btn" onclick="editProfile()">Edit</button>
+    </div>
+  </div>
+</div>
+
+<!-- CALIBRATION -->
+<div class="cal-gate tier-locked" id="cal-gate" aria-disabled="true">
+  <div class="cal-gate-header">
+    <span class="tier-badge" style="background:var(--teal)">&#x1F3AF; Pre-Activity Calibration</span>
+    <span style="font-size:14px;font-weight:700">Set your prediction before you begin</span>
+  </div>
+  <div class="cal-gate-body">
+    <div class="cal-tip">Think about the difference between reading a pin (input) and writing to it (output). How does a physical button connect to the Pico's GPIO pin?</div>
+    <label class="cal-label">How confident are you that you can complete this activity? <em>(1 = not at all, 10 = very confident)</em></label>
+    <div class="conf-slider-wrap">
+      <input type="range" id="cal-conf" min="1" max="10" value="5">
+      <span class="conf-val" id="cal-conf-val">5</span>
+    </div>
+    <label class="cal-label">What score (%) do you predict you will get on the Tier 1 fill-in-blank exercise?</label>
+    <input class="pred-input" id="cal-pred" type="number" min="0" max="100" placeholder="e.g. 70">
+    <div style="margin-top:16px">
+      <label class="cal-label">What do you think will be the hardest part of this activity? <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+      <textarea class="tier-textarea" id="cal-r1" rows="2" placeholder="e.g. I think understanding … will be difficult because …"></textarea>
+    </div>
+    <div style="margin-top:12px">
+      <button class="tier-btn" id="cal-submit" disabled>Save Prediction &amp; Start &#x2192;</button>
+    </div>
+    <div id="cal-feedback" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- TIER 1 -->
+<div class="tier-card tier-locked" id="tier1" aria-disabled="true">
+  <div class="tier-header">
+    <span class="tier-badge">Tier 1 &mdash; Fill in the Blank</span>
+    <span class="tier-title">Recognition &amp; Recall</span>
+    <span class="tier-desc">Bloom&rsquo;s: Remember</span>
+  </div>
+  <div class="tier-body">
+    <p class="tier-intro">Complete the program that turns on the onboard LED whenever a button connected to Pin 14 is pressed. With a pull-up resistor, the pin reads HIGH (1) when the button is open and LOW (0) when pressed.</p>
+    <div class="code-block">import _[1]_ , time                              # module for hardware
+btn = machine.Pin(14, machine.Pin._[2]_,
+                      machine.Pin._[3]_ )   # pin 14, input mode, internal pull-up
+led = machine.Pin(25, machine.Pin.OUT)       # onboard LED output
+while _[4]_ :                               # run forever
+    if btn.value() == _[5]_ :              # PULL_UP → pressed = LOW (0)
+        led._[6]_ ()                        # LED on when button pressed
+    else:
+        led.off()
+    time.sleep(0.05)</div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 10px">Fill in each blank:</p>
+      <div class="blank-row">
+        <span class="blank-num">1</span>
+        <span class="blank-label"><code>import ___ , time</code> — the hardware control module</span>
+        <input class="blank-input" id="blank-1" autocomplete="off" spellcheck="false" placeholder="type here">
+      </div>
+      <div class="blank-row">
+        <span class="blank-num">2</span>
+        <span class="blank-label"><code>machine.Pin.___</code> — set pin as input (reading)</span>
+        <input class="blank-input" id="blank-2" autocomplete="off" spellcheck="false" placeholder="type here">
+      </div>
+      <div class="blank-row">
+        <span class="blank-num">3</span>
+        <span class="blank-label"><code>machine.Pin.___</code> — internal resistor holds pin HIGH when open</span>
+        <input class="blank-input" id="blank-3" autocomplete="off" spellcheck="false" placeholder="type here">
+      </div>
+      <div class="blank-row">
+        <span class="blank-num">4</span>
+        <span class="blank-label"><code>while ___:</code> — loop condition that runs forever</span>
+        <input class="blank-input" id="blank-4" autocomplete="off" spellcheck="false" placeholder="type here">
+      </div>
+      <div class="blank-row">
+        <span class="blank-num">5</span>
+        <span class="blank-label"><code>if btn.value() == ___:</code> — with PULL_UP, pressing connects pin to GND</span>
+        <input class="blank-input" id="blank-5" autocomplete="off" spellcheck="false" placeholder="type here">
+      </div>
+      <div class="blank-row">
+        <span class="blank-num">6</span>
+        <span class="blank-label"><code>led.___()&nbsp;</code> — method to turn LED on (not toggle)</span>
+        <input class="blank-input" id="blank-6" autocomplete="off" spellcheck="false" placeholder="type here">
+      </div>
+    <div style="margin-top:14px">
+      <button class="tier-btn" id="t1-submit" disabled>Check Answers</button>
+    </div>
+    <div id="t1-feedback" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- TIER 2 -->
+<div class="tier-card tier-locked" id="tier2" aria-disabled="true">
+  <div class="tier-header">
+    <span class="tier-badge">Tier 2 &mdash; Debug</span>
+    <span class="tier-title">Diagnosis &amp; Analysis</span>
+    <span class="tier-desc">Bloom&rsquo;s: Analyze</span>
+  </div>
+  <div class="tier-body">
+    <p class="tier-intro">The three code lines below each contain one bug. Identify and fix each bug — pay attention to pin direction, pull-up logic, and what <code>value()</code> returns when a button is pressed.</p>
+    <div class="bug-card" id="bug-card-0">
+      <h4>Bug 1 — Wrong pin direction</h4>
+      <p style="font-size:13px;color:var(--muted);margin:0 0 6px">Buggy line:</p>
+      <div class="bug-line">btn = machine.Pin(14, machine.Pin.OUT, machine.Pin.PULL_UP)</div>
+      <input class="bug-fix-input" id="bug-fix-0" placeholder="Type the corrected line here…" autocomplete="off" spellcheck="false">
+      <div class="bug-hint">&#x1F4A1; Hint: A button is a physical input device — it sends data TO the Pico, not from it.</div>
+      <div id="bug-fb-0" style="margin-top:6px"></div>
+    </div>
+    <div class="bug-card" id="bug-card-1">
+      <h4>Bug 2 — Wrong pressed-state value</h4>
+      <p style="font-size:13px;color:var(--muted);margin:0 0 6px">Buggy line:</p>
+      <div class="bug-line">if btn.value() == 1:  # trigger when pressed</div>
+      <input class="bug-fix-input" id="bug-fix-1" placeholder="Type the corrected line here…" autocomplete="off" spellcheck="false">
+      <div class="bug-hint">&#x1F4A1; Hint: A PULL_UP resistor holds the pin HIGH. What level does pressing the button create?</div>
+      <div id="bug-fb-1" style="margin-top:6px"></div>
+    </div>
+    <div class="bug-card" id="bug-card-2">
+      <h4>Bug 3 — Missing parentheses on method call</h4>
+      <p style="font-size:13px;color:var(--muted);margin:0 0 6px">Buggy line:</p>
+      <div class="bug-line">led.on    # turn LED on</div>
+      <input class="bug-fix-input" id="bug-fix-2" placeholder="Type the corrected line here…" autocomplete="off" spellcheck="false">
+      <div class="bug-hint">&#x1F4A1; Hint: <code>on</code> is a method, not a property — it must be called with ().</div>
+      <div id="bug-fb-2" style="margin-top:6px"></div>
+    </div>
+    <div style="margin-top:14px">
+      <button class="tier-btn" id="t2-submit" disabled>Submit Bug Fixes</button>
+    </div>
+    <div id="t2-feedback" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- MID-ACTIVITY REFLECTION -->
+<div class="refl-gate tier-locked" id="refl2" aria-disabled="true">
+  <div class="refl-gate-header">
+    <span class="refl-badge">&#x1F4DD; Mid-Activity Check-In</span>
+    <span style="font-size:14px;font-weight:700;color:var(--blue)">Reflect before continuing</span>
+  </div>
+  <div class="refl-gate-body">
+    <label class="cal-label">What have you learned so far from Tier 1 and Tier 2? What still feels unclear? <em>(min 10 words)</em></label>
+    <textarea class="tier-textarea" id="refl2-text" rows="3" placeholder="So far I have learned… I still find … unclear because…"></textarea>
+    <div style="margin-top:10px">
+      <button class="tier-btn" id="refl2-submit" disabled>Save &amp; Unlock Tier 3 &#x2192;</button>
+    </div>
+    <div id="refl2-feedback" style="margin-top:8px"></div>
+  </div>
+</div>
+
+<!-- TIER 3 -->
+<div class="tier-card tier-locked" id="tier3" aria-disabled="true">
+  <div class="tier-header">
+    <span class="tier-badge">Tier 3 &mdash; Extend</span>
+    <span class="tier-title">Button Press Counter</span>
+    <span class="tier-desc">Bloom&rsquo;s: Apply</span>
+  </div>
+  <div class="tier-body">
+    <p class="tier-intro">Extend the basic button program below. Add a <strong>press counter</strong>: each time the button is pressed (transitions from 1→0), increment a variable and print the count. The LED should stay ON while the button is held and print "Press #N" on each new press. Add a debounce delay of at least 200 ms after each detected press.</p>
+    <div class="starter-code">import machine, time
+btn = machine.Pin(14, machine.Pin.IN, machine.Pin.PULL_UP)
+led = machine.Pin(25, machine.Pin.OUT)
+count = 0          # press counter
+prev  = 1          # previous btn state
+
+while True:
+    curr = btn.value()
+    # TODO: detect press (1→0 transition), increment count, print, debounce
+    if curr == 0:
+        led.on()
+    else:
+        led.off()
+    prev = curr
+    time.sleep(0.05)</div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 6px">Write your extended solution below:</p>
+    <textarea class="tier-textarea" id="t3-text" rows="14" placeholder="# Write your extended MicroPython code here…"></textarea>
+    <div style="margin-top:12px">
+      <button class="tier-btn" id="t3-submit" disabled>Submit Extension &#x2192;</button>
+    </div>
+    <div id="t3-feedback" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- TIER 4 -->
+<div class="tier-card tier-locked" id="tier4" aria-disabled="true">
+  <div class="tier-header">
+    <span class="tier-badge">Tier 4 &mdash; Create</span>
+    <span class="tier-title">Button-Toggle LED</span>
+    <span class="tier-desc">Bloom&rsquo;s: Create</span>
+  </div>
+  <div class="tier-body">
+    <p class="tier-intro">Write a MicroPython program from scratch. Each time the button is pressed and released, the LED should <strong>toggle</strong> its state (OFF→ON or ON→OFF). The LED state should persist between presses. Requirements: use Pin 14 for the button (PULL_UP), Pin 25 for the LED, detect rising-edge release (0→1 transition), debounce for 150 ms. Print "LED ON" or "LED OFF" each time the state changes.</p>
+    <textarea class="tier-textarea" id="t4-text" rows="18" placeholder="# Write your complete MicroPython program from scratch…"></textarea>
+    <div style="margin-top:12px">
+      <button class="tier-btn" id="t4-submit" disabled>Submit Program &#x2192;</button>
+    </div>
+    <div id="t4-feedback" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- CONCEPT CHECK -->
+<div class="concept-check-card tier-locked" id="concept-check" aria-disabled="true">
+  <div class="concept-check-header">
+    <span class="concept-badge">&#x1F9E0; Concept Check</span>
+    <span style="font-size:15px;font-weight:700;color:var(--blue)">Activity 4 &mdash; 10 Questions</span>
+    <span style="font-size:12px;color:var(--muted)">Answer all 10, then submit. These are different from the pre/post test.</span>
+  </div>
+  <div class="concept-check-body">
+    <p style="font-size:13px;color:var(--muted);margin:0 0 16px">Test your understanding of <em>input pins and pull-up resistors</em>.</p>
+    <div class="cq-block" id="cq-block-0">
+      <p class="cq-text"><span class="cq-num">1</span>What does <code>machine.Pin.IN</code> tell the Pico?</p>
+      <div class="cq-opts">
+        <label class="cq-opt"><input type="radio" name="cq0" value="0"><span>Drive a voltage out of the pin</span></label>
+        <label class="cq-opt"><input type="radio" name="cq0" value="1"><span>Read the voltage level coming into the pin</span></label>
+        <label class="cq-opt"><input type="radio" name="cq0" value="2"><span>Short the pin to ground</span></label>
+        <label class="cq-opt"><input type="radio" name="cq0" value="3"><span>Set the pin to 3.3 V permanently</span></label>
+      </div>
+      <div class="cq-fb" id="cfb-0"></div>
+    </div>
+    <div class="cq-block" id="cq-block-1">
+      <p class="cq-text"><span class="cq-num">2</span>What is the purpose of a pull-up resistor on a button circuit?</p>
+      <div class="cq-opts">
+        <label class="cq-opt"><input type="radio" name="cq1" value="0"><span>Limits current to protect the LED</span></label>
+        <label class="cq-opt"><input type="radio" name="cq1" value="1"><span>Keeps the pin at a known HIGH state when the button is not pressed</span></label>
+        <label class="cq-opt"><input type="radio" name="cq1" value="2"><span>Makes the button press faster</span></label>
+        <label class="cq-opt"><input type="radio" name="cq1" value="3"><span>Converts analog voltage to digital</span></label>
+      </div>
+      <div class="cq-fb" id="cfb-1"></div>
+    </div>
+    <div class="cq-block" id="cq-block-2">
+      <p class="cq-text"><span class="cq-num">3</span>With <code>machine.Pin.PULL_UP</code>, what does <code>btn.value()</code> return when the button IS pressed?</p>
+      <div class="cq-opts">
+        <label class="cq-opt"><input type="radio" name="cq2" value="0"><span>1 (HIGH)</span></label>
+        <label class="cq-opt"><input type="radio" name="cq2" value="1"><span>0 (LOW)</span></label>
+        <label class="cq-opt"><input type="radio" name="cq2" value="2"><span>3.3 (volts)</span></label>
+        <label class="cq-opt"><input type="radio" name="cq2" value="3"><span>None</span></label>
+      </div>
+      <div class="cq-fb" id="cfb-2"></div>
+    </div>
+    <div class="cq-block" id="cq-block-3">
+      <p class="cq-text"><span class="cq-num">4</span>With <code>machine.Pin.PULL_UP</code>, what does <code>btn.value()</code> return when the button is NOT pressed?</p>
+      <div class="cq-opts">
+        <label class="cq-opt"><input type="radio" name="cq3" value="0"><span>0 (LOW)</span></label>
+        <label class="cq-opt"><input type="radio" name="cq3" value="1"><span>1 (HIGH)</span></label>
+        <label class="cq-opt"><input type="radio" name="cq3" value="2"><span>-1</span></label>
+        <label class="cq-opt"><input type="radio" name="cq3" value="3"><span>True</span></label>
+      </div>
+      <div class="cq-fb" id="cfb-3"></div>
+    </div>
+    <div class="cq-block" id="cq-block-4">
+      <p class="cq-text"><span class="cq-num">5</span>Which line correctly creates an input pin 14 with internal pull-up?</p>
+      <div class="cq-opts">
+        <label class="cq-opt"><input type="radio" name="cq4" value="0"><span><code>btn = machine.Pin(14, machine.Pin.OUT)</code></span></label>
+        <label class="cq-opt"><input type="radio" name="cq4" value="1"><span><code>btn = machine.Pin(14, machine.Pin.IN)</code></span></label>
+        <label class="cq-opt"><input type="radio" name="cq4" value="2"><span><code>btn = machine.Pin(14, machine.Pin.IN, machine.Pin.PULL_UP)</code></span></label>
+        <label class="cq-opt"><input type="radio" name="cq4" value="3"><span><code>btn = machine.Pin.IN(14, machine.Pin.PULL_UP)</code></span></label>
+      </div>
+      <div class="cq-fb" id="cfb-4"></div>
+    </div>
+    <div class="cq-block" id="cq-block-5">
+      <p class="cq-text"><span class="cq-num">6</span>What happens if you use a button pin with no pull-up and no pull-down resistor?</p>
+      <div class="cq-opts">
+        <label class="cq-opt"><input type="radio" name="cq5" value="0"><span>The pin always reads 0</span></label>
+        <label class="cq-opt"><input type="radio" name="cq5" value="1"><span>The pin always reads 1</span></label>
+        <label class="cq-opt"><input type="radio" name="cq5" value="2"><span>The pin floats — readings are unpredictable</span></label>
+        <label class="cq-opt"><input type="radio" name="cq5" value="3"><span>The Pico will crash immediately</span></label>
+      </div>
+      <div class="cq-fb" id="cfb-5"></div>
+    </div>
+    <div class="cq-block" id="cq-block-6">
+      <p class="cq-text"><span class="cq-num">7</span>What does the <code>btn.value()</code> method return?</p>
+      <div class="cq-opts">
+        <label class="cq-opt"><input type="radio" name="cq6" value="0"><span>"pressed" or "released" as a string</span></label>
+        <label class="cq-opt"><input type="radio" name="cq6" value="1"><span>True or False as a boolean</span></label>
+        <label class="cq-opt"><input type="radio" name="cq6" value="2"><span>Integer 0 or 1</span></label>
+        <label class="cq-opt"><input type="radio" name="cq6" value="3"><span>The voltage level in volts</span></label>
+      </div>
+      <div class="cq-fb" id="cfb-6"></div>
+    </div>
+    <div class="cq-block" id="cq-block-7">
+      <p class="cq-text"><span class="cq-num">8</span>What is "debouncing" in the context of a button?</p>
+      <div class="cq-opts">
+        <label class="cq-opt"><input type="radio" name="cq7" value="0"><span>Speeding up the button response</span></label>
+        <label class="cq-opt"><input type="radio" name="cq7" value="1"><span>Filtering out the brief rapid on/off noise that occurs when a button is pressed</span></label>
+        <label class="cq-opt"><input type="radio" name="cq7" value="2"><span>Setting the pull-up resistor value</span></label>
+        <label class="cq-opt"><input type="radio" name="cq7" value="3"><span>Converting button presses to decimal numbers</span></label>
+      </div>
+      <div class="cq-fb" id="cfb-7"></div>
+    </div>
+    <div class="cq-block" id="cq-block-8">
+      <p class="cq-text"><span class="cq-num">9</span>If you use <code>machine.Pin.PULL_DOWN</code> instead of PULL_UP, pressing a button that connects pin to 3.3 V gives:</p>
+      <div class="cq-opts">
+        <label class="cq-opt"><input type="radio" name="cq8" value="0"><span>btn.value() == 0</span></label>
+        <label class="cq-opt"><input type="radio" name="cq8" value="1"><span>btn.value() == 1</span></label>
+        <label class="cq-opt"><input type="radio" name="cq8" value="2"><span>An error</span></label>
+        <label class="cq-opt"><input type="radio" name="cq8" value="3"><span>The pin floats</span></label>
+      </div>
+      <div class="cq-fb" id="cfb-8"></div>
+    </div>
+    <div class="cq-block" id="cq-block-9">
+      <p class="cq-text"><span class="cq-num">10</span>What module provides <code>Pin</code>, <code>ADC</code>, and <code>PWM</code> classes in MicroPython?</p>
+      <div class="cq-opts">
+        <label class="cq-opt"><input type="radio" name="cq9" value="0"><span>time</span></label>
+        <label class="cq-opt"><input type="radio" name="cq9" value="1"><span>gpio</span></label>
+        <label class="cq-opt"><input type="radio" name="cq9" value="2"><span>machine</span></label>
+        <label class="cq-opt"><input type="radio" name="cq9" value="3"><span>hardware</span></label>
+      </div>
+      <div class="cq-fb" id="cfb-9"></div>
+    </div>
+    <div style="margin-top:4px;margin-bottom:16px">
+      <div class="cq-score-bar"><div class="cq-score-fill" id="cq-score-fill" style="width:0%"></div></div>
+      <div style="font-size:12px;color:var(--muted)" id="cq-answered-count">0 / 10 answered</div>
+    </div>
+    <button class="tier-btn" id="cq-submit" disabled style="background:var(--blue)">Submit Concept Check</button>
+    <div id="cq-feedback" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- REFLECTIVE JOURNAL -->
+<div class="refl-gate tier-locked" id="refl3" aria-disabled="true">
+  <div class="refl-gate-header">
+    <span class="refl-badge">&#x1F4D3; Reflective Journal</span>
+    <span style="font-size:14px;font-weight:700;color:var(--blue)">Post-Activity Reflection</span>
+  </div>
+  <div class="refl-gate-body">
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px">
+      <div>
+        <label class="cal-label" style="margin-bottom:4px">Post-activity confidence (1–10):</label>
+        <div class="conf-slider-wrap" style="margin:0"><input type="range" id="post-conf" min="1" max="10" value="5"><span class="conf-val" id="post-conf-val">5</span></div>
+      </div>
+      <div>
+        <label class="cal-label" style="margin-bottom:4px">Actual Tier 1 score (%):</label>
+        <input class="pred-input" id="post-actual" type="number" min="0" max="100" placeholder="e.g. 83">
+      </div>
+    </div>
+    <div class="journal-prompt">
+      <label><span class="jp-num">1</span> Explain pull-up resistors to a classmate who has never heard of them. Why do we need them, and what goes wrong without them?</label>
+      <textarea class="tier-textarea" id="jr1" rows="4" placeholder="Write at least 10 words…"></textarea>
+    </div>
+    <div class="journal-prompt">
+      <label><span class="jp-num">2</span> Describe a situation where reading a digital input (like a button) could be used in a real IoT project. What would the button control or trigger?</label>
+      <textarea class="tier-textarea" id="jr2" rows="4" placeholder="Write at least 10 words…"></textarea>
+    </div>
+    <div class="journal-prompt">
+      <label><span class="jp-num">3</span> What was the most confusing part of this activity — the difference between IN/OUT, the PULL_UP logic, or reading <code>value()</code>? How did you work through it?</label>
+      <textarea class="tier-textarea" id="jr3" rows="4" placeholder="Write at least 10 words…"></textarea>
+    </div>
+    <div style="margin-top:12px">
+      <button class="tier-btn" id="refl3-submit" disabled>Submit Reflection &amp; Complete &#x2714;</button>
+    </div>
+    <div id="refl3-feedback" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- COMPLETE BANNER -->
+<div class="complete-banner" id="act-complete-banner" style="display:none">
+  <h2>&#x1F3AF; Activity 4 Complete!</h2>
+  <p>Your Tier 1–4 work, concept check, and reflection have all been saved. Well done!</p>
+  <div style="margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+    <a href="index.html" class="btn">&#x2190; Back to Activities</a>
+  </div>
+</div>
+
+</div><!-- /container -->
+</div><!-- /main-content -->
+
+<footer class="site-footer">
+  <p class="footer-tagline">See &middot; Think &middot; Explore &middot; Marvel</p>
+  <p class="footer-lab">UMPSA STEM LAB &nbsp;|&nbsp; Rasp Pi Pico IoT</p>
+  <div class="footer-copy">
+    <span>&copy; 2026 UMPSA STEM Lab Engineering Education</span>
+    <a href="https://www.umpsa.edu.my" class="footer-icon" aria-label="Website">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+    </a>
+    <a href="mailto:stemlab@umpsa.edu.my" class="footer-icon" aria-label="Email">
+      <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>
+    </a>
+  </div>
+</footer>
+
+<script>
+/* =====================================================
+   ACTIVITY CONFIG
+===================================================== */
+window.ACTIVITY = {
+  id: '4t',
+  title: 'Activity 4 — Digital Input — Tiered Practice',
+  week: 8,
+  tier: 1,
+  concept: 'input pins and pull-up resistors'
+};
+
+var LMS_KEY = 'lilex_a4t';
+var ID_KEY  = 'lilex_student';
+var T1_ANSWERS = ['machine', 'IN', 'PULL_UP', 'True', '0', 'on'];
+var BUG_ANSWERS = ['btn = machine.Pin(14, machine.Pin.IN, machine.Pin.PULL_UP)', 'if btn.value() == 0:', 'led.on()'];
+var CQ_ANSWERS  = [1, 1, 1, 1, 2, 2, 2, 1, 1, 2];
+
+var state    = {cal:false,t1:false,t2:false,refl2:false,t3:false,t4:false,cq:false,refl3:false};
+var attempts = {t1:0,t2:0,t3:0,t4:0};
+
+/* =====================================================
+   LOCAL STORAGE HELPERS
+===================================================== */
+function lmsGet(){try{return JSON.parse(localStorage.getItem(LMS_KEY)||'{}');}catch(e){return {};}}
+function lmsSet(d){try{localStorage.setItem(LMS_KEY,JSON.stringify(d));}catch(e){}}
+function lmsLog(evt,data){var d=lmsGet();if(!d.log)d.log=[];d.log.push({evt:evt,ts:Date.now(),data:data});lmsSet(d);}
+
+/* =====================================================
+   STUDENT PROFILE
+===================================================== */
+function saveProfile(){
+  var name=document.getElementById('id-name').value.trim();
+  var matric=document.getElementById('id-matric').value.trim();
+  var kelas=document.getElementById('id-kelas').value.trim();
+  if(!name||!matric||!kelas){document.getElementById('id-notice').style.display='block';return;}
+  document.getElementById('id-notice').style.display='none';
+  var profile={name:name,matric:matric,kelas:kelas,
+    mykid:document.getElementById('id-mykid').value.trim(),
+    age:document.getElementById('id-age').value,
+    gender:document.getElementById('id-gender').value,
+    phone:document.getElementById('id-phone').value.trim(),
+    email:document.getElementById('id-email').value.trim(),
+    school:document.getElementById('id-school').value.trim(),
+    state:document.getElementById('id-state').value,
+    ts:Date.now()};
+  try{localStorage.setItem(ID_KEY,JSON.stringify(profile));}catch(e){}
+  showConfirmed(profile);
+  unlockCard('cal-gate');
+}
+function showConfirmed(p){
+  document.getElementById('id-form-area').style.display='none';
+  document.getElementById('id-confirmed-area').style.display='block';
+  document.getElementById('id-block').classList.add('id-confirmed');
+  document.getElementById('id-conf-name').textContent=p.name;
+  document.getElementById('id-conf-meta').textContent=p.matric+' · '+p.kelas;
+  unlockCard('cal-gate');
+}
+function editProfile(){
+  document.getElementById('id-form-area').style.display='block';
+  document.getElementById('id-confirmed-area').style.display='none';
+  document.getElementById('id-block').classList.remove('id-confirmed');
+}
+(function loadProfile(){
+  try{
+    var p=JSON.parse(localStorage.getItem(ID_KEY)||'null');
+    if(p&&p.name&&p.matric){
+      ['name','matric','kelas','mykid','age','gender','phone','email','school','state'].forEach(function(k){
+        var el=document.getElementById('id-'+k);
+        if(el&&p[k]!==undefined)el.value=p[k];
+      });
+      showConfirmed(p);
+    }
+  }catch(e){}
+})();
+
+/* =====================================================
+   HELPERS
+===================================================== */
+function unlockCard(id){var el=document.getElementById(id);if(el){el.classList.remove('tier-locked');el.removeAttribute('aria-disabled');}}
+function showFeedback(id,msg,type){
+  var el=document.getElementById(id);if(!el)return;
+  el.className='feedback-'+type+' feedback-anim';el.innerHTML=msg;el.style.display='block';
+}
+function markDone(id){var el=document.getElementById(id);if(el){el.classList.remove('active');el.classList.add('done');}}
+function markStepperActive(id){var el=document.getElementById(id);if(el){el.classList.add('active');el.querySelector('.tier-label').style.color='var(--teal)';}}
+
+/* =====================================================
+   CALIBRATION
+===================================================== */
+(function(){
+  var cs=document.getElementById('cal-conf'),cv=document.getElementById('cal-conf-val');
+  if(cs)cs.addEventListener('input',function(){cv.textContent=cs.value;});
+})();
+document.getElementById('cal-submit').addEventListener('click',function(){
+  if(state.cal)return;
+  var conf=+(document.getElementById('cal-conf').value||5);
+  var pred=document.getElementById('cal-pred').value.trim();
+  var r1=document.getElementById('cal-r1').value.trim();
+  if(!pred||isNaN(+pred)){showFeedback('cal-feedback','Please enter a predicted score (0–100).','error');return;}
+  state.cal=true;
+  var d=lmsGet();d.cal={confidence:conf,predicted_score:+pred,reflection_1:r1,ts:Date.now()};lmsSet(d);
+  lmsLog('calibration_saved',{confidence:conf,predicted_score:+pred});
+  showFeedback('cal-feedback','Prediction saved! Begin Tier 1.','success');
+  document.getElementById('cal-submit').disabled=true;
+  markDone('tp0');document.getElementById('tc01').classList.add('done');
+  markStepperActive('tp1');
+  unlockCard('tier1');document.getElementById('t1-submit').disabled=false;
+  setTimeout(function(){document.getElementById('tier1').scrollIntoView({behavior:'smooth',block:'nearest'});},300);
+});
+
+/* =====================================================
+   TIER 1 — Fill-in-Blank
+===================================================== */
+document.getElementById('t1-submit').addEventListener('click',function(){
+  if(state.t1)return;attempts.t1++;
+  var allFilled=true,allCorrect=true,firstAttempt=(attempts.t1===1);
+  for(var i=1;i<=6;i++){
+    var el=document.getElementById('blank-'+i);
+    if(!el)continue;
+    var val=el.value.trim();
+    if(!val){allFilled=false;continue;}
+    var correct=T1_ANSWERS[i-1];
+    if(val.toLowerCase()===correct.toLowerCase()){el.classList.add('correct');el.classList.remove('wrong');}
+    else{el.classList.add('wrong');el.classList.remove('correct');allCorrect=false;}
+  }
+  if(!allFilled){showFeedback('t1-feedback','Please fill in all blanks before submitting.','error');return;}
+  var pct=Math.round((T1_ANSWERS.filter(function(a,i){
+    var el=document.getElementById('blank-'+(i+1));
+    return el&&el.value.trim().toLowerCase()===a.toLowerCase();
+  }).length/6)*100);
+  var d=lmsGet();d.t1_submitted={attempts:attempts.t1,pct:pct,ts:Date.now()};
+  if(firstAttempt)d.t1_first_attempt_pct=pct;
+  lmsSet(d);lmsLog('t1_submitted',{attempts:attempts.t1,pct:pct});
+  if(allCorrect){
+    state.t1=true;
+    showFeedback('t1-feedback','All correct! Proceeding to Tier 2. &#x1F3AF;','success');
+    document.getElementById('t1-submit').disabled=true;
+    markDone('tp1');document.getElementById('tc12').classList.add('done');
+    markStepperActive('tp2');
+    unlockCard('tier2');document.getElementById('t2-submit').disabled=false;
+    setTimeout(function(){document.getElementById('tier2').scrollIntoView({behavior:'smooth',block:'nearest'});},300);
+  }else{
+    showFeedback('t1-feedback','Score: '+pct+'% — check the highlighted blanks and try again.','warning');
+  }
+});
+
+/* =====================================================
+   TIER 2 — Debug
+===================================================== */
+var bugSolved=[false,false,false];
+document.getElementById('t2-submit').addEventListener('click',function(){
+  if(state.t2)return;attempts.t2++;
+  var allSolved=true;
+  for(var i=0;i<3;i++){
+    var el=document.getElementById('bug-fix-'+i);
+    if(!el)continue;
+    var val=el.value.trim();
+    var correct=BUG_ANSWERS[i];
+    var fb=document.getElementById('bug-fb-'+i);
+    if(val.toLowerCase().replace(/\s+/g,' ')===correct.toLowerCase().replace(/\s+/g,' ')){
+      bugSolved[i]=true;
+      el.style.borderColor='#22bb55';
+      if(fb){fb.className='feedback-success';fb.textContent='\u2713 Correct!';}
+    }else{
+      allSolved=false;
+      el.style.borderColor='var(--red)';
+      if(fb){fb.className='feedback-error';fb.textContent='Not quite — re-read the hint.';}
+    }
+  }
+  var solved=bugSolved.filter(Boolean).length;
+  var d=lmsGet();d.t2_submitted={attempts:attempts.t2,solved:solved,ts:Date.now()};lmsSet(d);
+  lmsLog('t2_submitted',{attempts:attempts.t2,solved:solved});
+  if(allSolved){
+    state.t2=true;
+    showFeedback('t2-feedback','All bugs fixed! Great debugging! Now reflect before Tier 3.','success');
+    document.getElementById('t2-submit').disabled=true;
+    markDone('tp2');document.getElementById('tc23').classList.add('done');
+    unlockCard('refl2');document.getElementById('refl2-submit').disabled=false;
+    setTimeout(function(){document.getElementById('refl2').scrollIntoView({behavior:'smooth',block:'nearest'});},300);
+  }else{
+    showFeedback('t2-feedback',solved+' of 3 bugs fixed — keep going!','warning');
+  }
+});
+
+/* =====================================================
+   MID-ACTIVITY REFLECTION (between T2 and T3)
+===================================================== */
+document.getElementById('refl2-submit').addEventListener('click',function(){
+  if(state.refl2)return;
+  var txt=document.getElementById('refl2-text').value.trim();
+  if(txt.split(/\s+/).filter(Boolean).length<10){showFeedback('refl2-feedback','Write at least 10 words.','error');return;}
+  state.refl2=true;
+  var d=lmsGet();d.reflection_2={text:txt,ts:Date.now()};lmsSet(d);
+  lmsLog('refl2_saved',{});
+  showFeedback('refl2-feedback','Reflection saved! Tier 3 unlocked.','success');
+  document.getElementById('refl2-submit').disabled=true;
+  markStepperActive('tp3');
+  unlockCard('tier3');document.getElementById('t3-submit').disabled=false;
+  setTimeout(function(){document.getElementById('tier3').scrollIntoView({behavior:'smooth',block:'nearest'});},300);
+});
+
+/* =====================================================
+   TIER 3 — Extend
+===================================================== */
+document.getElementById('t3-submit').addEventListener('click',function(){
+  if(state.t3)return;attempts.t3++;
+  var txt=document.getElementById('t3-text').value.trim();
+  var matric=(function(){try{var s=JSON.parse(localStorage.getItem(ID_KEY)||'{}');return s.matric||'unknown';}catch(e){return 'unknown';}})();
+  if(txt.length<20){showFeedback('t3-feedback','Please write your extended code before submitting.','error');return;}
+  state.t3=true;
+  var d=lmsGet();d.t3_submitted={text:txt,attempts:attempts.t3,ts:Date.now()};lmsSet(d);
+  try{localStorage.setItem('lilex_a4t_t3_'+matric,txt);}catch(e){}
+  lmsLog('t3_submitted',{attempts:attempts.t3,ts:Date.now()});
+  showFeedback('t3-feedback','Tier 3 submitted! Tier 4 unlocked.','success');
+  document.getElementById('t3-submit').disabled=true;
+  markDone('tp3');document.getElementById('tc34').classList.add('done');
+  markStepperActive('tp4');
+  unlockCard('tier4');document.getElementById('t4-submit').disabled=false;
+  setTimeout(function(){document.getElementById('tier4').scrollIntoView({behavior:'smooth',block:'nearest'});},300);
+});
+
+/* =====================================================
+   TIER 4 — Create
+===================================================== */
+document.getElementById('t4-submit').addEventListener('click',function(){
+  if(state.t4)return;attempts.t4++;
+  var txt=document.getElementById('t4-text').value.trim();
+  var matric=(function(){try{var s=JSON.parse(localStorage.getItem(ID_KEY)||'{}');return s.matric||'unknown';}catch(e){return 'unknown';}})();
+  if(txt.length<10){showFeedback('t4-feedback','Please write your program before submitting.','error');return;}
+  state.t4=true;
+  var d=lmsGet();d.t4_submitted={text:txt,attempts:attempts.t4,ts:Date.now()};lmsSet(d);
+  try{localStorage.setItem('lilex_a4t_t4_'+matric,txt);}catch(e){}
+  lmsLog('t4_submitted',{attempts:attempts.t4,ts:Date.now()});
+  showFeedback('t4-feedback','Tier 4 submitted! Now check your concept understanding. &#x1F9E0;','success');
+  document.getElementById('t4-submit').disabled=true;
+  markDone('tp4');document.getElementById('tc4c').classList.add('done');
+  markStepperActive('tpc');
+  unlockCard('concept-check');
+  setTimeout(function(){document.getElementById('concept-check').scrollIntoView({behavior:'smooth',block:'nearest'});},300);
+});
+
+/* =====================================================
+   CONCEPT CHECK — 10 MCQs
+===================================================== */
+(function(){
+  var cqSelected=new Array(10).fill(-1);
+  var cqSubmitted=false;
+  for(var qi=0;qi<10;qi++){
+    (function(idx){
+      document.querySelectorAll('input[name="cq'+idx+'"]').forEach(function(r){
+        r.addEventListener('change',function(){
+          cqSelected[idx]=parseInt(this.value,10);
+          var answered=cqSelected.filter(function(v){return v!==-1;}).length;
+          document.getElementById('cq-answered-count').textContent=answered+' / 10 answered';
+          document.getElementById('cq-score-fill').style.width=(answered*10)+'%';
+          document.getElementById('cq-submit').disabled=(answered<10);
+        });
+      });
+    })(qi);
+  }
+  document.getElementById('cq-submit').addEventListener('click',function(){
+    if(cqSubmitted)return;
+    cqSubmitted=true;
+    var correct=0;
+    for(var i=0;i<10;i++){
+      var fb=document.getElementById('cfb-'+i);
+      var block=document.getElementById('cq-block-'+i);
+      document.querySelectorAll('input[name="cq'+i+'"]').forEach(function(r){r.disabled=true;});
+      if(cqSelected[i]===CQ_ANSWERS[i]){
+        correct++;
+        fb.className='cq-fb correct';fb.textContent='\u2713 Correct!';
+        block.style.borderColor='#16a34a';
+      }else{
+        fb.className='cq-fb incorrect';
+        var correctOpt=document.querySelector('input[name="cq'+i+'"][value="'+CQ_ANSWERS[i]+'"]');
+        var correctText=correctOpt?correctOpt.closest('label').querySelector('span').textContent:'';
+        fb.textContent='\u2717 Incorrect. Correct: '+correctText;
+        block.style.borderColor='#dc2626';
+      }
+    }
+    var pct=Math.round(correct/10*100);
+    document.getElementById('cq-score-fill').style.width=pct+'%';
+    document.getElementById('cq-answered-count').textContent=correct+' / 10 correct ('+pct+'%)';
+    document.getElementById('cq-submit').disabled=true;
+    var d=lmsGet();
+    d.concept_check={score:correct,pct:pct,selected:cqSelected.slice(),ts:Date.now()};
+    lmsSet(d);lmsLog('concept_check_complete',{score:correct,pct:pct});
+    var fb2=document.getElementById('cq-feedback');
+    if(pct>=80){fb2.className='cq-fb correct';fb2.style.display='block';fb2.innerHTML='&#x1F3AF; Great work! <strong>'+correct+'/10 ('+pct+'%)</strong>. Time to reflect!';}
+    else if(pct>=60){fb2.className='cq-fb';fb2.style.display='block';fb2.style.background='#f5a21d22';fb2.style.color='#92400e';fb2.innerHTML='&#x1F4A1; <strong>'+correct+'/10 ('+pct+'%)</strong>. Review the highlighted questions, then reflect.';}
+    else{fb2.className='cq-fb incorrect';fb2.style.display='block';fb2.innerHTML='&#x1F4D6; <strong>'+correct+'/10 ('+pct+'%)</strong>. Consider re-reading the tutorial, then reflect on the gaps.';}
+    markDone('tpc');document.getElementById('tccr').classList.add('done');
+    markStepperActive('tpr');
+    unlockCard('refl3');document.getElementById('refl3-submit').disabled=false;
+    setTimeout(function(){document.getElementById('refl3').scrollIntoView({behavior:'smooth',block:'nearest'});},600);
+  });
+  window._restoreCQ=function(savedSelected){
+    if(!savedSelected||cqSubmitted)return;
+    cqSelected=savedSelected.slice();
+    for(var i=0;i<10;i++){
+      var r=document.querySelector('input[name="cq'+i+'"][value="'+cqSelected[i]+'"]');
+      if(r)r.checked=true;
+    }
+    var answered=cqSelected.filter(function(v){return v!==-1;}).length;
+    document.getElementById('cq-answered-count').textContent=answered+' / 10 answered';
+    document.getElementById('cq-score-fill').style.width=(answered*10)+'%';
+    document.getElementById('cq-submit').disabled=(answered<10);
+  };
+})();
+
+/* =====================================================
+   POST-CALIBRATION SLIDER
+===================================================== */
+(function(){
+  var pe=document.getElementById('post-conf'),pv=document.getElementById('post-conf-val');
+  if(pe)pe.addEventListener('input',function(){pv.textContent=pe.value;});
+})();
+
+/* =====================================================
+   FINAL REFLECTION + COMPLETION
+===================================================== */
+document.getElementById('refl3-submit').addEventListener('click',function(){
+  if(state.refl3)return;
+  var postConf=+(document.getElementById('post-conf').value||5);
+  var postActual=document.getElementById('post-actual').value||'';
+  var jr1=document.getElementById('jr1').value.trim();
+  var jr2=document.getElementById('jr2').value.trim();
+  var jr3=document.getElementById('jr3').value.trim();
+  var short=[];
+  if(jr1.split(/\s+/).filter(Boolean).length<10)short.push('prompt 1');
+  if(jr2.split(/\s+/).filter(Boolean).length<10)short.push('prompt 2');
+  if(jr3.split(/\s+/).filter(Boolean).length<10)short.push('prompt 3');
+  if(short.length>0){showFeedback('refl3-feedback','Please write at least 10 words in '+short.join(', ')+'.','error');return;}
+  state.refl3=true;
+  var d=lmsGet();
+  d.post_cal={post_confidence:postConf,actual_pct:postActual,jr1:jr1,jr2:jr2,jr3:jr3,ts:Date.now()};
+  if(d.cal&&d.cal.predicted_score!==undefined&&d.t1_first_attempt_pct!==undefined){
+    d.calibration_delta=d.t1_first_attempt_pct-d.cal.predicted_score;
+    lmsLog('calibration_delta',{predicted:d.cal.predicted_score,actual:d.t1_first_attempt_pct,delta:d.calibration_delta});
+  }
+  lmsSet(d);lmsLog('activity_complete',{ts:Date.now()});
+  markDone('tpr');
+  showFeedback('refl3-feedback','Reflection saved! Activity 4 complete! &#x1F389;','success');
+  document.getElementById('refl3-submit').disabled=true;
+  document.getElementById('act-complete-banner').style.display='block';
+  document.getElementById('act-complete-banner').scrollIntoView({behavior:'smooth',block:'nearest'});
+});
+
+/* =====================================================
+   AUTO-SAVE TEXTAREAS
+===================================================== */
+['jr1','jr2','jr3','cal-r1','refl2-text','t3-text','t4-text'].forEach(function(id){
+  var el=document.getElementById(id);if(!el)return;
+  try{var d=lmsGet();if(d._autosave&&d._autosave[id])el.value=d._autosave[id];}catch(e){}
+  el.addEventListener('input',function(){
+    try{var d=lmsGet();if(!d._autosave)d._autosave={};d._autosave[id]=el.value;lmsSet(d);}catch(e){}
+  });
+});
+
+/* =====================================================
+   RESTORE STATE ON PAGE LOAD
+===================================================== */
+(function restore(){
+  var d=lmsGet();
+  if(d.cal){
+    state.cal=true;document.getElementById('cal-submit').disabled=true;
+    if(d.cal.confidence!==undefined)document.getElementById('cal-conf').value=d.cal.confidence;
+    document.getElementById('cal-conf-val').textContent=d.cal.confidence||5;
+    if(d.cal.predicted_score!==undefined)document.getElementById('cal-pred').value=d.cal.predicted_score;
+    if(d.cal.reflection_1)document.getElementById('cal-r1').value=d.cal.reflection_1;
+    showFeedback('cal-feedback','Calibration saved (confidence: '+d.cal.confidence+'/10, predicted: '+d.cal.predicted_score+'%).','success');
+    markDone('tp0');document.getElementById('tc01').classList.add('done');
+    markStepperActive('tp1');
+    unlockCard('tier1');document.getElementById('t1-submit').disabled=false;
+  }
+  if(d.t1_submitted){
+    state.t1=true;document.getElementById('t1-submit').disabled=true;
+    markDone('tp1');document.getElementById('tc12').classList.add('done');
+    markStepperActive('tp2');
+    unlockCard('tier2');document.getElementById('t2-submit').disabled=false;
+  }
+  if(d.t2_submitted){
+    state.t2=true;document.getElementById('t2-submit').disabled=true;
+    markDone('tp2');document.getElementById('tc23').classList.add('done');
+    unlockCard('refl2');
+    if(d.reflection_2){
+      state.refl2=true;document.getElementById('refl2-submit').disabled=true;
+      if(d.reflection_2.text)document.getElementById('refl2-text').value=d.reflection_2.text;
+      showFeedback('refl2-feedback','Reflection saved.','success');
+      markStepperActive('tp3');
+      unlockCard('tier3');document.getElementById('t3-submit').disabled=false;
+    }else{document.getElementById('refl2-submit').disabled=false;}
+  }
+  if(d.t3_submitted){
+    state.t3=true;document.getElementById('t3-submit').disabled=true;
+    if(d.t3_submitted.text)document.getElementById('t3-text').value=d.t3_submitted.text;
+    markDone('tp3');document.getElementById('tc34').classList.add('done');
+    markStepperActive('tp4');
+    unlockCard('tier4');document.getElementById('t4-submit').disabled=false;
+  }
+  if(d.t4_submitted){
+    state.t4=true;document.getElementById('t4-submit').disabled=true;
+    if(d.t4_submitted.text)document.getElementById('t4-text').value=d.t4_submitted.text;
+    markDone('tp4');document.getElementById('tc4c').classList.add('done');
+    unlockCard('concept-check');
+    if(d.concept_check){
+      markStepperActive('tpc');
+      if(window._restoreCQ&&d.concept_check.selected)window._restoreCQ(d.concept_check.selected);
+      var cqBtn=document.getElementById('cq-submit');
+      if(cqBtn&&!cqBtn.disabled){cqBtn.click();}
+      else{
+        var pct=d.concept_check.pct||0;var correct=d.concept_check.score||0;
+        document.getElementById('cq-score-fill').style.width=pct+'%';
+        document.getElementById('cq-answered-count').textContent=correct+' / 10 correct ('+pct+'%)';
+        markDone('tpc');document.getElementById('tccr').classList.add('done');
+        unlockCard('refl3');document.getElementById('refl3-submit').disabled=false;
+      }
+    }else{markStepperActive('tpc');}
+  }
+  if(d.post_cal){
+    state.refl3=true;document.getElementById('refl3-submit').disabled=true;
+    if(d.post_cal.jr1)document.getElementById('jr1').value=d.post_cal.jr1;
+    if(d.post_cal.jr2)document.getElementById('jr2').value=d.post_cal.jr2;
+    if(d.post_cal.jr3)document.getElementById('jr3').value=d.post_cal.jr3;
+    showFeedback('refl3-feedback','Reflection saved. Activity 4 complete!','success');
+    markDone('tpr');
+    document.getElementById('act-complete-banner').style.display='block';
+  }
+})();
+</script>
+</body>
+</html>

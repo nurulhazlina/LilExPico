@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teacher notes &mdash; Activity 13 | LilEx5 Pico IoT Module</title>
+<meta name="description" content="Instructor notes for Activity 13.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%2302ADA5'/%3E%3C/svg%3E">
+<style>
+.codebox{position:relative;margin:1em 0}
+.codebox pre{margin:0;padding:1.1em 1em 1em;background:var(--code-bg,#1e1e2e);color:var(--code-fg,#cdd6f4);border-radius:6px;overflow-x:auto;font-size:.88em;line-height:1.5;tab-size:4}
+.codebox code{font-family:'Cascadia Code','Fira Mono',monospace;white-space:pre}
+.copybtn{position:absolute;top:.45em;right:.45em;padding:.22em .6em;font-size:.78em;font-weight:600;background:#02ADA5;color:#fff;border:none;border-radius:4px;cursor:pointer;opacity:.82;transition:opacity .15s}
+.copybtn:hover{opacity:1}
+.copybtn.copied{background:#4caf50}
+</style>
+</head>
+<body>
+
+<div class="chev"><span>See</span><span>Think</span><span>Explore</span><span>Marvel</span></div>
+<nav class="sitenav"><div class="wrap">
+  <a class="brand" href="index.html">LilEx5 <span>Pico IoT Module</span></a>
+  <a class="nl" href="index.html">Home</a>
+  <details class="navsel">
+    <summary>Activity 13: Sending Data to a Live Dashboard</summary>
+    <div class="navmenu" role="menu">
+      <a href="teacher-0.html"><b>Activity 0</b>: Getting Started</a>
+      <a href="teacher-1.html"><b>Activity 1</b>: Light Up an LED</a>
+      <a href="teacher-2.html"><b>Activity 2</b>: Make an LED Blink</a>
+      <a href="teacher-3.html"><b>Activity 3</b>: Digital Output &amp; Servo</a>
+      <a href="teacher-4.html"><b>Activity 4</b>: Digital Input</a>
+      <a href="teacher-5.html"><b>Activity 5</b>: Making Decisions</a>
+      <a href="teacher-6.html"><b>Activity 6</b>: And, Or, Not</a>
+      <a href="teacher-7.html"><b>Activity 7</b>: Words on a Screen</a>
+      <a href="teacher-8.html"><b>Activity 8</b>: Sensors and Numbers</a>
+      <a href="teacher-9.html"><b>Activity 9</b>: Soil Moisture</a>
+      <a href="teacher-10.html"><b>Activity 10</b>: Internet and Data</a>
+      <a href="teacher-11.html"><b>Activity 11</b>: Control from Anywhere</a>
+      <a href="teacher-12.html"><b>Activity 12</b>: Sending Messages by Radio</a>
+      <a href="teacher-13.html" aria-current="page"><b>Activity 13</b>: Sending Data to a Live Dashboard</a>
+    </div>
+  </details>
+  <a class="nl" href="pinout.html">Pin reference</a>
+</div></nav>
+
+<div class="gate" id="gate">
+  <h2>&#128274; Teacher notes</h2>
+  <p>This page holds the exercise answer and instructor guidance for <strong>Activity 13 &mdash; Sending Data to a Live Dashboard</strong>.
+  It is not linked from the student pages.</p>
+  <p><strong>Students: please go back and try the activity first.</strong></p>
+  <button class="cta" id="gatebtn" type="button">I'm a teacher &mdash; show the notes</button>
+  <p style="margin-top:16px"><a href="activity-13.html">&larr; Back to the student page</a></p>
+</div>
+
+<div id="tcontent" hidden>
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">LilEx5 &middot; Pico IoT Module &middot; Instructor notes</p>
+    <h1>Activity 13 &mdash; teacher notes</h1>
+    <p class="sub">Sending Data to a Live Dashboard. The board posts every sensor reading to Google Sheets
+    over WiFi. The dashboard reads the sheet and updates itself live &mdash; from anywhere, with nothing to
+    host.</p>
+    <div class="hero-cta">
+      <a class="cta alt" href="activity-13.html">&#9654; Student page</a>
+      <a class="cta alt" href="LilEx5_Dashboard4.html" target="_blank">&#9654; Open the dashboard</a>
+      <a class="cta alt" href="teacher.html">&#128218; All teacher notes</a>
+      <a class="cta alt" href="teacher-12.html">&#8592; Activity 12 notes</a>
+      <a class="cta alt" href="pinout.html">&#128204; Pin reference</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<div class="tbanner"><b>Keep this link to yourself.</b> Unlisted and hidden from search engines, but the
+repository is public &mdash; anyone with the URL can read it.</div>
+
+<div class="tbanner"><b>Deploy the Apps Script before the lesson.</b> The deployment takes about five
+minutes and requires a Google account. Do it once from your own account; then every student uses the same
+<code>/exec</code> URL. Paste it into <code>config.py</code> on each board, or give students the URL on
+a card so they can type it themselves.</div>
+
+<section>
+  <h2>What is being taught</h2>
+  <ul>
+    <li><strong>One idea: data reaches the browser without a server you run.</strong> The board sends JSON
+    to Google Apps Script, Google stores the row, the dashboard asks Google for it. The class does not
+    install or maintain anything &mdash; and the dashboard updates live, in a browser tab, on any device.</li>
+    <li><strong>The cloud is not magic, it is a shared notice board.</strong> The Pico cannot talk directly
+    to the browser (both are behind different routers). The spreadsheet is the shared place: the board
+    writes to it and the browser reads from it. That one sentence explains the whole architecture.</li>
+    <li><strong>WiFi is the new hardware idea.</strong> The <code>network</code> module requires Pico&nbsp;W
+    firmware. The board connects once on startup and stays connected for the session. This is the first
+    time students write code that leaves the room.</li>
+    <li><strong>Rate limiting is real engineering.</strong> <code>maybe_send()</code> checks elapsed time
+    before posting. Posting on every loop tick would flood the network and get the Apps Script URL
+    throttled. Students do not write this logic &mdash; they use it &mdash; but it is worth naming.</li>
+    <li><strong>Reused, not re-taught:</strong> the loop, <code>sleep</code>, <code>Pin</code>,
+    <code>def</code>, <code>import</code>, the full sensor stack from Activity 8 onwards, and
+    <code>config.py</code> from Activity 11. The new code is three lines added to a program the class
+    already understands.</li>
+    <li><strong>Genuinely new:</strong> <code>import network</code>, <code>urequests</code>,
+    <code>json.dumps()</code>, and the idea that an HTTP POST carries structured data. None of these need
+    to be explained in full &mdash; the <code>wifi_reporter.py</code> file wraps all of them.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Setting up the Apps Script</h2>
+  <ul>
+    <li><strong>Do this once, before the class.</strong> Go to
+    <a href="https://script.google.com" target="_blank" rel="noopener">script.google.com</a>, create a
+    new project, paste in <code>LilEx5_AppsScript.js</code>, deploy as a Web App: <em>Execute as: Me</em>,
+    <em>Who has access: Anyone</em>. Copy the <code>/exec</code> URL.</li>
+    <li><strong>The sheet is created automatically.</strong> The first POST from any board creates the
+    spreadsheet and the <code>SensorData</code> tab. You do not need to create it in advance.</li>
+    <li><strong>One deployment, one sheet, one class.</strong> All boards write to the same sheet. The
+    dashboard reads the most recent row, so it shows whoever posted last. If you want each student to have
+    their own data, deploy a separate Apps Script per student &mdash; but this is unnecessary for the
+    class activity.</li>
+    <li><strong>If you redeploy</strong>, the URL changes. Update <code>config.py</code> on every board
+    and the <code>API_URL</code> constant at the top of <code>LilEx5_Dashboard4.html</code>.</li>
+  </ul>
+
+  <div class="tablescroll">
+  <table>
+    <thead><tr><th>Setting</th><th>Correct value</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>Execute as</td><td><strong>Me</strong></td>
+        <td>The script runs under your Google account and has permission to create and write to your
+        Drive.</td></tr>
+      <tr><td>Who has access</td><td><strong>Anyone</strong></td>
+        <td>The Pico has no Google session. It sends an anonymous HTTP POST. <em>Anyone with Google account</em>
+        will block it.</td></tr>
+      <tr><td>URL to copy</td><td>Ends in <strong>/exec</strong></td>
+        <td>The <code>/dev</code> URL only works when you are logged in to Google. The board and the
+        dashboard are not.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="cal warn"><b>Do not share the <code>/exec</code> URL publicly</b>
+  Anyone who has it can write rows to your sheet. Paste it into <code>config.py</code> on the boards and
+  give it out in the classroom. Do not post it in a shared document or on a public page.</div>
+</section>
+
+<section>
+  <h2>WiFi requirements</h2>
+  <ul>
+    <li><strong>2.4&nbsp;GHz only.</strong> The Pico W radio does not support 5&nbsp;GHz. Most school
+    networks broadcast both bands under the same name &mdash; if the board cannot connect, it is almost
+    always on the 5&nbsp;GHz band. Ask your IT department to confirm the 2.4&nbsp;GHz SSID, or use a
+    phone hotspot set to 2.4&nbsp;GHz.</li>
+    <li><strong>SSID and password are case-sensitive.</strong> One wrong character hangs the board at
+    <em>Connecting&hellip;</em> with no error. Paste, do not type, whenever possible.</li>
+    <li><strong>Captive portals will not work.</strong> If your school network requires a browser
+    login before granting internet access, the Pico cannot complete it. A phone hotspot avoids this
+    entirely.</li>
+    <li><strong>Pico&nbsp;W firmware is required.</strong> Standard Pico firmware has no <code>network</code>
+    module. If a student sees <code>ImportError: no module named 'network'</code>, flash the Pico&nbsp;W
+    firmware:
+    hold <strong>BOOTSEL</strong>, plug in USB, drag the <code>.uf2</code> file onto the
+    <em>RPI-RP2</em> drive. Then re-upload all files.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>How to run the room</h2>
+  <ul>
+    <li><strong>Put the dashboard on the projector before the lesson starts</strong>, already open and
+    showing live data from your own board. Students who see the tiles updating before they write a line of
+    code understand the goal immediately.</li>
+    <li><strong>Walk the room once during Step 2</strong> (editing <code>config.py</code>). A wrong URL
+    or mistyped password at this stage causes silent failure later. Paste the URL from your own screen if
+    possible.</li>
+    <li><strong>The Shell is the proof.</strong> <code>POST 200 OK — 20 fields sent</code> appearing
+    every five seconds means everything is working. If a student's Shell shows this, tell them to open the
+    dashboard and watch the tiles. If it does not, the problem is WiFi or the URL &mdash; nothing else.</li>
+    <li><strong>All boards write to the same sheet.</strong> The dashboard shows the most recent row from
+    any board. Ask students to breathe on their BME280 and watch the temperature tile jump &mdash; that
+    is the moment of the lesson.</li>
+    <li><strong>The dashboard link is in three places on the student page</strong> (hero, Step 5 banner,
+    and the Links table) and also in this file. Make sure students know to open
+    <code>LilEx5_Dashboard4.html</code>, not to create their own.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Exercise answer &mdash; add a high-temperature alert</h2>
+  <p class="muted">The exercise on the student page asks them to add a check: if the temperature reading
+  in the data dict is above 30&nbsp;&deg;C, print a warning in the Shell before posting. This requires
+  reading a value out of the <code>data</code> dict and using an <code>if</code> &mdash; both already
+  taught.</p>
+
+  <div class="codebox"><button class="copybtn" type="button">Copy</button><pre><code># Exercise answer — main_dashboard.py with temperature alert added
+# Changes are marked with  ← NEW
+
+from adapter import (
+    make_bme280_fields, make_ags10_fields,
+    make_vcnl_fields, make_bmi323_fields,
+    make_qmc_fields, make_ads_fields,
+)
+from wifi_reporter import WiFiReporter
+import config
+
+sensor_fields = (
+    make_bme280_fields() +
+    make_ags10_fields() +
+    make_vcnl_fields() +
+    make_bmi323_fields() +
+    make_qmc_fields() +
+    make_ads_fields()
+)
+
+reporter = WiFiReporter(config.WIFI_SSID, config.WIFI_PASS, config.APPS_SCRIPT_URL)
+reporter.connect()
+
+while True:
+    data = {}
+    for f in sensor_fields:
+        f.update()
+        data[f.key] = f.value
+
+    if data.get("temp_c", 0) > 30:            # ← NEW
+        print("WARNING: temperature above 30 C!")   # ← NEW
+
+    reporter.maybe_send(data, config.REPORT_INTERVAL_MS)</code></pre></div>
+
+  <div class="tablescroll">
+  <table>
+    <thead><tr><th>Accepting it</th><th>What to look for</th></tr></thead>
+    <tbody>
+      <tr><td>The key name</td><td><code>"temp_c"</code> must match the key set by
+        <code>make_bme280_fields()</code>. Accept any key they found by printing <code>data</code>
+        first &mdash; that is good engineering.</td></tr>
+      <tr><td>Position of the check</td><td><strong>After</strong> the data dict is built and
+        <strong>before</strong> <code>maybe_send()</code>. After the send is also acceptable; before
+        the loop is wrong (data is not ready yet).</td></tr>
+      <tr><td>The threshold</td><td>Any temperature that makes sense. 30&nbsp;&deg;C is the example;
+        accept 28, 35, or whatever the student chose and can justify.</td></tr>
+      <tr><td>Acceptance test</td><td>Breathe on the BME280 until the temperature climbs above the
+        threshold. The warning must appear in the Shell before the next POST line.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="cal note"><b>Why this exercise</b>
+  It uses <code>dict.get(key, default)</code> &mdash; a single new method &mdash; and otherwise applies
+  only what the class already knows: <code>if</code>, a comparison, and <code>print()</code>. The harder
+  part is knowing that <code>data</code> is a dict and choosing the right key &mdash; which means reading
+  code rather than writing it. That is the whole exercise.</div>
+</section>
+
+<section>
+  <h2>Going-further answers</h2>
+  <div class="tablescroll">
+  <table>
+    <thead><tr><th>Task</th><th>Answer / what to say</th></tr></thead>
+    <tbody>
+      <tr><td>Change how often the board posts</td>
+        <td>Edit <code>REPORT_INTERVAL_MS</code> in <code>config.py</code>. 1000 is once a second;
+        60000 is once a minute. Going below 1000 is possible but starts to saturate the Apps Script
+        quota &mdash; Google rate-limits free accounts to roughly 20 000 URL fetches per day.</td></tr>
+      <tr><td>Print every key–value pair in the data dict</td>
+        <td><code>for k, v in data.items(): print(k, v)</code> &mdash; the first time most students
+        use <code>.items()</code>. Good for understanding exactly what is being sent.</td></tr>
+      <tr><td>View the dashboard from a phone</td>
+        <td>Open <code>LilEx5_Dashboard4.html</code> on any device connected to the internet. The Apps
+        Script URL is already public, so no extra setup is needed. This is the payoff sentence of the
+        whole module: the board in the lab, the dashboard on a phone across town.</td></tr>
+      <tr><td>Chart in Google Sheets</td>
+        <td>Select the <code>temp_c</code> column in the SensorData tab, insert a chart, and set the
+        chart type to Line. It updates live as new rows arrive. No code needed &mdash; that is the
+        point.</td></tr>
+      <tr><td>Two boards, one sheet</td>
+        <td>Both students use the same <code>APPS_SCRIPT_URL</code> and different WiFi credentials.
+        Both write rows; the dashboard shows the most recent. Ask what they would need to add to tell
+        the rows apart: a board ID field.</td></tr>
+      <tr><td>Send only if a value crosses a threshold</td>
+        <td>Wrap <code>maybe_send()</code> in an <code>if</code> that checks a sensor reading. The board
+        stops sending and the dashboard tiles go grey. Good conversation about &ldquo;no news is news&rdquo;
+        versus &ldquo;last known good&rdquo; in IoT systems.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>Before the lesson</h2>
+  <ul>
+    <li><strong>Deploy the Apps Script from your own Google account</strong> and test it with one board
+    before the class. Confirm the sheet appears and <code>POST 200 OK</code> prints in the Shell.</li>
+    <li><strong>Open the dashboard on the projector and leave it running.</strong> Students who see live
+    data before the lesson starts arrive with the right mental model already in place.</li>
+    <li><strong>Confirm the classroom WiFi is 2.4&nbsp;GHz and has no captive portal.</strong> If it does,
+    arrange a phone hotspot or ask IT to whitelist the Pico's MAC address.</li>
+    <li><strong>Flash Pico&nbsp;W firmware on any board that still has standard Pico firmware.</strong> You
+    can check before the lesson: if <code>import network</code> raises an error, the firmware is wrong.
+    Download from
+    <a href="https://micropython.org/download/RPI_PICO_W/" target="_blank" rel="noopener">micropython.org/download/RPI_PICO_W/</a>.</li>
+    <li><strong>Prepare config cards.</strong> One small card per student with the WiFi SSID, password, and
+    your <code>/exec</code> URL already printed. Typing a 90-character URL by hand is where most lessons
+    go wrong.</li>
+    <li><strong>Know your Apps Script quota.</strong> Google allows roughly 20&nbsp;000 URL executions per
+    day on a free account. A class of 30 boards posting every 5 seconds uses about 21&nbsp;600 per hour.
+    Keep the lesson short or raise <code>REPORT_INTERVAL_MS</code> to 10&nbsp;000 for class use.</li>
+    <li>Thonny preset to <em>MicroPython (Raspberry Pi Pico)</em>; all six sensor driver files already on
+    the boards from Activity 8.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>The mistakes students actually make</h2>
+  <div class="tablescroll">
+  <table>
+    <thead><tr><th>What they did</th><th>What they see</th><th>What to say</th></tr></thead>
+    <tbody>
+      <tr><td>Standard Pico firmware, not Pico&nbsp;W</td>
+        <td><code>ImportError: no module named 'network'</code></td>
+        <td><strong>The most common blocker.</strong> Flash Pico&nbsp;W firmware: hold BOOTSEL, plug USB,
+        drag the <code>.uf2</code> onto RPI-RP2. Then re-upload all files. There is no other fix.</td></tr>
+      <tr><td>Wrong SSID or password in <code>config.py</code></td>
+        <td>Hangs at <code>[WiFi] Connecting to &hellip;</code> forever, then times out</td>
+        <td>Case-sensitive. Check both fields character by character. A phone hotspot is the fastest way
+        to confirm it is a credentials problem and not a network problem.</td></tr>
+      <tr><td>5&nbsp;GHz network (same name as 2.4&nbsp;GHz)</td>
+        <td>Same as wrong password &mdash; timeout with no error</td>
+        <td>The Pico&nbsp;W only sees 2.4&nbsp;GHz. Ask IT for the 2.4&nbsp;GHz-only SSID, or use a
+        hotspot set to 2.4&nbsp;GHz.</td></tr>
+      <tr><td>Captive portal on the school network</td>
+        <td>Connects to WiFi but all POSTs return an unexpected redirect response</td>
+        <td>The Pico cannot fill in a browser login form. Use a phone hotspot.</td></tr>
+      <tr><td>Copied the <code>/dev</code> URL instead of <code>/exec</code></td>
+        <td>POST returns 302 or 403</td>
+        <td>In Apps Script, <em>Deploy &rarr; Manage deployments</em>. The URL ending in
+        <code>/exec</code> is the one to copy. The <code>/dev</code> URL requires a Google login.</td></tr>
+      <tr><td>Deployment set to <em>Anyone with Google account</em></td>
+        <td>POST returns 403 Forbidden</td>
+        <td>The board has no Google session. Redeploy: <em>Execute as: Me</em>,
+        <em>Who has access: Anyone</em>.</td></tr>
+      <tr><td>Apps Script not saved before deploying</td>
+        <td>Old version runs, or the deployment shows an error</td>
+        <td>In the Apps Script editor, Ctrl+S (or Cmd+S) saves. Only then does <em>Deploy</em> pick up
+        the new code.</td></tr>
+      <tr><td>Dashboard shows <code>--</code> everywhere</td>
+        <td>Offline or waiting for first POST</td>
+        <td>Wait for one <code>POST 200 OK</code> in the Shell, then refresh. Also check that
+        <code>API_URL</code> at the top of <code>LilEx5_Dashboard4.html</code> matches the
+        <code>/exec</code> address.</td></tr>
+      <tr><td>Shell shows <code>POST 200 OK</code> but the sheet is empty</td>
+        <td>Sheet exists but has no rows</td>
+        <td>The tab must be named exactly <code>SensorData</code> (case-sensitive). Rename it and try
+        again.</td></tr>
+      <tr><td><code>config.py</code> saved to the computer, not the Pico</td>
+        <td><code>ImportError: no module named 'config'</code> or old credentials used</td>
+        <td><em>File &rarr; Save as&hellip; &rarr; Raspberry Pi Pico</em> in Thonny. The board cannot read
+        files from the computer.</td></tr>
+      <tr><td>Knocked SW5</td><td>Board goes dead</td><td>Still the power switch.</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>Teaching notes</h2>
+  <ul>
+    <li><strong>Open with the dashboard already live on the projector.</strong> Ask: &ldquo;Where is the
+    data coming from?&rdquo; Most will guess the board on the desk. Correct &mdash; but it went through
+    Google first. That is the whole architecture in one sentence.</li>
+    <li><strong>Draw the three hops on the board.</strong> Board &rarr; Google &rarr; Browser. Then ask
+    why you cannot do Board &rarr; Browser directly. Both sides are behind different routers; there is no
+    address the browser can dial. The spreadsheet is the shared place that both sides can reach. This is
+    the one idea worth spending five minutes on.</li>
+    <li><strong>The <code>wifi_reporter.py</code> file does not need to be read in full.</strong> Students
+    use it the same way they use <code>adapter.py</code> &mdash; import it, call the methods, trust the
+    result. The three new lines in <code>main_dashboard.py</code> are all they write.</li>
+    <li><strong>The moment of the lesson is the tile updating.</strong> When a student breathes on the
+    BME280 and the temperature tile on the projector moves three seconds later &mdash; through WiFi,
+    through Google, back to the browser &mdash; that is when the data flow becomes real. Do not hurry
+    past it.</li>
+    <li><strong>Rate limiting is worth one sentence.</strong> &ldquo;The board could post a hundred times
+    a second, but Google would throttle it and the lesson would end.&rdquo; <code>maybe_send()</code>
+    is the professional solution. Naming it is enough.</li>
+    <li><strong>Close the module here.</strong> From one LED on a pin, to a message through the air
+    (Activity 12), to six sensors posting live to a dashboard anyone in the world can open. It is worth
+    saying out loud.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Links</h2>
+  <div class="tablescroll">
+  <table>
+    <tbody>
+      <tr><td>Student page</td><td><a href="activity-13.html">activity-13.html</a></td></tr>
+      <tr><td>Live dashboard</td><td><a href="LilEx5_Dashboard4.html" target="_blank">LilEx5_Dashboard4.html</a></td></tr>
+      <tr><td>All teacher notes</td><td><a href="teacher.html">teacher.html</a></td></tr>
+      <tr><td>Previous activity</td><td><a href="activity-12.html">activity-12.html</a> &middot; <a href="teacher-12.html">teacher-12.html</a></td></tr>
+      <tr><td>Apps Script console</td><td><a href="https://script.google.com" target="_blank" rel="noopener">script.google.com</a></td></tr>
+      <tr><td>Pico&nbsp;W firmware</td><td><a href="https://micropython.org/download/RPI_PICO_W/" target="_blank" rel="noopener">micropython.org/download/RPI_PICO_W/</a></td></tr>
+      <tr><td>Thonny</td><td><a href="https://thonny.org" target="_blank" rel="noopener">thonny.org</a></td></tr>
+      <tr><td>Pin reference</td><td><a href="pinout.html">pinout.html</a></td></tr>
+      <tr><td>Repository</td><td><a href="https://github.com/ump-stemlab/pico-iot-module">github.com/ump-stemlab/pico-iot-module</a></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>Files used in this activity</h2>
+  <div class="tablescroll">
+  <table>
+    <thead><tr><th>File</th><th>Lives on</th><th>Activity 13</th></tr></thead>
+    <tbody>
+      <tr><td><code>config.py</code></td><td>Pico</td>
+        <td><strong>edited</strong> &mdash; add <code>WIFI_SSID</code>, <code>WIFI_PASS</code>,
+        <code>APPS_SCRIPT_URL</code>, <code>REPORT_INTERVAL_MS</code></td></tr>
+      <tr><td><code>wifi_reporter.py</code></td><td>Pico</td>
+        <td><strong>new</strong> &mdash; <code>WiFiReporter</code> class; handles connect and POST</td></tr>
+      <tr><td><code>main_dashboard.py</code></td><td>Pico</td>
+        <td><strong>new</strong> &mdash; same as <code>main.py</code> plus three WiFi lines</td></tr>
+      <tr><td><code>LilEx5_AppsScript.js</code></td><td>Google Apps Script</td>
+        <td><strong>deployed once</strong> &mdash; receives POST from board, serves GET to dashboard</td></tr>
+      <tr><td><code>LilEx5_Dashboard4.html</code></td><td>Browser</td>
+        <td><strong>open in browser</strong> &mdash; polls Apps Script every 5&nbsp;s, draws graphs</td></tr>
+      <tr><td>All sensor driver <code>.py</code> files</td><td>Pico</td>
+        <td>unchanged &mdash; already on board from Activity 8</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="muted">Activity 13 adds no new hardware pins. All six sensor groups are already wired from
+  Activity 8. The WiFi radio on the Pico&nbsp;W uses an internal antenna and needs no connector.</p>
+</section>
+
+<section>
+  <h2>&#x1F9E9; Tiered Activity 13 Answers</h2>
+  <div class="tbanner">These are the model answers for
+    <a href="activity13-tiers.html">Tiered Activity 13 — Sending Data to a Dashboard</a>.
+    Share only after students have attempted each tier.
+  </div>
+
+  <h3>Tier 1 — Fill in the Blanks</h3>
+  <table>
+    <thead><tr><th>#</th><th>Clue</th><th>Answer</th></tr></thead>
+    <tbody>
+      <tr><td><strong>[1]</strong></td><td>the MQTT client class name (import)</td><td><code>MQTTClient</code></td></tr>
+      <tr><td><strong>[2]</strong></td><td>constructor call with client ID and broker address</td><td><code>MQTTClient</code></td></tr>
+      <tr><td><strong>[3]</strong></td><td>establish TCP connection to the broker</td><td><code>connect</code></td></tr>
+      <tr><td><strong>[4]</strong></td><td>convert Python string to bytes for publishing</td><td><code>encode</code></td></tr>
+      <tr><td><strong>[5]</strong></td><td>send a message to a topic</td><td><code>publish</code></td></tr>
+      <tr><td><strong>[6]</strong></td><td>interval between publishes in seconds</td><td><code>5</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Tier 2 — Debug the Code</h3>
+  <table>
+    <thead><tr><th>Bug</th><th>Corrected line</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Bug 1 — wrong class name capitalisation</strong></td><td><code>from umqtt.simple import MQTTClient</code></td></tr>
+      <tr><td><strong>Bug 2 — missing parentheses on connect call</strong></td><td><code>client.connect()</code></td></tr>
+      <tr><td><strong>Bug 3 — publishing raw integer instead of encoded bytes</strong></td><td><code>client.publish(b"lilex/temp", str(raw).encode())</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Tier 3 — Extend: Multi-topic publisher — temperature to lilex/temp, simulated humidity to lilex/humidity, uptime to lilex/uptime. Last-will: "offline".</h3>
+  <div class="codebox"><button class="copybtn">Copy</button><pre><code>from umqtt.simple import MQTTClient
+import machine, time
+
+# WiFi connection assumed complete
+
+BROKER = "broker.hivemq.com"
+client = MQTTClient("pico_multi", BROKER)
+client.set_last_will(b"lilex/status", b"offline")
+client.connect()
+client.publish(b"lilex/status", b"online")
+
+sensor_t = machine.ADC(4)
+sensor_h = machine.ADC(1)
+uptime   = 0
+
+while True:
+    raw_t = sensor_t.read_u16()
+    v_t   = raw_t * 3.3 / 65535
+    temp  = 27 - (v_t - 0.706) / 0.001721
+
+    raw_h = sensor_h.read_u16()
+    hum   = raw_h / 65535 * 100   # simulated 0-100 %
+
+    client.publish(b"lilex/temp",     "{:.1f}".format(temp).encode())
+    client.publish(b"lilex/humidity", "{:.1f}".format(hum).encode())
+    client.publish(b"lilex/uptime",   str(uptime).encode())
+    print("Published t={:.1f} h={:.1f} up={}".format(temp, hum, uptime))
+
+    time.sleep(5)
+    uptime += 5</code></pre></div>
+
+  <h3>Tier 4 — Create: Full IoT pipeline — WiFi, MQTT connect with last-will, publish temp every 10 s, subscribe to /cmd and blink on "blink" payload.</h3>
+  <div class="codebox"><button class="copybtn">Copy</button><pre><code>from umqtt.simple import MQTTClient
+import machine, network, time
+
+SSID = "YOUR_SSID"; PASSWORD = "YOUR_PASSWORD"
+MATRIC = "CB22080"   # replace with your matric number
+BROKER = "broker.hivemq.com"
+
+TOPIC_TEMP   = ("lilex/" + MATRIC + "/temp").encode()
+TOPIC_CMD    = ("lilex/" + MATRIC + "/cmd").encode()
+TOPIC_STATUS = ("lilex/" + MATRIC + "/status").encode()
+
+def connect_wifi():
+    wlan = network.WLAN(network.STA_IF)
+    wlan.active(True)
+    wlan.connect(SSID, PASSWORD)
+    for _ in range(60):
+        if wlan.isconnected(): return wlan
+        time.sleep(0.5)
+    raise OSError("WiFi timeout")
+
+def read_temp():
+    s = machine.ADC(4)
+    v = s.read_u16() * 3.3 / 65535
+    return 27 - (v - 0.706) / 0.001721
+
+def on_message(topic, msg):
+    if msg == b"blink":
+        led = machine.Pin(25, machine.Pin.OUT)
+        for _ in range(3):
+            led.on(); time.sleep(0.2); led.off(); time.sleep(0.2)
+
+wlan = connect_wifi()
+print("IP:", wlan.ifconfig()[0])
+
+client = MQTTClient("lilex_" + MATRIC, BROKER)
+client.set_last_will(TOPIC_STATUS, b"offline")
+client.set_callback(on_message)
+try:
+    client.connect()
+    client.subscribe(TOPIC_CMD)
+    client.publish(TOPIC_STATUS, b"online")
+    while True:
+        try:
+            t = read_temp()
+            client.publish(TOPIC_TEMP, "{:.1f}".format(t).encode())
+            client.check_msg()
+            print("Published {:.1f} C".format(t))
+        except Exception as e:
+            print("Error:", e)
+        time.sleep(10)
+except Exception as e:
+    print("MQTT failed:", e)</code></pre></div>
+
+  <h3>Concept Check (10 MCQs)</h3>
+  <table>
+    <thead><tr><th>Question</th><th>Correct answer</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Q1</strong></td><td>Message Queuing Telemetry Transport</td></tr>
+      <tr><td><strong>Q2</strong></td><td>A named channel that messages are published to and subscribed from</td></tr>
+      <tr><td><strong>Q3</strong></td><td>It routes messages between publishers and subscribers</td></tr>
+      <tr><td><strong>Q4</strong></td><td>The protocol operates at the network level where data is transmitted as raw bytes</td></tr>
+      <tr><td><strong>Q5</strong></td><td>.encode()</td></tr>
+      <tr><td><strong>Q6</strong></td><td>Sends the message b"25.3" to all subscribers of topic lilex/temp</td></tr>
+      <tr><td><strong>Q7</strong></td><td>A message the broker automatically sends to subscribers if the device disconnects unexpectedly</td></tr>
+      <tr><td><strong>Q8</strong></td><td>Publish sends data; subscribe listens for data</td></tr>
+      <tr><td><strong>Q9</strong></td><td>It is free and requires no setup — good for testing before deploying a private broker</td></tr>
+      <tr><td><strong>Q10</strong></td><td>client = MQTTClient("pico", "broker.hivemq.com")</td></tr>
+    </tbody>
+  </table>
+</section>
+
+</div><!-- /wrap -->
+</div><!-- /tcontent -->
+
+<script>
+(function(){
+  var b = document.getElementById('gatebtn');
+  b.addEventListener('click', function(){
+    document.getElementById('gate').hidden = true;
+    document.getElementById('tcontent').hidden = false;
+  });
+})();
+</script>
+
+<footer>
+  <div class="wrap">
+    <p><strong>See &middot; Think &middot; Explore &middot; Marvel</strong><br>UMPSA STEM LAB</p>
+    <p><a href="index.html">Home</a> &middot;
+       <a href="activity-0.html">Activity 0</a> &middot;
+       <a href="activity-1.html">Activity 1</a> &middot;
+       <a href="activity-2.html">Activity 2</a> &middot;
+       <a href="activity-3.html">Activity 3</a> &middot;
+       <a href="activity-4.html">Activity 4</a> &middot;
+       <a href="activity-5.html">Activity 5</a> &middot;
+       <a href="activity-6.html">Activity 6</a> &middot;
+       <a href="activity-7.html">Activity 7</a> &middot;
+       <a href="activity-8.html">Activity 8</a> &middot;
+       <a href="activity-9.html">Activity 9</a> &middot;
+       <a href="activity-10.html">Activity 10</a> &middot;
+       <a href="activity-11.html">Activity 11</a> &middot;
+       <a href="activity-12.html">Activity 12</a> &middot;
+       <a href="activity-13.html">Activity 13</a> &middot;
+       <a href="pinout.html">Pin reference</a> &middot;
+       <a href="https://github.com/ump-stemlab/pico-iot-module">Source on GitHub</a></p>
+  </div>
+</footer>
+<script src="code.js"></script>
+<script>
+document.querySelectorAll('.copybtn').forEach(function(b){
+  b.addEventListener('click',function(){
+    var t=b.parentElement.querySelector('code').textContent;
+    navigator.clipboard.writeText(t).then(function(){
+      b.textContent='Copied!';b.classList.add('copied');
+      setTimeout(function(){b.textContent='Copy';b.classList.remove('copied');},2000);
+    });
+  });
+});
+</script>
+</body>
+</html>
