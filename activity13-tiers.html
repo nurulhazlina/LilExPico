@@ -716,6 +716,7 @@ function saveProfile(){
   try{localStorage.setItem(ID_KEY,JSON.stringify(profile));}catch(e){}
   showConfirmed(profile);
   unlockCard('cal-gate');
+  var csb=document.getElementById('cal-submit');if(csb)csb.disabled=false;
 }
 function showConfirmed(p){
   document.getElementById('id-form-area').style.display='none';
@@ -724,6 +725,7 @@ function showConfirmed(p){
   document.getElementById('id-conf-name').textContent=p.name;
   document.getElementById('id-conf-meta').textContent=p.matric+' · '+p.kelas;
   unlockCard('cal-gate');
+  var csb=document.getElementById('cal-submit');if(csb)csb.disabled=false;
 }
 function editProfile(){
   document.getElementById('id-form-area').style.display='block';
